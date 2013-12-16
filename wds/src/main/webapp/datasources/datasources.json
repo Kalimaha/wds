@@ -1,0 +1,16 @@
+[
+    {
+        "driver": "SQLServer2000",
+        "url": "jdbc:sqlserver://HQWPRFAOSTATDB1\Dissemination;databaseName=Warehouse;",
+        "dbName": "Warehouse",
+        "username": "Warehouse",
+        "password": "w@reh0use"
+    },
+    {
+        "driver": "SQLServer2000",
+        "url": "jdbc:sqlserver://HQWPRFAOSTATDB2\Dissemination;databaseName=Warehouse;",
+        "dbName": "Warehouse",
+        "username": "Warehouse",
+        "password": "w@reh0use"
+    }
+]

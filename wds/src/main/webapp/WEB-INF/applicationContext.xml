@@ -28,4 +28,8 @@
         <property name="publicFolder" value="${wds.publicFolder}" />
 	</bean>
 
+    <bean id="datasourcePool" class="org.fao.fenix.wds.core.datasource.DatasourcePool" lazy-init="false" init-method="init">
+        <constructor-arg value="/datasources" />
+    </bean>
+
 </beans>
