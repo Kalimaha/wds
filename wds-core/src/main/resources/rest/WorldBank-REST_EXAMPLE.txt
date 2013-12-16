@@ -1,0 +1,30 @@
+http://fenixapps.fao.org/wds/api?out=html
+							 &db=worldbank
+							 &where=country(ken),indicator(NY.GDP.MKTP.CD)
+							 &frequency=Q
+							 &year=2005:2010
+
+							 
+							 
+http://fenixapps.fao.org/wds/api?out=html
+							 &db=worldbank
+							 &where=country(br),indicator(NY.GDP.MKTP.CD),incomeLevel(LMC),lendingType(IDB)
+							 &year=2005:2010
+							 
+							 
+							 
+http://localhost:8080/wds/api?out=html
+							 &db=worldbank
+							 &select=year,indicator,value
+							 &where=indicator(NY.GDP.MKTP.CD),country(it),year(2005:2010)
+							 
+							 
+							 
+http://localhost:8080/wds/api?out=html
+							 &db=worldbank
+							 &where=indicator(NY.GDP.MKTP.CD)
+							 &year=2010
+							 
+							 
+							 
+http://ldvapp07.fao.org:8030/wds/api?out=html&db=worldbank&select=country,indicator,year,value&where=indicator(NY.GDP.MKTP.CD),year(2005)

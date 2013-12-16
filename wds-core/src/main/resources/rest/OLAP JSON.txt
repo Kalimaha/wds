@@ -1,0 +1,15 @@
+http://fenixapps.fao.org/wds/api?db=faostat&out=olapjson&select=D.AreaCode[Area],D.ItemCode[Item],D.ElementCode[Element],E.UnitNameE[Unit],D.Value[Value]{SUM}&from=Data[D],Element[E]&where=D.AreaCode(4:68),D.ElementCode(55:56:57:58:152:154:432:434:436:438:5312:5419:5510:5525:5530:5531:5532:5610:5622:5910:5922),D.ItemCode(15:31),JOIN(D.ElementCode:E.ElementCode)&groupby=D.AreaCode,D.ItemCode,D.ElementCode,E.UnitNameE
+
+http://fenixapps.fao.org/wds/api?db=faostat&showNullValues=false&out=olapjson&select=D.AreaCode[Area],D.ItemCode[Item],D.ElementCode[Element],E.UnitNameE[Unit],D.Value[Value]{SUM}&from=Data[D],Element[E]&where=D.AreaCode(4:68),D.ElementCode(55:56:57:58:152:154:432:434:436:438:5312:5419:5510:5525:5530:5531:5532:5610:5622:5910:5922),D.ItemCode(15:31),JOIN(D.ElementCode:E.ElementCode)&groupby=D.AreaCode,D.ItemCode,D.ElementCode,E.UnitNameE
+
+
+
+http://fenixapps.fao.org/wds/api?db=faostat&out=olapjson&select=D.ItemCode[Item],D.AreaCode[Area],D.ElementCode[Element],E.UnitNameE[Unit],D.Value[Value]{SUM}&from=Data[D],Element[E]&where=D.AreaCode(4:68),D.ElementCode(55:56:57:58:152:154:432:434:436:438:5312:5419:5510:5525:5530:5531:5532:5610:5622:5910:5922),D.ItemCode(15:31),JOIN(D.ElementCode:E.ElementCode)&groupby=D.AreaCode,D.ItemCode,D.ElementCode,E.UnitNameE
+
+
+
+http://fenixapps.fao.org/wds/api?db=faostat&out=olapjson&select=D.AreaCode[Area],D.ItemCode[Item],D.ElementCode[Element],D.Year[Year],E.UnitNameE[Unit],D.Value[Value]{SUM}&from=Data[D],Element[E]&where=D.AreaCode(4:68),D.ElementCode(55:56:57:58:152:154:432:434:436:438:5312:5419:5510:5525:5530:5531:5532:5610:5622:5910:5922),D.ItemCode(15:31),JOIN(D.ElementCode:E.ElementCode),D.Year(1990:1991:1992)&groupby=D.AreaCode,D.ItemCode,D.ElementCode,D.Year,E.UnitNameE
+
+
+
+http://fenixapps.fao.org/wds/api?db=faostat&out=olapjson&select=D.ElementCode[ElementCode],D.AreaCode[AreaCode],D.ItemCode[Item],D.Year[Year],E.UnitNameE[Unit],D.Value[Measures]{SUM}&from=Data[D],Element[E]&where=D.AreaCode(29),D.ElementCode(55:58:5510),D.ItemCode(15),JOIN(D.ElementCode:E.ElementCode),D.Year(1980)&groupby=D.AreaCode,D.ItemCode,D.ElementCode,D.Year,E.UnitNameE

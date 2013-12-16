@@ -1,0 +1,11 @@
+// get all groups
+http://localhost:8080/wds/rest/groups/faostat/en
+http://fenixapps.fao.org/wds/rest/groups/faostat/en
+
+// get domains by group
+http://localhost:8080/wds/rest/domains/faostat/Q/es
+http://fenixapps.fao.org/wds/rest/domains/faostat/Q/es
+
+// get bulk downloads by domain
+http://localhost:8080/wds/rest/bulkdownloads/faostat/QC/en
+http://fenixapps.fao.org/wds/rest/bulkdownloads/faostat/QC/en

@@ -1,0 +1,110 @@
+http://localhost:8080/wds/api?out=xml
+								   &db=faostat
+								   &select=ItemCode,Year,Value
+								   &from=Data
+								   &where=ItemCode(1:23:47),Year[DATE](2001:2002:2003)
+								   &groupby=ItemCode
+								   &orderby=Year[DESC]
+
+								   
+								   
+http://localhost:8080/wds/api?out=html
+								   &db=faosTAT
+								   &select=Year,ItemCode,Value
+								   &from=data
+								   &where=ItemCode(15),Year[DATE](1961),AreaCode(2)
+								   &orderby=Year[DESC]
+
+
+
+http://localhost:8080/wds/api?out=html
+								   &db=faosTAT
+								   &select=Year,ItemCode[Commodity],DomainCode[Domain],AreaCode[Country],Value[Production]
+								   &from=data[D]
+								   &where=D.ItemCode(15),DomainCode('QC'),AreaCode(2),ElementCode(5510)
+								   &orderby=Year[DESC]		
+								   
+								   
+
+# Commodity Codes
+http://ldvapp07.fao.org:8030/wds/api?out=html
+								   		  &db=faosTAT
+								   		  &select=I.ItemCode[Code], I.ItemNameE[Label]
+								   		  &from=Item[I],DomainItem[DI]
+								   		  &where=JOIN(DI.ItemCode:I.ItemCode),DI.DomainCode('QC')
+								  		  &orderby=I.ItemNameE	
+
+
+
+# Element Codes
+http://ldvapp07.fao.org:8030/wds/api?out=html
+								   		  &db=faosTAT
+								   		  &select=E.ElementCode[Code], E.ElementNameE[Label]
+								   		  &from=Element[E],DomainElement[DE]
+								   		  &where=JOIN(DE.ElementCode:E.ElementCode),DE.DomainCode('QC')
+								  		  &orderby=E.ElementNameE
+
+
+
+http://localhost:8080/wds/api?out=html
+								   &db=faosTAT
+								   &select=A.AreaCode[Code], A.AreaNameE[Label]
+								   &from=AreaGroupArea[A],DomainArea[DA]
+								   &where=JOIN(DA.AreaCode:A.AreaCode),DA.DomainCode('QC'),A.Type('External')
+								   &groupby=A.AreaCode,A.AreaNameE
+								   &orderby=A.AreaNameE	
+
+
+
+# Country Codes
+http://ldvapp07.fao.org:8030/wds/api?out=html
+								   		  &db=faosTAT
+								   		  &select=A.AreaCode[Code], A.AreaNameE[Label]
+								   		  &from=AreaGroupArea[A],DomainArea[DA]
+								   		  &where=JOIN(DA.AreaCode:A.AreaCode),DA.DomainCode('QC'),A.Type('External')
+								   		  &groupby=A.AreaCode,A.AreaNameE
+								   		  &orderby=A.AreaNameE	
+								   		  
+								   		  
+								   		  
+# Univariate Statistics
+http://ldvapp07.fao.org:8030/wds/api?out=html
+							    		  &db=faostat
+							    		  &select=D.Year,A.AreaNameE[Country],I.ItemNameE[Commodity],D.Value[Price]
+							 			  &from=data[D],AreaGroupArea[A],Item[I],DomainItem[DI],DomainArea[DA] 
+							 			  &where=D.ItemCode(44),
+							 			  		 D.DomainCode('QC'),
+							 			  		 D.ElementCode(5510),
+							 			  		 JOIN(A.AreaCode:D.AreaCode),
+							 			  		 JOIN(I.ItemCode:D.ItemCode),
+							 			  		 JOIN(DI.ItemCode:I.ItemCode),
+							 			  		 JOIN(DA.AreaCode:A.AreaCode),
+							 			  		 DA.DomainCode('QC'),
+							 			  		 DI.DomainCode('QC'),
+							 			  		 A.Type('External'),
+							 			  		 D.AreaCode(115)
+							 			  &groupby=D.Year,A.AreaNameE,I.ItemNameE,D.Value
+							 			  &orderby=Year,Commodity,Country
+							 			  
+							 			  
+							 			  
+							 			  
+http://localhost:8080/wds/api?out=excel
+								   &db=faosTAT
+								   &select=D.GroupName,D.DomainCode[Code], D.DomainNameE[Label]
+								   &from=Domain[D]								   
+								   &orderby=D.DomainNameE	
+								   
+								   
+
+# FAOSTAT Domains and Groups								   
+http://ldvapp07.fao.org:8030/wds/api?out=html&db=faosTAT&select=D.GroupName[DOMAIN],D.DomainNameE[subdomain]&from=Domain[D]&groupby=D.GroupCode,D.GroupName,D.DomainNameE&orderby=D.GroupName
+								   		  
+http://ldvapp07.fao.org:8030/fwds-web/FWDS?out=html&db=faostat&select=value,itemcode,areacode&from=data&where=domaincode('F'),year(2000)
+	
+# USA's Wheat
+http://fenixapps.fao.org/wds/api?out=html&db=faostat&select=E.ElementNameE[Element],A.AreaNameE[Country],I.ItemNameE[Item],D.year[Year],D.value[Value],&from=data[D],element[E],item[I],area[A]&where=D.elementcode(5312),D.itemcode(15),D.areacode(2),D.domaincode('QC'),JOIN(D.elementcode:E.elementcode),JOIN(D.itemcode:I.itemcode),JOIN(D.areacode:A.areacode)&orderby=E.elementnamee,D.year
+	
+	
+	
+<HTML><HEAD><meta http-equiv='content-type' content='text/html;charset=utf-8'><TITLE>Redirecting</TITLE><META HTTP-EQUIV='refresh' content='1'; url=http://127.0.0.1:8080/wds/excels/5d72b12d-a465-4b0a-bc73-b13e3d1ef565.xls'></HEAD><BODY onLoad='location.replace('http://127.0.0.1:8080/wds/excels/5d72b12d-a465-4b0a-bc73-b13e3d1ef565.xls'>Redirecting you...</BODY></HTML>							  											   

@@ -1,0 +1,104 @@
+<PAYLOAD>
+
+	<!-- Parameters to connect to the database through JDBC. -->
+	<DB>
+		<DRIVER>SQLServer2000</DRIVER>
+		<URL>jdbc:sqlserver://FAOSTAT-PROD\\Production;databaseName=Warehouse;</URL>
+		<USERNAME>Warehouse</USERNAME>
+		<PASSWORD>w@reh0use</PASSWORD>
+	</DB>
+	
+	<!-- Parameters to connect to well known data sources. -->
+	<DB>
+		<DATASOURCE>FAOSTAT</DATASOURCE>
+	</DB>
+	
+	<!-- Parameters to create the SQL query. -->
+	<SQL>
+		<QUERY>SELECT Year FROM Data WHERE ItemCode = '123'</QUERY>
+		<SELECTS>
+			<SELECT>
+				<AGGREGATION>NONE</AGGREGATION>
+				<COLUMN>Year</COLUMN>
+				<ALIAS>NONE</ALIAS>
+			</SELECT>
+			<SELECT>
+				<AGGREGATION>SUM</AGGREGATION>
+				<COLUMN>ItemCode</COLUMN>
+				<ALIAS>NONE</ALIAS>
+			</SELECT>
+			<SELECT>
+				<AGGREGATION>AVG</AGGREGATION>
+				<COLUMN>Value</COLUMN>
+				<ALIAS>NONE</ALIAS>
+			</SELECT>
+		</SELECTS>
+		<FROMS>
+			<FROM>
+				<COLUMN>Data</COLUMN>
+				<ALIAS>NONE</ALIAS>
+			</FROM>
+		</FROMS>
+		<WHERES>
+			<WHERE>
+				<DATATYPE>TEXT</DATATYPE>
+				<COLUMN>GroupCode</COLUMN>
+				<OPERATOR>=</OPERATOR>
+				<VALUE>Production</VALUE>
+			</WHERE>
+			<WHERE>
+				<DATATYPE>TEXT</DATATYPE>
+				<COLUMN>DomainCode</COLUMN>
+				<OPERATOR>=</OPERATOR>
+				<VALUE>Crops</VALUE>
+			</WHERE>
+			<WHERE>
+				<DATATYPE>DATE</DATATYPE>
+				<COLUMN>Year</COLUMN>
+				<OPERATOR>IN</OPERATOR>
+				<INS>
+					<IN>2001</IN>
+					<IN>2002</IN>
+					<IN>2003</IN>
+					<IN>2004</IN>
+					<IN>2005</IN>
+				</INS>
+			</WHERE>
+		</WHERES>
+		<GROUPBYS>
+			<GROUPBY>
+				<COLUMN>NONE</COLUMN>
+			</GROUPBY>
+		</GROUPBYS>
+		<ORDERBYS>
+			<ORDERBY>
+				<COLUMN>Year</COLUMN>
+				<DIRECTION>ASC</DIRECTION>
+			</ORDERBY>
+		</ORDERBYS>
+		<LIMIT>NONE</LIMIT>
+	</SQL>
+	
+	<!-- Parameters to connect to web services. -->
+	<WS>
+		<URL>http://localhost:8080/r4f-web/services/R4FService</URL>
+		<PARAMETERS>
+			<PARAMETER>
+				<NAME>Test Name</NAME>
+				<VALUE>Test Value</VALUE>
+			</PARAMETER>
+		</PARAMETERS>
+	</WS>
+	
+	<!-- Parameters to connect to REST. -->
+	<REST>
+		<URL>http://localhost:8080/r4f-web/REST</URL>
+		<PARAMETERS>
+			<PARAMETER>
+				<NAME>Method</NAME>
+				<VALUE>GET</VALUE>
+			</PARAMETER>
+		</PARAMETERS>
+	</REST>
+
+</PAYLOAD>

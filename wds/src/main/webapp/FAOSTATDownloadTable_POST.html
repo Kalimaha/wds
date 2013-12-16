@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Data Manager Test</title>
+	</head>
+
+	<body>
+
+		<!--<FORM ACTION="http://localhost:8080/wds/rest/table/faostat/{'selects':[{'aggregation':'NONE','column':'D.Value','alias':'Price'},{'aggregation':'NONE','column':'I.ItemNameE','alias':'Item'},{'aggregation':'NONE','column':'E.ElementNameE','alias':'Element'},{'aggregation':'NONE','column':'A.AreaNameE','alias':'Area'},{'aggregation':'NONE','column':'D.Year\t','alias':'Year'}],'froms':[{'column':'Data','alias':'D'},{'column':'Item','alias':'I'},{'column':'Element','alias':'E'},{'column':'Area','alias':'A'}],'wheres':[{'datatype':'TEXT','column':'D.ItemCode','operator':'IN','value':'','ins':['15']},{'datatype':'TEXT','column':'D.AreaCode','operator':'IN','value':'','ins':['2']},{'datatype':'TEXT','column':'D.AreaCode','operator':'\u003d','value':'A.AreaCode','ins':[]},{'datatype':'TEXT','column':'D.ItemCode','operator':'\u003d','value':'I.ItemCode','ins':[]},{'datatype':'TEXT','column':'D.ElementCode','operator':'\u003d','value':'E.ElementCode','ins':[]}],'groupBys':[{'column':'I.ItemNameE'},{'column':'E.ElementNameE'},{'column':'E.AreaNameE'},{'column':'D.Year'}],'orderBys':[{'column':'D.Year','direction':'DESC'}],'limit':'NONE','query':'NONE','frequency':'NONE'}/,/./4" METHOD="POST">-->
+		<FORM ACTION="http://localhost:8080/wds/rest/table/html/" METHOD="POST">
+			<table width="60%" align="center">
+				<tr>
+					<td colspan='2' align='center'>WDS POST Test</td>
+				</tr>
+				
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="datasource" VALUE="FAOSTAT"></td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="json" VALUE="{'selects':[{'aggregation':'NONE','column':'D.Value','alias':'Price'},{'aggregation':'NONE','column':'I.ItemNameE','alias':'Item'},{'aggregation':'NONE','column':'E.ElementNameE','alias':'Element'},{'aggregation':'NONE','column':'A.AreaNameE','alias':'Area'},{'aggregation':'NONE','column':'D.Year\t','alias':'Year'}],'froms':[{'column':'Data','alias':'D'},{'column':'Item','alias':'I'},{'column':'Element','alias':'E'},{'column':'Area','alias':'A'}],'wheres':[{'datatype':'TEXT','column':'D.ItemCode','operator':'IN','value':'','ins':['15']},{'datatype':'TEXT','column':'D.AreaCode','operator':'IN','value':'','ins':['2']},{'datatype':'DATE','column':'D.AreaCode','operator':'\u003d','value':'A.AreaCode','ins':[]},{'datatype':'DATE','column':'D.ItemCode','operator':'\u003d','value':'I.ItemCode','ins':[]},{'datatype':'DATE','column':'D.ElementCode','operator':'\u003d','value':'E.ElementCode','ins':[]}],'groupBys':[{'column':'I.ItemNameE'},{'column':'E.ElementNameE'},{'column':'A.AreaNameE'},{'column':'D.Year'},{'column':'D.Value'}],'orderBys':[{'column':'D.Year','direction':'DESC'}],'limit':'NONE','query':'NONE','frequency':'NONE'}"></td>
+					<!--<td><INPUT TYPE="TEXT" SIZE="60" NAME="json" VALUE="pippo"></td>-->
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="cssFilename" VALUE="faostat"></td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="thousandSeparator" VALUE=","></td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="decimalSeparator" VALUE="."></td>
+				</tr>
+				<tr>
+					<td>Username:</td>
+					<td><INPUT TYPE="TEXT" SIZE="60" NAME="decimalNumbers" VALUE="2"></td>
+				</tr>
+				
+				<tr>
+					<td colspan='2' align='center'><INPUT TYPE="SUBMIT" VALUE="Synch"></td>
+				</tr>
+			</table>
+		</FORM>
+
+	</body>
+
+</html>
