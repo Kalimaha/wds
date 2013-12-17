@@ -48,11 +48,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getDomainListBoxes(datasource, domainCode, lang);
+                    it = fp.getDomainListBoxes(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomainListBoxes' thrown an error: " + e.getMessage()));
@@ -173,11 +174,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getRegions(datasource, domainCode, lang);
+                    it = fp.getRegions(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getRegions' thrown an error: " + e.getMessage()));
@@ -235,13 +237,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-//                    System.out.println(areaGroupCode);
-//                    System.out.println(Integer.valueOf(areaGroupCode).intValue());
-                    it = fp.getAreaGroupArea(datasource, domainCode, Integer.valueOf(areaGroupCode).intValue());
+                    it = fp.getAreaGroupArea(dsBean, domainCode, Integer.valueOf(areaGroupCode).intValue());
 
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -303,11 +304,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getSpecialGroups(datasource, domainCode, lang);
+                    it = fp.getSpecialGroups(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getSpecialGroups' thrown an error: " + e.getMessage()));
@@ -365,11 +367,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getItems(datasource, domainCode, lang);
+                    it = fp.getItems(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getItems' thrown an error: " + e.getMessage()));
@@ -427,11 +430,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getItemsAggregated(datasource, domainCode, lang);
+                    it = fp.getItemsAggregated(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getItemsAggregated' thrown an error: " + e.getMessage()));
@@ -489,11 +493,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getElements(datasource, domainCode, lang);
+                    it = fp.getElements(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getElements' thrown an error: " + e.getMessage()));
@@ -551,11 +556,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getYears(datasource, domainCode);
+                    it = fp.getYears(dsBean, domainCode);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getYears' thrown an error: " + e.getMessage()));
@@ -613,11 +619,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getItemGroupItem(datasource, domainCode, Integer.valueOf(itemGroupCode).intValue());
+                    it = fp.getItemGroupItem(dsBean, domainCode, Integer.valueOf(itemGroupCode).intValue());
 
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -682,10 +689,11 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
 
                 try {
 
-                    it = fp.getData(b);
+                    it = fp.getData(dsBean, b);
 
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -745,16 +753,15 @@ public class FAOSTATProceduresRESTService {
                 Gson g = new Gson();
 
                 // Convert from string to JSON
-                System.out.println(payload);
                 FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
-                System.out.println(b);
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
 
                 try {
 
-                    it = fp.getData(b);
+                    it = fp.getData(dsBean, b);
 
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -774,11 +781,6 @@ public class FAOSTATProceduresRESTService {
                 writer.write("<table>");
                 while(it.hasNext()) {
                     List<String> l = it.next();
-                    for (int i = 0; i < l.size(); i++) {
-                        String s =  l.get(i);
-                        System.out.print(s + ", ");
-                    }
-                    System.out.println();
                     writer.write("<tr>");
                     for (int i = 0; i < l.size(); i++) {
                         writer.write("<td>");
