@@ -22,13 +22,14 @@ Information for Action Programme
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
-import org.fao.fenix.wds.core.bean.DBBean;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
-import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 import org.fao.fenix.wds.core.sql.Bean2SQL;
 import org.fao.fenix.wds.core.sql.faostat.SQLBeansRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -46,6 +47,9 @@ import java.sql.SQLException;
 @Path("/bulkdownloads")
 public class FAOSTATBulkDownloadsRESTService {
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{datasource}/{domainCode}/{language}")
@@ -62,8 +66,7 @@ public class FAOSTATBulkDownloadsRESTService {
                 Gson g = new Gson();
 
                 // compute result
-                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
-                DBBean db = new DBBean(ds);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 SQLBean sql = SQLBeansRepository.getBulkDownloads(language, domainCode);
                 JDBCIterable it = new JDBCIterable();
 

@@ -23,10 +23,11 @@ package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
 import org.apache.log4j.Logger;
-import org.fao.fenix.wds.core.bean.DBBean;
-import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -46,6 +47,9 @@ public class FAOSTATGroupsAndDomainsRESTService {
 
     private static final Logger LOGGER = Logger.getLogger(FAOSTATGroupsAndDomainsRESTService.class);
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
     @Path("{datasource}/{language}")
@@ -62,7 +66,7 @@ public class FAOSTATGroupsAndDomainsRESTService {
                 Gson g = new Gson();
 
                 // compute result
-                DBBean db = new DBBean(DATASOURCE.valueOf(datasource.toUpperCase()));
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 JDBCIterable it = new JDBCIterable();
 
                 try {

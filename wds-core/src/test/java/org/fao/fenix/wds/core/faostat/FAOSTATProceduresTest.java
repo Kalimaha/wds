@@ -37,17 +37,17 @@ public class FAOSTATProceduresTest extends TestCase {
         FAOSTATProcedures fp = new FAOSTATProcedures();
         Gson g = new Gson();
         JDBCIterable it = null;
-        try {
-            it = fp.getCountries("faostatproddiss", "QC", "E");
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            it = fp.getCountries("faostatproddiss", "QC", "E");
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
         while(it.hasNext())
             System.out.println(g.toJson(it.next()));
         System.out.println("");

@@ -22,11 +22,11 @@ Information for Action Programme
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
-import org.fao.fenix.wds.core.bean.DBBean;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.NestedWhereBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
-import org.fao.fenix.wds.core.constant.DATASOURCE;
 import org.fao.fenix.wds.core.constant.SQL;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 import org.fao.fenix.wds.core.sql.Bean2SQL;
@@ -57,6 +57,9 @@ public class FAOSTATExporter {
 	@Autowired
 	private Wrapper wrapper;
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
     @POST
     @Path("/streamexcel")
     public Response streamExcel(final @FormParam("datasource_WQ") String datasource,
@@ -78,9 +81,8 @@ public class FAOSTATExporter {
 
                 // compute result
                 Gson g = new Gson();
-                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
                 SQLBean sql = g.fromJson(json, SQLBean.class);
-                DBBean db = new DBBean(ds);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
                 // compute result

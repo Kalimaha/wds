@@ -1,10 +1,13 @@
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATProceduresBean;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.faostat.FAOSTATProcedures;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -23,6 +26,9 @@ import java.util.UUID;
 @Component
 @Path("/procedures")
 public class FAOSTATProceduresRESTService {
+
+    @Autowired
+    private DatasourcePool datasourcePool;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -104,11 +110,12 @@ public class FAOSTATProceduresRESTService {
 
                 // compute result
                 JDBCIterable it = new JDBCIterable();
+                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
 
                 try {
 
                     // Query DB
-                    it = fp.getCountries(datasource, domainCode, lang);
+                    it = fp.getCountries(dsBean, domainCode, lang);
 
                 } catch (IllegalAccessException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getCountries' thrown an error: " + e.getMessage()));

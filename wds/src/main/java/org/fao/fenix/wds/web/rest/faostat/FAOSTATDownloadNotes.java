@@ -23,9 +23,11 @@ package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
 import org.fao.fenix.wds.core.bean.DBBean;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
 import org.fao.fenix.wds.core.bean.cpi.CPIBean;
 import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSException;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCConnector;
@@ -45,7 +47,6 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /** 
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -57,6 +58,9 @@ public class FAOSTATDownloadNotes {
 	
 	@Autowired
 	private Wrapper wrapper;
+
+    @Autowired
+    DatasourcePool datasourcePool;
 	
 	@POST
 	@Produces(MediaType.TEXT_HTML)
@@ -64,11 +68,6 @@ public class FAOSTATDownloadNotes {
 	public Response createCPINotes(@FormParam("datasource") String datasource, @FormParam("json") String json, @FormParam("lang") String lang) {
 		
 		try {
-			
-			// logging
-			long t0 = System.currentTimeMillis();
-			String id = UUID.randomUUID().toString();
-//			System.out.println("[START][" + id + "] - FAOSTATDownloadNotes.createCPINotes");
 			
 			// compute result
 			Gson g = new Gson();
@@ -94,8 +93,6 @@ public class FAOSTATDownloadNotes {
 			builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 						
 			// return response
-//			System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//			System.out.println("[END][" + id + "] - FAOSTATDownloadNotes.createCPINotes - " + (System.currentTimeMillis() - t0) + " millis.");
 			return builder.build();
 					
 		} catch (WDSException e) {
@@ -119,11 +116,6 @@ public class FAOSTATDownloadNotes {
 		
 		try {
 			
-			// logging
-			long t0 = System.currentTimeMillis();
-			String id = UUID.randomUUID().toString();
-//			System.out.println("[START][" + id + "] - FAOSTATDownloadNotes.createCPITable");
-			
 			// create HTML
 			DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
 			DBBean db = new DBBean(ds);
@@ -145,8 +137,6 @@ public class FAOSTATDownloadNotes {
 			builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 						
 			// return response
-//			System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//			System.out.println("[END][" + id + "] - FAOSTATDownloadNotes.createCPITable - " + (System.currentTimeMillis() - t0) + " millis.");
 			return builder.build();
 			
 		} catch (WDSException e) {
@@ -180,9 +170,8 @@ public class FAOSTATDownloadNotes {
 
                 // Query
                 String script = "SELECT html FROM Metadata_Domain_Text[M] WHERE M.lang = '" + language + "' AND M.name = 'Description' AND M.domain = '" + domainCode + "' ";
-                DATASOURCE ds = DATASOURCE.FAOSTATPROD;
                 SQLBean sql = new SQLBean(script);
-                DBBean db = new DBBean(ds);
+                DatasourceBean db = datasourcePool.getDatasource(DATASOURCE.FAOSTATPROD.name());
 
                 // Fetch data
                 JDBCIterable it = new JDBCIterable();

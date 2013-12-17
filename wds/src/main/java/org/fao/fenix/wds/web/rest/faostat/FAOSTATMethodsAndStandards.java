@@ -23,8 +23,10 @@ package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
 import org.fao.fenix.wds.core.bean.DBBean;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
 import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCConnector;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
@@ -57,6 +59,9 @@ public class FAOSTATMethodsAndStandards {
 	@Autowired
 	private Wrapper wrapper;
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
     @GET
 	@Path("/{code}/excel/{datasource}/{domainCode}/{lang}")
     @Produces("application/msexcel")
@@ -69,9 +74,8 @@ public class FAOSTATMethodsAndStandards {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // initiate variable
-                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                DBBean db = new DBBean(ds);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 SQLBean sql = null;
                 List<String> headers = new ArrayList<String>();
 
@@ -214,8 +218,7 @@ public class FAOSTATMethodsAndStandards {
                 List<String> headers = new ArrayList<String>();
 
                 // compute result
-                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
-                DBBean db = new DBBean(ds);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 SQLBean sql = null;
 
                 // get SQL script

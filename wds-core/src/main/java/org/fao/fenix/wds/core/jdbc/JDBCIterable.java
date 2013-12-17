@@ -1,8 +1,7 @@
 package org.fao.fenix.wds.core.jdbc;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
-import org.fao.fenix.wds.core.bean.DBBean;
-import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.SQL;
 import org.fao.fenix.wds.core.exception.WDSException;
 
@@ -27,30 +26,23 @@ public class JDBCIterable implements Iterator<List<String>> {
 
     private int columns;
 
-    public void query(DBBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
-        switch (db.getDatasource()) {
-            case FAOSTAT: querySQLServer(db, sql); break;
-            case FAOSTAT2: querySQLServer(db, sql); break;
-            case FAOSTATPROD: querySQLServer(db, sql); break;
-            case FAOSTATPRODDISS: querySQLServer(db, sql); break;
-            case FAOSTATTESTDISS: querySQLServer(db, sql); break;
-            case FAOSTATGLBL: querySQLServer(db, sql); break;
-            case FAOSYB: queryPostgreSQL(db, sql); break;
-            case FENIXDATAMANAGER: queryPostgreSQL(db, sql); break;
-            case CROWDPRICES: queryPostgreSQL(db, sql); break;
-            case FENIX: queryPostgreSQL(db, sql); break;
-            case STAGINGAREA: queryPostgreSQL(db, sql); break;
-            case AMISPOLICIES: queryPostgreSQL(db, sql); break;
-            default: throw new WDSException(db.getDatasource().name() + " is not recognized as datasource (yet).");
+    public void query(DatasourceBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+        switch (db.getDriver()) {
+            case POSTGRESQL     : queryPostgreSQL(db, sql); break;
+            case SQLSERVER2000  : querySQLServer(db, sql); break;
+            default             : throw new WDSException(db.getDriver().name() + " driver has not been implemented (yet).");
         }
     }
 
-    public void querySQLServer(DBBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException {
+    public void querySQLServer(DatasourceBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException {
 
         // Clean the query
         validate(sql);
         sql = sql.replaceAll("-", "_");
-        //sql = sql.replaceAll("/", "_");
+
+        System.out.println(db.getUrl());
+        System.out.println(db.getUsername());
+        System.out.println(db.getPassword());
 
         // Open connections
         SQLServerDriver.class.newInstance();
@@ -63,10 +55,10 @@ public class JDBCIterable implements Iterator<List<String>> {
 
     }
 
-    public void queryPostgreSQL(DBBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public void queryPostgreSQL(DatasourceBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
 
         // Clean the query
-        if (db.getDatasource() != DATASOURCE.STAGINGAREA)
+        if (!db.getId().equalsIgnoreCase("STAGINGAREA"))
             validate(sql);
 
         // Open connections

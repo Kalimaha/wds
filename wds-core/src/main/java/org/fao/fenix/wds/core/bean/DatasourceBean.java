@@ -21,13 +21,17 @@
  */
 package org.fao.fenix.wds.core.bean;
 
+import org.fao.fenix.wds.core.constant.DRIVER;
+
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  */
 public class DatasourceBean {
 
-    private String driver;
+    private String id;
+
+    private DRIVER driver;
 
     private String url;
 
@@ -37,11 +41,11 @@ public class DatasourceBean {
 
     private String password;
 
-    public String getDriver() {
+    public DRIVER getDriver() {
         return driver;
     }
 
-    public void setDriver(String driver) {
+    public void setDriver(DRIVER driver) {
         this.driver = driver;
     }
 
@@ -77,10 +81,19 @@ public class DatasourceBean {
         this.password = password;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "DatasourceBean{" +
-                "driver='" + driver + '\'' +
+                "id='" + id + '\'' +
+                ", driver=" + driver +
                 ", url='" + url + '\'' +
                 ", dbName='" + dbName + '\'' +
                 ", username='" + username + '\'' +

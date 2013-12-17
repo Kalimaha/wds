@@ -22,10 +22,12 @@
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
-import org.fao.fenix.wds.core.bean.DBBean;
+import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.DATASOURCE;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -43,6 +45,9 @@ import java.sql.SQLException;
 @Path("/geoconverter")
 public class GeoConverter {
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{systemFrom}/{systemTo}/{code}")
@@ -59,7 +64,7 @@ public class GeoConverter {
                 Gson g = new Gson();
 
                 // compute result
-                DBBean db = new DBBean(DATASOURCE.FENIX);
+                DatasourceBean db = datasourcePool.getDatasource(DATASOURCE.FENIX.name());
                 JDBCIterable it = new JDBCIterable();
 
                 try {

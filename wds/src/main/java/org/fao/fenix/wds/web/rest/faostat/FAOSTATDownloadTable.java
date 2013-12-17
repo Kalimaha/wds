@@ -22,12 +22,10 @@ Information for Action Programme
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
-import org.fao.fenix.wds.core.bean.DBBean;
-import org.fao.fenix.wds.core.bean.NestedWhereBean;
-import org.fao.fenix.wds.core.bean.SQLBean;
-import org.fao.fenix.wds.core.bean.SelectBean;
+import org.fao.fenix.wds.core.bean.*;
 import org.fao.fenix.wds.core.constant.DATASOURCE;
 import org.fao.fenix.wds.core.constant.SQL;
+import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.exception.WDSException;
 import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.jdbc.JDBCConnector;
@@ -60,6 +58,9 @@ public class FAOSTATDownloadTable {
 	@Autowired
 	private Wrapper wrapper;
 
+    @Autowired
+    DatasourcePool datasourcePool;
+
     @POST
     @Path("/excelWithQuotes")
     public Response createExcelWithQuotes(@FormParam("datasource_WQ") String datasource,
@@ -75,11 +76,6 @@ public class FAOSTATDownloadTable {
 
         try {
 
-            // logging
-            long t0 = System.currentTimeMillis();
-            String id = UUID.randomUUID().toString();
-//            System.out.println("[START][" + id + "] - FAOSTATDownloadTable.createExcel");
-
             // compute result
             Gson g = new Gson();
             DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
@@ -90,7 +86,7 @@ public class FAOSTATDownloadTable {
             if (datasource.toUpperCase().startsWith("FAOSTAT"))
                 sql.setQuery(replaceLimitWithTop(sql));
 
-//            System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
+            // query the DB
             List<List<String>> table = JDBCConnector.query(db, sql, true);
 
             List<String> headers = new ArrayList<String>();
@@ -137,8 +133,6 @@ public class FAOSTATDownloadTable {
             builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 
             // return response
-//            System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//            System.out.println("[END][" + id + "] - FAOSTATDownloadTable.createExcel - " + (System.currentTimeMillis() - t0) + " millis.");
             return builder.build();
 
         } catch (WDSException e) {
@@ -180,12 +174,6 @@ public class FAOSTATDownloadTable {
 		
 		try {
 			
-			// logging
-			long t0 = System.currentTimeMillis();
-			String id = UUID.randomUUID().toString();
-//			System.out.println("[START][" + id
-//					+ "] - FAOSTATDownloadTable.createTable");
-
 			// compute result
 			Gson g = new Gson();
 			DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
@@ -204,9 +192,6 @@ public class FAOSTATDownloadTable {
 					script = script.substring(0, idx);
 				sql.setQuery(script);
 			}
-
-//			System.out
-//					.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
 
 			// compute result
 			DBBean db = new DBBean(ds);
@@ -243,9 +228,6 @@ public class FAOSTATDownloadTable {
 					"X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 
 			// return response
-//			System.out
-//					.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//			System.out.println("[END][" + id+ "] - FAOSTATDownloadTable.createTable - " + (System.currentTimeMillis() - t0) + " millis.");
 			return builder.build();
 		
 		} catch (WDSException e) {
@@ -289,11 +271,6 @@ public class FAOSTATDownloadTable {
 		
 		try {
 			
-			// logging
-			long t0 = System.currentTimeMillis();
-			String id = UUID.randomUUID().toString();
-//			System.out.println("[START][" + id + "] - FAOSTATDownloadTable.createTable");
-			
 			// compute result
 			Gson g = new Gson();
 			DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
@@ -317,8 +294,6 @@ public class FAOSTATDownloadTable {
 			if ( nowrap != null ) {
 				isNoWrap = nowrap;
 			}
-			
-//			System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
 			
 			// compute result
 			DBBean db = new DBBean(ds);
@@ -361,8 +336,6 @@ public class FAOSTATDownloadTable {
 			builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 			
 			// return response
-//			System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//			System.out.println("[END][" + id + "] - FAOSTATDownloadTable.createTable - " + (System.currentTimeMillis() - t0) + " millis.");
 			return builder.build();
 		
 		} catch (WDSException e) {
@@ -395,11 +368,6 @@ public class FAOSTATDownloadTable {
 
         try {
 
-            // logging
-            long t0 = System.currentTimeMillis();
-            String id = UUID.randomUUID().toString();
-//            System.out.println("[START][" + id + "] - FAOSTATDownloadTable.createExcel");
-
             // compute result
             Gson g = new Gson();
             DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
@@ -410,7 +378,7 @@ public class FAOSTATDownloadTable {
             if (datasource.toUpperCase().startsWith("FAOSTAT"))
                 sql.setQuery(replaceLimitWithTop(sql));
 
-//            System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
+            // query the DB
             List<List<String>> table = JDBCConnector.query(db, sql, true);
 
             List<String> headers = new ArrayList<String>();
@@ -441,8 +409,6 @@ public class FAOSTATDownloadTable {
             builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
 
             // return response
-//            System.out.println("[QUERY][" + id + "] - " + Bean2SQL.convert(sql));
-//            System.out.println("[END][" + id + "] - FAOSTATDownloadTable.createExcel - " + (System.currentTimeMillis() - t0) + " millis.");
             return builder.build();
 
         } catch (WDSException e) {
@@ -463,94 +429,6 @@ public class FAOSTATDownloadTable {
         }
 
     }
-	
-//	/**
-//	 * @param datasource e.g. FAOSTAT
-//	 * @param json Parameters to build SQL query
-//	 * @return HTML formatted <code>String</code>
-//	 *
-//	 * Produces a HTML table.
-//	 */
-//	@POST
-//	@Path("/excel")
-//    @Produces("application/msexcel")
-//	public Response createExcel(@FormParam("datasource") final String datasource,
-//								@FormParam("json") final String json,
-//								@FormParam("cssFilename") final String cssFilename,
-//								@FormParam("valueIndex") final String valueIndex,
-//								@FormParam("thousandSeparator") final String thousandSeparator,
-//								@FormParam("decimalSeparator") final String decimalSeparator,
-//								@FormParam("decimalNumbers") final String decimalNumbers) {
-//
-//        // Initiate the stream
-//        StreamingOutput stream = new StreamingOutput() {
-//
-//            @Override
-//            public void write(OutputStream os) throws IOException, WebApplicationException {
-//
-//                // Initiate utilities
-//                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-//                Gson g = new Gson();
-//
-//                // compute result
-//                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
-//                DBBean db = new DBBean(ds);
-//                SQLBean sql = g.fromJson(json, SQLBean.class);
-//
-//                // alter the query to switch from LIMIT to TOP
-//                if (datasource.toUpperCase().startsWith("FAOSTAT"))
-//                    sql.setQuery(replaceLimitWithTop(sql));
-//
-//                // Fetch data
-//                JDBCIterable it = new JDBCIterable();
-//
-//                try {
-//
-//                    // Query DB
-//                    it.query(db, Bean2SQL.convert(sql).toString());
-//
-//                } catch (IllegalAccessException e) {
-//                    WDSExceptionStreamWriter.streamException(os, ("Method 'createExcel' thrown an error: " + e.getMessage()));
-//                } catch (InstantiationException e) {
-//                    WDSExceptionStreamWriter.streamException(os, ("Method 'createExcel' thrown an error: " + e.getMessage()));
-//                } catch (SQLException e) {
-//                    WDSExceptionStreamWriter.streamException(os, ("Method 'createExcel' thrown an error: " + e.getMessage()));
-//                } catch (ClassNotFoundException e) {
-//                    WDSExceptionStreamWriter.streamException(os, ("Method 'createExcel' thrown an error: " + e.getMessage()));
-//                }
-//
-//                // Create HTML to be converted in Excel
-//                StringBuilder sb = new StringBuilder();
-//                sb.append("<table>");
-//                while(it.hasNext()) {
-//                    sb.append("<tr>");
-//                    List<String> row = it.next();
-//                    for (String s : row)
-//                        sb.append("<td>").append(s).append("</td>");
-//                    sb.append("</tr>");
-//                }
-//                sb.append("</table>");
-//
-//                // Write to the stream
-//                writer.write(sb.toString());
-//                writer.flush();
-//
-//            }
-//
-//        };
-//
-//        // Wrap result
-//        ResponseBuilder builder = Response.ok(stream);
-//        builder.header("Access-Control-Allow-Origin", "*");
-//        builder.header("Access-Control-Max-Age", "3600");
-//        builder.header("Access-Control-Allow-Methods", "POST");
-//        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-//        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
-//
-//        // Stream Excel
-//        return builder.build();
-//
-//	}
 	
 	public String replaceLimitWithTop(SQLBean sql) {
 		for (NestedWhereBean nwb : sql.getNestedWheres()) {
@@ -595,15 +473,14 @@ public class FAOSTATDownloadTable {
                 // compute result
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
                 Gson g = new Gson();
-                DATASOURCE ds = DATASOURCE.valueOf(datasource.toUpperCase());
                 SQLBean sql = g.fromJson(json, SQLBean.class);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
 
                 // alter the query to switch from LIMIT to TOP
                 if (datasource.toUpperCase().startsWith("FAOSTAT"))
                     sql.setQuery(replaceLimitWithTop(sql));
 
                 // compute result
-                DBBean db = new DBBean(ds);
                 JDBCIterable it = new JDBCIterable();
 
                 try {

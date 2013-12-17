@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fao.fenix</groupId>
     <artifactId>wds</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>FENIX Web Data Server</name>
     <organization>
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.fao.fenix</groupId>
             <artifactId>wds-core</artifactId>
-            <version>4.1-SNAPSHOT</version>
+            <version>4.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
