@@ -6,3 +6,4 @@ WDS acronym stands for Web Data Server. This project is used to feed data throug
   <li>wds: REST services</li>
   <li>wds-core: Core libraries</li>
 </ul>
+Please refer to the <a href='https://github.com/FENIX-Platform/WDS/wiki'>wiki</a> for more detailed information about the project.
