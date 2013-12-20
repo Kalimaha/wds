@@ -21,38 +21,39 @@ public class USDA {
 		
 		// Attributes
 		attributes = new ArrayList<String>();
-		attributes.add("001");						// Area Planted
+//		attributes.add("001");						// Area Planted
 		attributes.add("004");						// Area Harvested
 		attributes.add("007");						// Crush
 		attributes.add("020");						// Beginning Stocks
-		attributes.add("022");						// Sow Beginning Stocks
+//		attributes.add("022");						// Sow Beginning Stocks
 		attributes.add("028");						// Production
 		attributes.add("054");						// Rough Production
 		attributes.add("057");						// Imports
-		attributes.add("064");						// Raw Imports
-		attributes.add("071");						// Other Imports
+//		attributes.add("064");						// Raw Imports
+//		attributes.add("071");						// Other Imports
 		attributes.add("081");						// TY Imports
 		attributes.add("086");						// Total Supply
 		attributes.add("088");						// Exports
 		attributes.add("113");						// TY Exports
 		attributes.add("125");						// Domestic Consumption
-		attributes.add("126");						// Total Disappearance
+//		attributes.add("126");						// Total Disappearance
 		attributes.add("130");						// Feed Dom. Consumption
-		attributes.add("139");						// Human Dom. Consumption
+//		attributes.add("139");						// Human Dom. Consumption
 		attributes.add("142");						// USE Dom. Consumption
-		attributes.add("149");						// Food Use Dom. Cons.
-		attributes.add("150");						// Loss Dom. Consumption
-		attributes.add("151");						// Other Disappearance
-		attributes.add("173");						// Total Disappearance
-		attributes.add("174");						// Total Use
+//		attributes.add("149");						// Food Use Dom. Cons.
+//		attributes.add("150");						// Loss Dom. Consumption
+//		attributes.add("151");						// Other Disappearance
+        attributes.add("161");						// Feed Waste Dom. Cons. (1000 MT)
+//		attributes.add("173");						// Total Disappearance
+//		attributes.add("174");						// Total Use
 		attributes.add("176");						// Ending Stocks
 		attributes.add("178");						// Total Distribution
-		attributes.add("181");						// Extr. Rate, 999.9999
+//		attributes.add("181");						// Extr. Rate, 999.9999
 		attributes.add("182");						// Milling Rate (.9999)
 		attributes.add("184");						// Yield
 		attributes.add("192");						// FSI Consumption
-		attributes.add("195");						// Stocks-to-Use
-		attributes.add("212");						// Per Capita Consumption
+//		attributes.add("195");						// Stocks-to-Use
+//		attributes.add("212");						// Per Capita Consumption
 		
 		// Commodities
 		commodities = new ArrayList<String>();

@@ -22,30 +22,25 @@ public class USDAClient {
     private final String ACTION = "http://www.fas.usda.gov/wsfapsd/getDatabyCommodity";
 
     public List<USDABean> getDataByCommodity(String commodityCode, List<String> userCountries, List<String> userAttributes) throws WDSException {
+        System.out.println("commodityCode: " + commodityCode);
         try {
             HttpURLConnection connection = buildConnection();
             OutputStream out = connection.getOutputStream();
             Writer wout = new OutputStreamWriter(out);
             writeRequest(wout, commodityCode);
             StringBuilder sb = new StringBuilder();
-
             BufferedReader in = null;
-
             if (connection.getResponseCode() == 200) {
                 in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             } else {
                 in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             }
-
-//            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 sb.append(inputLine);
             }
             in.close();
-
             return parseUSDAXML(sb, userCountries, userAttributes);
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
             throw new WDSException(e.getMessage());
@@ -146,6 +141,7 @@ public class USDAClient {
     }
 
     public String extractPayload(String xml) throws WDSException {
+        System.out.println(xml);
         int idx_1 = xml.indexOf("<getDatabyCommodity ");
         int idx_2 = "</getDatabyCommodity>".length() + xml.indexOf("</getDatabyCommodity>");
         if (idx_1 > -1 && idx_2 > -1)
@@ -159,7 +155,7 @@ public class USDAClient {
         wout.write("<soap:Header/>");
         wout.write("<soap:Body>");
         wout.write("<wsf:getDatabyCommodity>");
-        wout.write("<wsf:strCommodityCode>0114200</wsf:strCommodityCode>");
+        wout.write("<wsf:strCommodityCode>" + commodityCode + "</wsf:strCommodityCode>");
         wout.write("</wsf:getDatabyCommodity>");
         wout.write("</soap:Body>");
         wout.write("</soap:Envelope>");
