@@ -7,8 +7,6 @@ import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.SQLException;
-
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
@@ -19,7 +17,35 @@ public class FAOSTATProcedures {
     @Autowired
     private DatasourcePool datasourcePool;
 
-    public JDBCIterable getDomainListBoxes(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getCPINotes(DatasourceBean dsBean, String[] areaCodes, String[] yearCodes, String[] itemCodes, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("exec dbo.usp_GetCPINotes @lang=N'");
+        sb.append(lang);
+        sb.append("', @areaList=N'");
+        for (int i = 0 ; i < areaCodes.length ; i++) {
+            sb.append(areaCodes[i]);
+            if (i < areaCodes.length - 1)
+                sb.append(",");
+        }
+        sb.append("', @yearList=N'");
+        for (int i = 0 ; i < yearCodes.length ; i++) {
+            sb.append(yearCodes[i]);
+            if (i < yearCodes.length - 1)
+                sb.append(",");
+        }
+        sb.append("', @item=N'");
+        for (int i = 0 ; i < itemCodes.length ; i++) {
+            sb.append(itemCodes[i]);
+            if (i < itemCodes.length - 1)
+                sb.append(",");
+        }
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getDomainListBoxes(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetDomainListBoxes @DomainCode = N'");
@@ -31,7 +57,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getCountries(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getCountries(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetAreaList1 @DomainCode = N'");
@@ -43,7 +69,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getRegions(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getRegions(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetAreaList2 @DomainCode = N'");
@@ -55,7 +81,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getAreaGroupArea(DatasourceBean dsBean, String domainCode, int areaGroupCode) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getAreaGroupArea(DatasourceBean dsBean, String domainCode, int areaGroupCode) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetAreaGroupArea @DomainCode = N'");
@@ -67,7 +93,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getItemGroupItem(DatasourceBean dsBean, String domainCode, int areaGroupCode) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getItemGroupItem(DatasourceBean dsBean, String domainCode, int areaGroupCode) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetItemGroupItem @DomainCode = N'");
@@ -79,7 +105,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getSpecialGroups(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getSpecialGroups(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetAreaList3 @DomainCode = N'");
@@ -91,7 +117,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getItems(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getItems(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetItemList1 @DomainCode = N'");
@@ -103,7 +129,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getItemsAggregated(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getItemsAggregated(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetItemList2 @DomainCode = N'");
@@ -115,7 +141,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getElements(DatasourceBean dsBean, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getElements(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetElementList @DomainCode = N'");
@@ -127,7 +153,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getYears(DatasourceBean dsBean, String domainCode) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getYears(DatasourceBean dsBean, String domainCode) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetYearList @DomainCode = N'");
@@ -150,7 +176,7 @@ public class FAOSTATProcedures {
                                 boolean nullValues,
                                 String thousandSeparator,
                                 String decimalSeparator,
-                                int decimalPlaces) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+                                int decimalPlaces) throws Exception {
         JDBCIterable it = new JDBCIterable();
         String areas = buildCollection(areaCodes);
         String items = buildCollection(itemCodes);
@@ -188,7 +214,7 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getData(DatasourceBean dsBean, FAOSTATProceduresBean b) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public JDBCIterable getData(DatasourceBean dsBean, FAOSTATProceduresBean b) throws Exception {
         JDBCIterable it = new JDBCIterable();
         String areas = buildCollection(b.getAreaCodes());
         String items = buildCollection(b.getItemCodes());

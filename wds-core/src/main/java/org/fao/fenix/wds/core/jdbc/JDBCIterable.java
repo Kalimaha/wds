@@ -5,6 +5,7 @@ import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.SQL;
 import org.fao.fenix.wds.core.exception.WDSException;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public class JDBCIterable implements Iterator<List<String>> {
 
     private int columns;
 
-    public void query(DatasourceBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public void query(DatasourceBean db, String sql) throws Exception {
         switch (db.getDriver()) {
             case POSTGRESQL     : queryPostgreSQL(db, sql); break;
             case SQLSERVER2000  : querySQLServer(db, sql); break;
@@ -40,10 +41,6 @@ public class JDBCIterable implements Iterator<List<String>> {
         validate(sql);
         sql = sql.replaceAll("-", "_");
 
-        System.out.println(db.getUrl());
-        System.out.println(db.getUsername());
-        System.out.println(db.getPassword());
-
         // Open connections
         SQLServerDriver.class.newInstance();
         this.setConnection(DriverManager.getConnection(db.getUrl(), db.getUsername(), db.getPassword()));
@@ -55,7 +52,7 @@ public class JDBCIterable implements Iterator<List<String>> {
 
     }
 
-    public void queryPostgreSQL(DatasourceBean db, String sql) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {
+    public void queryPostgreSQL(DatasourceBean db, String sql) throws IOException, InstantiationException, SQLException, ClassNotFoundException {
 
         // Clean the query
         if (!db.getId().equalsIgnoreCase("STAGINGAREA"))
