@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATProceduresBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
-import org.fao.fenix.wds.core.exception.WDSExceptionStreamWriter;
 import org.fao.fenix.wds.core.faostat.FAOSTATProcedures;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -30,10 +27,27 @@ public class FAOSTATProceduresRESTService {
     @Autowired
     private DatasourcePool datasourcePool;
 
+    private FAOSTATProcedures fp = new FAOSTATProcedures();
+
+    private final Gson g = new Gson();
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/listboxes/{datasource}/{domainCode}/{lang}")
-    public Response getDomainListBoxes(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    @Path("/cpinotes/{datasource}/{areaCodes}/{yearCodes}/{itemCodes}/{lang}")
+    public Response getCPINotes(@PathParam("datasource") String datasource,
+                                @PathParam("areaCodes") String areaCodes,
+                                @PathParam("yearCodes") String yearCodes,
+                                @PathParam("itemCodes") String itemCodes,
+                                @PathParam("lang") String lang) throws Exception {
+
+        // Convert inputs
+        String[] areas = g.fromJson(areaCodes, String[].class);
+        String[] years = g.fromJson(yearCodes, String[].class);
+        String[] items = g.fromJson(itemCodes, String[].class);
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getCPINotes(dsBean, areas, years, items, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -42,28 +56,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getDomainListBoxes(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomainListBoxes' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomainListBoxes' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomainListBoxes' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomainListBoxes' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -81,22 +74,62 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/listboxes/{datasource}/{domainCode}/{lang}")
+    public Response getDomainListBoxes(@PathParam("datasource") String datasource,
+                                       @PathParam("domainCode") String domainCode,
+                                       @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getDomainListBoxes(dsBean, domainCode, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
 
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/countries/{datasource}/{domainCode}/{lang}")
-    public Response getCountries(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getCountries(@PathParam("datasource") String datasource,
+                                 @PathParam("domainCode") String domainCode,
+                                 @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getCountries(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -105,28 +138,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getCountries(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getCountries' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getCountries' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getCountries' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getCountries' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -144,22 +156,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/regions/{datasource}/{domainCode}/{lang}")
-    public Response getRegions(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getRegions(@PathParam("datasource") String datasource,
+                               @PathParam("domainCode") String domainCode,
+                               @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable  it = fp.getRegions(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -168,28 +179,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getRegions(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getRegions' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getRegions' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getRegions' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getRegions' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -207,22 +197,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/areagrouparea/{datasource}/{domainCode}/{areaGroupCode}")
-    public Response getAreaGroupArea(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("areaGroupCode") final String areaGroupCode) {
+    public Response getAreaGroupArea(@PathParam("datasource") String datasource,
+                                     @PathParam("domainCode") String domainCode,
+                                     @PathParam("areaGroupCode") String areaGroupCode) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getAreaGroupArea(dsBean, domainCode, Integer.valueOf(areaGroupCode).intValue());
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -231,32 +220,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getAreaGroupArea(dsBean, domainCode, Integer.valueOf(areaGroupCode).intValue());
-
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getAreaGroupArea' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getAreaGroupArea' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getAreaGroupArea' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getAreaGroupArea' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -274,22 +238,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/specialgroups/{datasource}/{domainCode}/{lang}")
-    public Response getSpecialGroups(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getSpecialGroups(@PathParam("datasource") String datasource,
+                                     @PathParam("domainCode") String domainCode,
+                                     @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getSpecialGroups(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -298,28 +261,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getSpecialGroups(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getSpecialGroups' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getSpecialGroups' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getSpecialGroups' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getSpecialGroups' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -337,22 +279,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/items/{datasource}/{domainCode}/{lang}")
-    public Response getItems(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getItems(@PathParam("datasource") String datasource,
+                             @PathParam("domainCode") String domainCode,
+                             @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getItems(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -361,28 +302,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getItems(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItems' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItems' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItems' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItems' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -400,22 +320,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/itemsaggregated/{datasource}/{domainCode}/{lang}")
-    public Response getItemsAggregated(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getItemsAggregated(@PathParam("datasource") String datasource,
+                                       @PathParam("domainCode") String domainCode,
+                                       @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getItemsAggregated(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -424,28 +343,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getItemsAggregated(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemsAggregated' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemsAggregated' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemsAggregated' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemsAggregated' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -463,22 +361,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/elements/{datasource}/{domainCode}/{lang}")
-    public Response getElements(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("lang") final String lang) {
+    public Response getElements(@PathParam("datasource") String datasource,
+                                @PathParam("domainCode") String domainCode,
+                                @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getElements(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -487,28 +384,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getElements(dsBean, domainCode, lang);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getElements' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getElements' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getElements' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getElements' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -526,22 +402,20 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/years/{datasource}/{domainCode}")
-    public Response getYears(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode) {
+    public Response getYears(@PathParam("datasource") String datasource,
+                             @PathParam("domainCode") String domainCode) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getYears(dsBean, domainCode);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -550,28 +424,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getYears(dsBean, domainCode);
-
-                } catch (IllegalAccessException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getYears' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getYears' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getYears' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getYears' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -589,22 +442,21 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/itemgroupitem/{datasource}/{domainCode}/{itemGroupCode}")
-    public Response getItemGroupItem(@PathParam("datasource") final String datasource, @PathParam("domainCode") final String domainCode, @PathParam("itemGroupCode") final String itemGroupCode) {
+    public Response getItemGroupItem(@PathParam("datasource") String datasource,
+                                     @PathParam("domainCode") String domainCode,
+                                     @PathParam("itemGroupCode") String itemGroupCode) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getItemGroupItem(dsBean, domainCode, Integer.valueOf(itemGroupCode).intValue());
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -613,32 +465,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-
-                try {
-
-                    // Query DB
-                    it = fp.getItemGroupItem(dsBean, domainCode, Integer.valueOf(itemGroupCode).intValue());
-
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemGroupItem' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemGroupItem' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemGroupItem' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getItemGroupItem' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -656,22 +483,20 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/data")
-    public Response getData(@FormParam("payload") final String payload) {
+    public Response getData(@FormParam("payload") String payload) throws Exception {
+
+        // compute result
+        FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
+        final JDBCIterable it = fp.getData(dsBean, b);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -680,34 +505,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // Convert from string to JSON
-                FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
-
-                try {
-
-                    it = fp.getData(dsBean, b);
-
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getData' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getData' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getData' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getData' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("[");
@@ -725,21 +523,19 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 
     @POST
     @Path("/excel")
-    public Response getExcel(@FormParam("payload") final String payload) {
+    public Response getExcel(@FormParam("payload") String payload) throws Exception {
+
+        // compute result
+        FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
+        final JDBCIterable it = fp.getData(dsBean, b);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -748,34 +544,7 @@ public class FAOSTATProceduresRESTService {
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
                 // compute result
-                FAOSTATProcedures fp = new FAOSTATProcedures();
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                Gson g = new Gson();
-
-                // Convert from string to JSON
-                FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
-
-                // compute result
-                JDBCIterable it = new JDBCIterable();
-                DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
-
-                try {
-
-                    it = fp.getData(dsBean, b);
-
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getExcel' thrown an error: " + e.getMessage()));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getExcel' thrown an error: " + e.getMessage()));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getExcel' thrown an error: " + e.getMessage()));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    WDSExceptionStreamWriter.streamException(os, ("Method 'getExcel' thrown an error: " + e.getMessage()));
-                }
 
                 // write the result of the query
                 writer.write("<table>");
@@ -799,16 +568,8 @@ public class FAOSTATProceduresRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
-
         // Stream result
-        return builder.build();
+        return Response.status(200).entity(stream).build();
 
     }
 

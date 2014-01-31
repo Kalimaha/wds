@@ -109,6 +109,8 @@ public class FAOSTATExporter {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'streamExcel' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
                 // write the result of the query

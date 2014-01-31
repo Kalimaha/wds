@@ -126,6 +126,8 @@ public class FAOSTATMethodsAndStandards {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 } catch (ClassNotFoundException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
                 StringBuilder sb = new StringBuilder();
@@ -268,6 +270,8 @@ public class FAOSTATMethodsAndStandards {
                 } catch (SQLException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 } catch (ClassNotFoundException e) {
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 

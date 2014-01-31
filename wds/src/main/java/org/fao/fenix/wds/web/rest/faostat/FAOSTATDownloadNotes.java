@@ -189,6 +189,8 @@ public class FAOSTATDownloadNotes {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
                 } catch (ClassNotFoundException e) {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
                 // Build the output
