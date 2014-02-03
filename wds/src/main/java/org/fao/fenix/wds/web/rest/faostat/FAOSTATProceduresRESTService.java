@@ -2,6 +2,7 @@ package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.bean.faostat.FAOSTATCPINotesBean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATProceduresBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.faostat.FAOSTATProcedures;
@@ -31,23 +32,17 @@ public class FAOSTATProceduresRESTService {
 
     private final Gson g = new Gson();
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/cpinotes/{datasource}/{areaCodes}/{yearCodes}/{itemCodes}/{lang}")
-    public Response getCPINotes(@PathParam("datasource") String datasource,
-                                @PathParam("areaCodes") String areaCodes,
-                                @PathParam("yearCodes") String yearCodes,
-                                @PathParam("itemCodes") String itemCodes,
-                                @PathParam("lang") String lang) throws Exception {
+    @Path("/cpinotes")
+    public Response getCPINotes(@FormParam("payload") String payload) throws Exception {
 
         // Convert inputs
-        String[] areas = g.fromJson(areaCodes, String[].class);
-        String[] years = g.fromJson(yearCodes, String[].class);
-        String[] items = g.fromJson(itemCodes, String[].class);
+        FAOSTATCPINotesBean p = g.fromJson(payload, FAOSTATCPINotesBean.class);
 
         // compute result
-        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-        final JDBCIterable it = fp.getCPINotes(dsBean, areas, years, items, lang);
+        DatasourceBean dsBean = datasourcePool.getDatasource(p.getDatasource());
+        final JDBCIterable it = fp.getCPINotes(dsBean, p.getAreaCodes(), p.getYearCodes(), p.getItemCodes(), p.getLang());
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
