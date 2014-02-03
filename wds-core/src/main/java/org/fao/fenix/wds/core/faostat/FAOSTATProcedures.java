@@ -45,6 +45,28 @@ public class FAOSTATProcedures {
         return it;
     }
 
+    public JDBCIterable getCPIMetadataAreas(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetCPIMetadataArea @lang='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getCPIMetadata(DatasourceBean dsBean, String area, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetCPIMetadata ");
+        sb.append(area);
+        sb.append(", '");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterable getDomainListBoxes(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
