@@ -55,6 +55,7 @@ public class WSConnector {
 		List<String> countries = new ArrayList<String>();
 		List<String> attributes = new ArrayList<String>();
 		List<USDABean> beans = new ArrayList<USDABean>();
+        String year = "2010";
 		boolean avoidFilters = false;
 		
 		// fetch parameters
@@ -62,7 +63,8 @@ public class WSConnector {
 			RESTService p = RESTService.valueOf(key.toLowerCase());
 			String value = parameters.get(p.name())[0];
 			switch (p) {
-				case attribute: attributes = parseCodes(value, 3); break;
+                case year: year = value; break;
+                case attribute: attributes = parseCodes(value, 3); break;
 				case commodity: commodities = parseCodes(value, 7); break;
 				case country: countries = parseCodes(value, 2); break;
 				case filters:
@@ -77,23 +79,25 @@ public class WSConnector {
 			countries = null;
 			attributes = null;
 		}
-		
-		// fetch data
+
+        System.out.println("year? " + year);
+
+        // fetch data
 		USDAClient c = new USDAClient();
 		if (avoidFilters) {
 			for (String commodityCode : USDA.allCommodities) {
-				List<USDABean> tmp = c.getDataByCommodity(commodityCode, countries, attributes);
+				List<USDABean> tmp = c.getDataByCommodity(commodityCode, year, countries, attributes);
 				beans.addAll(tmp);
 			}
 		} else {
 			if (commodities.isEmpty()) {
 				for (String commodityCode : USDA.commodities) {
-					List<USDABean> tmp = c.getDataByCommodity(commodityCode, countries, attributes);
+					List<USDABean> tmp = c.getDataByCommodity(commodityCode, year, countries, attributes);
 					beans.addAll(tmp);
 				}
 			} else {
 				for (String commodityCode : commodities) {
-					List<USDABean> tmp = c.getDataByCommodity(commodityCode, countries, attributes);
+					List<USDABean> tmp = c.getDataByCommodity(commodityCode, year, countries, attributes);
 					beans.addAll(tmp);
 				}
 			}

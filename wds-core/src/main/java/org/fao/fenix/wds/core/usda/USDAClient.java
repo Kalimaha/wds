@@ -17,17 +17,21 @@ import java.util.List;
  * */
 public class USDAClient {
 
-    private final String WS_URL = "http://www.fas.usda.gov/wsfapsd/svcPSD_AMIS.asmx";
+//    private final String WS_URL = "http://www.fas.usda.gov/wsfapsd/svcPSD_AMIS.asmx";
 
-    private final String ACTION = "http://www.fas.usda.gov/wsfapsd/getDatabyCommodity";
+    private final String WS_URL = "http://apps.fas.usda.gov/wsfapsd/svcPSD_AMIS.asmx";
 
-    public List<USDABean> getDataByCommodity(String commodityCode, List<String> userCountries, List<String> userAttributes) throws WDSException {
-        System.out.println("commodityCode: " + commodityCode);
+//    private final String ACTION = "http://www.fas.usda.gov/wsfapsd/getDatabyCommodityPerYear";
+
+    private final String ACTION = "http://apps.fas.usda.gov/wsfapsd/getDatabyCommodityPerYear";
+
+    public List<USDABean> getDataByCommodity(String commodityCode, String year, List<String> userCountries, List<String> userAttributes) throws WDSException {
+        System.out.println("Processing commodityCode: " + commodityCode);
         try {
             HttpURLConnection connection = buildConnection();
             OutputStream out = connection.getOutputStream();
             Writer wout = new OutputStreamWriter(out);
-            writeRequest(wout, commodityCode);
+            writeRequest(wout, commodityCode, year);
             StringBuilder sb = new StringBuilder();
             BufferedReader in = null;
             if (connection.getResponseCode() == 200) {
@@ -141,26 +145,38 @@ public class USDAClient {
     }
 
     public String extractPayload(String xml) throws WDSException {
-        System.out.println(xml);
+//        System.out.println(xml);
         int idx_1 = xml.indexOf("<getDatabyCommodity ");
         int idx_2 = "</getDatabyCommodity>".length() + xml.indexOf("</getDatabyCommodity>");
         if (idx_1 > -1 && idx_2 > -1)
             return xml.substring(idx_1, idx_2);
         else
-            throw new WDSException("Can't extract payload.");
+            throw new WDSException("Can't extract payload.\n\n\n" + xml);
     }
 
-    private void writeRequest(Writer wout, String commodityCode) throws IOException {
-        wout.write("<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:wsf=\"http://www.fas.usda.gov/wsfaspsd/\">");
-        wout.write("<soap:Header/>");
+    private void writeRequest(Writer wout, String commodityCode, String year) throws IOException {
+
+//        wout.write("<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:wsf=\"http://www.fas.usda.gov/wsfaspsd/\">");
+//        wout.write("<soap:Header/>");
+//        wout.write("<soap:Body>");
+//        wout.write("<wsf:getDatabyCommodity>");
+//        wout.write("<wsf:strCommodityCode>" + commodityCode + "</wsf:strCommodityCode>");
+//        wout.write("</wsf:getDatabyCommodity>");
+//        wout.write("</soap:Body>");
+//        wout.write("</soap:Envelope>");
+
+        wout.write("<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">");
         wout.write("<soap:Body>");
-        wout.write("<wsf:getDatabyCommodity>");
-        wout.write("<wsf:strCommodityCode>" + commodityCode + "</wsf:strCommodityCode>");
-        wout.write("</wsf:getDatabyCommodity>");
+        wout.write("<getDatabyCommodityPerYear xmlns=\"http://www.fas.usda.gov/wsfaspsd/\">");
+        wout.write("<strCommodityCode>" + commodityCode + "</strCommodityCode>");
+        wout.write("<strYear>" + year + "</strYear>");
+        wout.write("</getDatabyCommodityPerYear>");
         wout.write("</soap:Body>");
         wout.write("</soap:Envelope>");
+
         wout.flush();
         wout.close();
+
     }
 
     private HttpURLConnection buildConnection() throws MalformedURLException, IOException {
