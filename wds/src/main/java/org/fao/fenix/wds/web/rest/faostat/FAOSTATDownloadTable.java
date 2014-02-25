@@ -22,6 +22,7 @@ Information for Action Programme
 package org.fao.fenix.wds.web.rest.faostat;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.fao.fenix.wds.core.bean.*;
 import org.fao.fenix.wds.core.constant.DATASOURCE;
 import org.fao.fenix.wds.core.constant.SQL;
@@ -39,7 +40,6 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.SQLException;
@@ -125,15 +125,8 @@ public class FAOSTATDownloadTable {
             // create HTML
             StringBuilder excel = wrapper.wrapAsExcel(table, UUID.randomUUID().toString() + ".xls");
 
-            // wrap result
-            ResponseBuilder builder = Response.ok(excel.toString());
-            builder.header("Access-Control-Allow-Origin", "*");
-            builder.header("Access-Control-Max-Age", "3600");
-            builder.header("Access-Control-Allow-Methods", "POST");
-            builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
-
-            // return response
-            return builder.build();
+            /* Stream result */
+            return Response.status(200).entity(excel.toString()).build();
 
         } catch (WDSException e) {
             e.printStackTrace();
@@ -218,17 +211,8 @@ public class FAOSTATDownloadTable {
 			// create HTML
 			StringBuilder html = wrapper.wrapAsHTML4FAOSTAT(table, true, wc);
 
-			// wrap result
-			ResponseBuilder builder = Response.ok(html.toString());
-			builder.header("Access-Control-Allow-Origin", "*");
-			builder.header("Access-Control-Max-Age", "3600");
-			builder.header("Access-Control-Allow-Methods", "POST");
-			builder.header(
-					"Access-Control-Allow-Headers",
-					"X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
-
-			// return response
-			return builder.build();
+			/* Stream result */
+            return Response.status(200).entity(html.toString()).build();
 		
 		} catch (WDSException e) {
 			e.printStackTrace();
@@ -328,15 +312,8 @@ public class FAOSTATDownloadTable {
 			// create HTML
 			StringBuilder html = wrapper.wrapAsHTML4FAOSTAT2(table, isNoWrap, wc);
 			
-			// wrap result
-			ResponseBuilder builder = Response.ok(html.toString());
-			builder.header("Access-Control-Allow-Origin", "*");
-			builder.header("Access-Control-Max-Age", "3600");
-			builder.header("Access-Control-Allow-Methods", "POST");
-			builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
-			
-			// return response
-			return builder.build();
+			/* Stream result */
+            return Response.status(200).entity(html.toString()).build();
 		
 		} catch (WDSException e) {
 			e.printStackTrace();
@@ -401,15 +378,8 @@ public class FAOSTATDownloadTable {
             // create HTML
             StringBuilder excel = wrapper.wrapAsExcel(table, UUID.randomUUID().toString() + ".xls");
 
-            // wrap result
-            ResponseBuilder builder = Response.ok(excel.toString());
-            builder.header("Access-Control-Allow-Origin", "*");
-            builder.header("Access-Control-Max-Age", "3600");
-            builder.header("Access-Control-Allow-Methods", "POST");
-            builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
-
-            // return response
-            return builder.build();
+            /* Stream result */
+            return Response.status(200).entity(excel.toString()).build();
 
         } catch (WDSException e) {
             e.printStackTrace();
@@ -464,6 +434,8 @@ public class FAOSTATDownloadTable {
 	@Path("/json")
 	public Response createJSON(@FormParam("datasource") final String datasource, @FormParam("json") final String json) {
 
+        System.out.println(json);
+
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
 
@@ -473,7 +445,14 @@ public class FAOSTATDownloadTable {
                 // compute result
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
                 Gson g = new Gson();
-                SQLBean sql = g.fromJson(json, SQLBean.class);
+                SQLBean sql = null;
+                try {
+                    sql = g.fromJson(json, SQLBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                    System.out.println("Gson Error!!!");
+                    System.out.println(json);
+                }
                 DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
 
                 // alter the query to switch from LIMIT to TOP
@@ -489,21 +468,32 @@ public class FAOSTATDownloadTable {
                     it.query(db, sql.getQuery());
 
                 } catch (IllegalAccessException e) {
+                    e.getMessage();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
                 } catch (InstantiationException e) {
+                    e.getMessage();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
                 } catch (SQLException e) {
+                    e.getMessage();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
                 } catch (ClassNotFoundException e) {
+                    e.getMessage();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'createJSON' thrown an error: " + e.getMessage()));
                 } catch (Exception e) {
+                    e.getMessage();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
                 // write the result of the query
                 writer.write("[");
                 while(it.hasNext()) {
-                    writer.write(g.toJson(it.next()));
+                    List<String> s = it.next();
+                    try {
+                        writer.write(g.toJson(s));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(s);
+                    }
                     if (it.hasNext())
                         writer.write(",");
                 }
@@ -516,15 +506,8 @@ public class FAOSTATDownloadTable {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
-        // Stream result
-        return builder.build();
+        /* Stream result */
+        return Response.status(200).entity(stream).build();
 		
 	}
 

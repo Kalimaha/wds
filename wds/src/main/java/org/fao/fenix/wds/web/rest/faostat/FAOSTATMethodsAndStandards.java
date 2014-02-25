@@ -40,7 +40,6 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.SQLException;
@@ -154,17 +153,8 @@ public class FAOSTATMethodsAndStandards {
 
         };
 
-        // wrap result
-        ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Cache-Control", "public");
-        builder.header("Pragma", "public");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() +".xls");
-
-        return builder.build();
+        /* Stream result */
+        return Response.status(200).entity(stream).build();
 		
 	}
 	
@@ -186,16 +176,8 @@ public class FAOSTATMethodsAndStandards {
 			wc.setCssName("");
 			StringBuilder html = wrapper.wrapAsHTML4FAOSTAT(table, false, wc);
 			
-			// wrap result
-			ResponseBuilder builder = Response.ok(html.toString());
-			builder.header("Access-Control-Allow-Origin", "*");
-			builder.header("Access-Control-Max-Age", "3600");
-			builder.header("Access-Control-Allow-Methods", "POST");
-			builder.header("Access-Control-Allow-Headers", "X-Requested-With,Host,User-Agent,Accept,Accept-Language,Accept-Encoding,Accept-Charset,Keep-Alive,Connection,Referer,Origin");
-								
-			// return response
-			//System.out.println("[END][" + id + "] - FAOSTATMethodsAndStandards.getHTML - " + (System.currentTimeMillis() - t0) + " millis.");
-			return builder.build();
+			/* Stream result */
+            return Response.status(200).entity(html.toString()).build();
 			
 		} catch (Exception e) {
 			return Response.status(500).entity("Error in 'getClassifications' service: " + e.getMessage()).build();
@@ -291,15 +273,8 @@ public class FAOSTATMethodsAndStandards {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
-        // Stream result
-        return builder.build();
+        /* Stream result */
+        return Response.status(200).entity(stream).build();
 		
 	}
 

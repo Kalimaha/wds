@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fao.fenix</groupId>
     <artifactId>wds-core</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.3-SNAPSHOT</version>
     <name>FENIX Web Data Server - Core</name>
     <pluginRepositories>
         <pluginRepository>
@@ -105,11 +105,6 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>1.7.1</version>
         </dependency>
         <dependency>
             <groupId>info.cukes</groupId>

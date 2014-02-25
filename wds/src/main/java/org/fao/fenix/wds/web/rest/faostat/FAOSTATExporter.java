@@ -3,7 +3,7 @@
  * FENIX (Food security and Early warning Network and Information Exchange)
  *
  * Copyright (c) 2011, by FAO of UN under the EC-FAO Food Security
-Information for Action Programme
+ Information for Action Programme
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,16 +46,16 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-/** 
+/**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a> 
  * */
 @Component
 @Path("/exporter")
 public class FAOSTATExporter {
-	
-	@Autowired
-	private Wrapper wrapper;
+
+    @Autowired
+    private Wrapper wrapper;
 
     @Autowired
     DatasourcePool datasourcePool;
@@ -137,10 +137,10 @@ public class FAOSTATExporter {
 
         // Wrap result
         ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
+//        builder.header("Access-Control-Allow-Origin", "*");
+//        builder.header("Access-Control-Max-Age", "3600");
+//        builder.header("Access-Control-Allow-Methods", "POST");
+//        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
         builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
 
         // Stream Excel
@@ -148,9 +148,9 @@ public class FAOSTATExporter {
 
     }
 
-	@POST
-	@Path("/excel")
-	public Response createExcel(@FormParam("data") final String data) {
+    @POST
+    @Path("/excel")
+    public Response createExcel(@FormParam("data") final String data) {
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
@@ -185,16 +185,16 @@ public class FAOSTATExporter {
 
         // Wrap result
         ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "GET");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
+//        builder.header("Access-Control-Allow-Origin", "*");
+//        builder.header("Access-Control-Max-Age", "3600");
+//        builder.header("Access-Control-Allow-Methods", "GET");
+//        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
         builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
 
         // Stream Excel
         return builder.build();
-		
-	}
+
+    }
 
     private String replaceLimitWithTop(SQLBean sql) {
         for (NestedWhereBean nwb : sql.getNestedWheres()) {
@@ -217,5 +217,5 @@ public class FAOSTATExporter {
         }
         return script;
     }
-	
+
 }

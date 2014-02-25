@@ -106,15 +106,8 @@ public class FAOSTATGroupsRESTService {
 
         };
 
-        // Wrap result
-        Response.ResponseBuilder builder = Response.ok(stream);
-        builder.header("Access-Control-Allow-Origin", "*");
-        builder.header("Access-Control-Max-Age", "3600");
-        builder.header("Access-Control-Allow-Methods", "POST");
-        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
-
-        // Stream result
-        return builder.build();
+        /* Stream result */
+        return Response.status(200).entity(stream).build();
 
     }
 
