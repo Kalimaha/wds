@@ -17,6 +17,16 @@ public class FAOSTATProcedures {
     @Autowired
     private DatasourcePool datasourcePool;
 
+    public JDBCIterable getODADonors(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODADonors @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterable getCPINotes(DatasourceBean dsBean, String[] areaCodes, String[] yearCodes, String[] itemCodes, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
