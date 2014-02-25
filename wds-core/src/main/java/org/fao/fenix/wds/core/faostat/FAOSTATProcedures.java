@@ -27,6 +27,56 @@ public class FAOSTATProcedures {
         return it;
     }
 
+    public JDBCIterable getODARecipients(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODARecipients @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getODAYear(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODAYear @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getODAPurposes(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODAPurposes @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getODAFlows(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODAFlows @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getODAElement(DatasourceBean dsBean, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetODAElement @tablelanguage='");
+        sb.append(lang);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterable getCPINotes(DatasourceBean dsBean, String[] areaCodes, String[] yearCodes, String[] itemCodes, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();

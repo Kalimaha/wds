@@ -73,6 +73,201 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/recipients/{datasource}/{lang}")
+    public Response getODARecipients(@PathParam("datasource") String datasource, @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getODARecipients(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/year/{datasource}/{lang}")
+    public Response getODAYear(@PathParam("datasource") String datasource, @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getODAYear(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/purposes/{datasource}/{lang}")
+    public Response getODAPurposes(@PathParam("datasource") String datasource, @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getODAPurposes(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/flows/{datasource}/{lang}")
+    public Response getODAFlows(@PathParam("datasource") String datasource, @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getODAFlows(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/elements/{datasource}/{lang}")
+    public Response getODAElements(@PathParam("datasource") String datasource, @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getODAElement(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/cpimetadata/{datasource}/{area}/{lang}")
     public Response getCPIMetadata(@PathParam("datasource") String datasource, @PathParam("area") String area, @PathParam("lang") String lang) throws Exception {
 
