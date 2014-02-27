@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<title>FAOSTAT3 API</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<script type='text/javascript' src='http://netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js'></script>
+		<script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+		<script type='text/javascript'>
+			function test() {
+				var data = {};
+				var payload = {
+					"datasource" : "faostatproddiss",
+					"domainCode" : "GE",
+					"lang" : "E",
+					"areaCodes" : ["225"],
+					"itemCodes" : ["1126"],
+					"elementListCodes" : ["7231"],
+					"years" : ["2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001"],
+					"flags" : true,
+					"codes" : true,
+					"units" : true,
+					"nullValues" : false,
+					"thousandSeparator" : ",",
+					"decimalSeparator" : ".",
+					"decimalPlaces" : 2,
+					"limit" : 50
+				};
+				data.payload = JSON.stringify(payload);
+				$.ajax({
+					type : 'POST',
+               url : 'http://faostat3.fao.org/wds/rest/procedures/data',
+               data : data,
+					success : function(response) {
+						console.log(JSON.stringify(response));
+						var s = '<table class="table table-striped table-bordered table-condensed table-responsive">';
+						for (var i = 0 ; i < response.length ; i++) {
+							s += '<tr>';
+							for (var j = 0 ; j < response[i].length ; j++)
+								s += '<td>' + response[i][j] + '</td>';
+						}
+						s += '</table>';
+						document.getElementById('placeholder').innerHTML = s;
+					},	
+					error : function(err, b, c) {
+						console.log(err);
+						console.log(b);
+						console.log(c);
+					}	
+				});
+			}
+		</script>
+		<link href='http://netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css' rel='stylesheet'>
+	</head>
+	<body>
+		<div class='container'>
+			<br><br>
+			<div class='row'>
+				<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+					<button class='btn btn-default' onclick='test();'>Get FAOSTAT Data</button>
+				</div>
+			</div>
+			<br><br>
+			<div class='row'>
+				<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+					<div id='placeholder'>Your Table Will Be Shown Here</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
