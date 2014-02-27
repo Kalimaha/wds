@@ -1,6 +1,7 @@
 package org.fao.fenix.wds.core.faostat;
 
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.bean.faostat.FAOSTATODABean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATProceduresBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
@@ -73,6 +74,60 @@ public class FAOSTATProcedures {
         sb.append("EXEC Warehouse.dbo.usp_GetODAElement @tablelanguage='");
         sb.append(lang);
         sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterable getODAData(DatasourceBean dsBean, FAOSTATODABean b) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC usp_GetODAData @Donor='");
+        for (int i = 0 ; i < b.getDonors().length ; i++) {
+            sb.append(b.getDonors()[i]);
+            if (i < b.getDonors().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @Recipient='");
+        for (int i = 0 ; i < b.getRecipients().length ; i++) {
+            sb.append(b.getRecipients()[i]);
+            if (i < b.getRecipients().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @Purpose='");
+        for (int i = 0 ; i < b.getPurposes().length ; i++) {
+            sb.append(b.getPurposes()[i]);
+            if (i < b.getPurposes().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @LGType='");
+        for (int i = 0 ; i < b.getLgTypes().length ; i++) {
+            sb.append(b.getLgTypes()[i]);
+            if (i < b.getLgTypes().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @LGTerms='");
+        for (int i = 0 ; i < b.getLgTerms().length ; i++) {
+            sb.append(b.getLgTerms()[i]);
+            if (i < b.getLgTerms().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @Year='");
+        for (int i = 0 ; i < b.getYears().length ; i++) {
+            sb.append(b.getYears()[i]);
+            if (i < b.getYears().length - 1)
+                sb.append(",");
+        }
+        sb.append("', @tablelanguage='");
+        sb.append(b.getLang());
+        sb.append("', @thousandsseparator='");
+        sb.append(b.getThousandSeparator());
+        sb.append("', @decimalseparator='");
+        sb.append(b.getDecimalSeparator());
+        sb.append("', @showDec='");
+        sb.append(b.getDecimals());
+        sb.append("', @page=");
+        sb.append(b.getPage());
+        sb.append(" ");
         it.query(dsBean, sb.toString());
         return it;
     }

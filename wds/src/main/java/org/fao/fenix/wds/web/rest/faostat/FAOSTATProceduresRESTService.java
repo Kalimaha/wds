@@ -3,6 +3,7 @@ package org.fao.fenix.wds.web.rest.faostat;
 import com.google.gson.Gson;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATCPINotesBean;
+import org.fao.fenix.wds.core.bean.faostat.FAOSTATODABean;
 import org.fao.fenix.wds.core.bean.faostat.FAOSTATProceduresBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.faostat.FAOSTATProcedures;
@@ -235,6 +236,48 @@ public class FAOSTATProceduresRESTService {
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
         final JDBCIterable it = fp.getODAElement(dsBean, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/oda/data")
+    public Response getODAElements(@FormParam("payload") String payload) throws Exception {
+
+        // Extract payload
+        FAOSTATODABean b = g.fromJson(payload, FAOSTATODABean.class);
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
+        final JDBCIterable it = fp.getODAData(dsBean, b);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {

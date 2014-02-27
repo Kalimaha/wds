@@ -8,18 +8,18 @@
 			function test() {
 				var data = {};
 				var payload = {
-					"datasource" : "faostatproddiss",
-					"donors" : ["702","10","11"],
-					"recipients" : ["5000","5100","5200"],
-					"purposes" : ["1000","997","998"],
-					"lgTypes" : ["1","2"],
-					"lgTerms" : ["6096","6097","6098"],
-					"years" : ["2007","2006","2005"],
-					"lang" : "E",
-					"thousandSeparator" : ",",
-					"decimalSeparator" : ".",
-					"decimals" : "2",
-					"page" : "0"
+					"datasource"            : "faostatproddiss",
+					"donors"                : ["702","10","11"],
+					"recipients"            : ["5000","5100","5200"],
+					"purposes"              : ["1000","997","998"],
+					"lgTypes"               : ["1","2"],
+					"lgTerms"               : ["6096","6097","6098"],
+					"years"                 : ["2007","2006","2005"],
+					"lang"                  : "E",
+					"thousandSeparator"     : ",",
+					"decimalSeparator"      : ".",
+					"decimals"              : "2",
+					"page"                  : "0"
 				};
 				data.payload = JSON.stringify(payload);
 				$.ajax({
@@ -39,11 +39,11 @@
                         s += '<th>Flow</th>';
                         s += '<th>Flow Code</th>';
                         s += '<th>Element</th>';
+                        s += '<th>Element Code</th>';
+                        s += '<th>Year</th>';
+                        s += '<th></th>';
+                        s += '<th></th>';
                         s += '<th>Value</th>';
-                        s += '<th></th>';
-                        s += '<th></th>';
-                        s += '<th></th>';
-                        s += '<th></th>';
                         s += '</tr></thead>';
                         s += '<tbody>';
 						for (var i = 0 ; i < response.length ; i++) {
