@@ -196,6 +196,37 @@ public class FAOSTATExporter {
 
     }
 
+    @POST
+    @Path("/htmltable")
+    public Response createExcelFromHTML(@FormParam("data") final String data) {
+
+        System.out.println("here we are");
+        System.out.println(data);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // Write to the stream
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+                writer.write(data);
+                writer.flush();
+
+            }
+
+        };
+
+        // Wrap result
+        ResponseBuilder builder = Response.ok(stream);
+        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
+
+        // Stream Excel
+        return builder.build();
+
+    }
+
     private String replaceLimitWithTop(SQLBean sql) {
         for (NestedWhereBean nwb : sql.getNestedWheres()) {
             SQLBean sql2 = nwb.getNestedCondition();

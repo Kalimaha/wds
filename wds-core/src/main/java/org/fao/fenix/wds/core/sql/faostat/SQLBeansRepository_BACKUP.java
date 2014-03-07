@@ -23,14 +23,14 @@ package org.fao.fenix.wds.core.sql.faostat;
 
 import org.fao.fenix.wds.core.bean.SQLBean;
 import org.fao.fenix.wds.core.constant.ORDERBY;
-import org.fao.fenix.wds.core.constant.WHERE;
 import org.fao.fenix.wds.core.constant.SQL;
+import org.fao.fenix.wds.core.constant.WHERE;
 
 /** 
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a> 
  * */
-public class SQLBeansRepository {
+public class SQLBeansRepository_BACKUP {
 	
 	public static SQLBean getClassifications(String domainCode, String lang) {
 		String s = "SELECT M.ItemCode, M.ItemName" + lang + ", M.ItemDescription" + lang + " FROM Metadata_Item AS M WHERE M.domaincode = '" + domainCode + "' ORDER BY M.ItemName" + lang + " ASC ";
@@ -186,12 +186,13 @@ public class SQLBeansRepository {
 	}
 	
 	public static SQLBean getElementCodes(String domainCode, String language) {
-        String script = "SELECT DISTINCT e.ElementListCode AS Code, e.ElementListName" + lang(language) + " AS Label, de.[Order" + lang(language) + "] AS [Order] " +
-                        "FROM Warehouse.dbo.Element e INNER JOIN Warehouse.dbo.DomainElement de ON e.ElementCode = de.ElementCode " +
-                        "WHERE de.DomainCode = '" + domainCode + "' AND de.Level <> 0 " +
-                        "ORDER BY de.[Order" + lang(language) + "]";
-        SQLBean sql = new SQLBean(script);
-        return sql;
+
+		SQLBean sqlb = new SQLBean("SELECT E.ElementCode, E.ElementName" + lang(language) + ", E.UnitName" + lang(language) + " " +
+								   "FROM DomainElement DE, Element E " +
+								   "WHERE DE.DomainCode = '" + domainCode + "' " +
+								   "AND DE.ElementCode = E.ElementCode " +
+								   "ORDER BY DE.ORD, E.ElementName" + lang(language) + ", E.UnitName" + lang(language) + " ");
+		return sqlb;
 		
 	}
 
@@ -309,48 +310,99 @@ public class SQLBeansRepository {
 	
 	
 	public static SQLBean getCountryCodes(String domainCode, String language) {
-        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
-                        "FROM Warehouse.dbo.DomainAreaList " +
-                        "WHERE DomainCode = '" + domainCode + "' AND [Level] IN (5) " +
-                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+//		sql.select(null, "A.AreaCode", "Code");
+//		sql.select(null, "A.AreaName" + lang(language), "Label");
+//		sql.from("domainareagrouparea", "A");
+//		sql.where(SQL.TEXT.name(), "A.DomainCode", "=", domainCode, null);
+//		sql.groupBy("A.AreaCode");
+//		sql.groupBy("A.AreaName" + lang(language));
+//		sql.orderBy("A.AreaName" + lang(language), ORDERBY.ASC.name());
+//		System.out.println(Bean2SQL.convert(sql));
+        String script = "SELECT da.AreaCode AS Code, a.AreaName" + lang(language) + " AS Label " +
+                        "FROM Warehouse.dbo.DomainArea da " +
+                        "INNER JOIN Warehouse.dbo.Area a ON da.AreaCode = a.AreaCode " +
+                        "WHERE da.DomainCode = '" + domainCode + "' AND da.[Level] = 5 " +
+                        "ORDER BY a.AreaNameE ASC ";
+        System.out.println("PROCEDURE: " + script);
         SQLBean sql = new SQLBean(script);
         return sql;
 	}
 	
 	public static SQLBean getRegionCodes(String domainCode, String language) {
-        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
-                        "FROM Warehouse.dbo.DomainAreaList " +
-                        "WHERE DomainCode = '" + domainCode + "' AND [Level] IN (10,15,20) AND AreaGroupTypeCode <> 'p' " +
-                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+//		SQLBean sql = new SQLBean();
+//		sql.select(null, "A.AreaGroupCode", "Code");
+//		sql.select(null, "A.AreaGroupName" + lang(language), "Label");
+//		sql.from("domainareagrouparea", "A");
+//		sql.where(SQL.TEXT.name(), "A.DomainCode", "=", domainCode, null);
+//		sql.where(SQL.TEXT.name(), "A.AreaGroupCode", "<", "5801", null);
+//		sql.groupBy("A.AreaGroupCode");
+//		sql.groupBy("A.AreaGroupName" + lang(language));
+//		sql.orderBy("A.AreaGroupCode", ORDERBY.ASC.name());
+//		System.out.println(Bean2SQL.convert(sql));
+        String script = "SELECT da.AreaCode AS Code , a.AreaName" + lang(language) + " AS Label " +
+                        "FROM Warehouse.dbo.DomainArea da " +
+                        "INNER JOIN Warehouse.dbo.Area a ON da.AreaCode = a.AreaCode " +
+                        "INNER JOIN Warehouse.dbo.AreaGroupType ag ON da.AreaCode = ag.AreaGroupCode " +
+                        "WHERE da.DomainCode = '" + domainCode + "' AND da.[Level] > 5 AND ag.AreaGroupTypeCode = 'g' " +
+                        "ORDER BY da.AreaCode ASC ";
+        System.out.println("PROCEDURE: " + script);
         SQLBean sql = new SQLBean(script);
 		return sql;
 	}
 	
 	public static SQLBean getSpecialGroupsCodes(String domainCode, String language) {
-        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
-                        "FROM Warehouse.dbo.DomainAreaList " +
-                        "WHERE DomainCode = '" + domainCode + "' AND [Level] IN (10,15,20) AND AreaGroupTypeCode = 'p' " +
-                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+//		SQLBean sql = new SQLBean();
+//		sql.select(null, "A.AreaGroupCode", "Code");
+//		sql.select(null, "A.AreaGroupName" + lang(language), "Label");
+//		sql.from("domainareagrouparea", "A");
+//		sql.where(SQL.TEXT.name(), "A.AreaGroupCode", ">", "5800", null);
+//		sql.where(SQL.TEXT.name(), "A.DomainCode", "=", domainCode, null);
+//		sql.groupBy("A.AreaGroupCode");
+//		sql.groupBy("A.AreaGroupName" + lang(language));
+//		sql.orderBy("A.AreaGroupName" + lang(language), ORDERBY.ASC.name());
+//		System.out.println(Bean2SQL.convert(sql));
+        String script = "SELECT da.AreaCode AS Code, a.AreaName" + lang(language) + " AS Label " +
+                        "FROM Warehouse.dbo.DomainArea da " +
+                        "INNER JOIN Warehouse.dbo.Area a ON da.AreaCode = a.AreaCode " +
+                        "INNER JOIN Warehouse.dbo.AreaGroupType ag ON da.AreaCode = ag.AreaGroupCode " +
+                        "WHERE da.DomainCode = '" + domainCode + "' AND da.[Level] > 5 AND ag.AreaGroupTypeCode = 'p' " +
+                        "ORDER BY da.AreaCode ASC ";
+        System.out.println("PROCEDURE: " + script);
         SQLBean sql = new SQLBean(script);
 		return sql;
 	}
 
 	public static SQLBean getItemCodes(String domainCode, String language) {
-        String script = "SELECT ItemCode AS Code, ItemListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
-                        "FROM Warehouse.dbo.DomainItemList " +
-                        "WHERE DomainCode = '" + domainCode + "' AND [Level] = 5 " +
-                        "ORDER BY [Order" + lang(language) + "], ItemListName" + lang(language) + ", AggregateType";
-        SQLBean sql = new SQLBean(script);
+		SQLBean sql = new SQLBean();
+		sql.select(null, "I.ItemCode", "Code");
+		sql.select(null, "I.ItemName" + lang(language), "Label");
+		sql.from("item", "I");
+		sql.from("domainitem", "DI");
+		sql.where(SQL.DATE.name(), "DI.ItemCode", "=", "I.ItemCode", null);
+		sql.where(SQL.TEXT.name(), "DI.DomainCode", "=", domainCode, null);
+		sql.orderBy("DI.Ord", ORDERBY.ASC.name());
+//		sql.orderBy("I.ItemName" + lang(language), ORDERBY.ASC.name());
+		sql.setQuery("SELECT I.ItemCode AS Code, I.ItemName" + lang(language) + " FROM Item AS I, DomainItem AS DI WHERE DI.ItemCode = I.ItemCode AND DI.DomainCode = '" + domainCode + "' AND I.ItemLevel IN (5, 15) ORDER BY DI.Ord ASC, I.ItemName" + lang(language) + " ASC ");
+//		System.out.println(sql.getQuery());
+//		System.out.println(Bean2SQL.convert(sql));
 		return sql;
 	}
 	
 	public static SQLBean getItemAggregatedCodes(String domainCode, String language) {
-        String script = "SELECT ItemCode AS Code, ItemListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
-                        "FROM Warehouse.dbo.DomainItemList " +
-                        "WHERE DomainCode = '" + domainCode + "' AND [Level] IN (10, 15, 20) " +
-                        "ORDER BY [Order" + lang(language) + "], ItemListName" + lang(language) + ", AggregateType";
-        SQLBean sql = new SQLBean(script);
-        return sql;
+		SQLBean sql = new SQLBean();
+		sql.select(null, "I.ItemCode", "Code");
+		sql.select(null, "I.ItemName" + lang(language), "Label");
+		sql.from("item", "I");
+		sql.from("domainitem", "DI");
+		sql.where(SQL.DATE.name(), "DI.ItemCode", "=", "I.ItemCode", null);
+		sql.where(SQL.TEXT.name(), "DI.DomainCode", "=", domainCode, null);
+		sql.where(SQL.TEXT.name(), "I.ItemLevel", ">", "5", null);
+		sql.orderBy("DI.Ord", ORDERBY.ASC.name());
+		sql.orderBy("I.ItemName" + lang(language), ORDERBY.ASC.name());
+		sql.setQuery("SELECT I.ItemCode AS Code, I.ItemName" + lang(language) + " FROM Item AS I, DomainItem AS DI WHERE DI.ItemCode = I.ItemCode AND DI.DomainCode = '" + domainCode + "' AND (I.ItemLevel = 10 OR I.ItemLevel > 15) ORDER BY DI.Ord ASC, I.ItemName" + lang(language) + " ASC ");
+//		System.out.println(sql.getQuery());
+//		System.out.println(Bean2SQL.convert(sql));
+		return sql;
 	}
 	
 	/**
@@ -360,11 +412,25 @@ public class SQLBeansRepository {
 	 * @return
 	 */
 	public static SQLBean getYears(String domainCode, String language, String tablename) {
-        String script = "SELECT Year AS [Year], Year AS Label " +
-                        "FROM Warehouse.dbo.DomainYears " +
-                        "WHERE DomainCode = '" + domainCode + "' " +
-                        "ORDER BY Year DESC";
-        SQLBean sql = new SQLBean(script);
+		SQLBean sql = new SQLBean();
+//		sql.select(null, "Y.Year", "Year");
+//		sql.select(null, "Y.Year", "Label");
+//		sql.from("Year", "Y");
+//        sql.from("Domain", "D");
+//		sql.where(SQL.TEXT.name(), "D.DomainCode", "=", domainCode, null);
+//		sql.groupBy("D.Year");
+//		sql.orderBy("D.Year", ORDERBY.DESC.name());
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("SELECT y.Year AS Year, y.Year AS Label FROM Year AS y CROSS JOIN Domain AS d WHERE  d.DomainCode = '");
+//        sb.append(domainCode);
+//        sb.append("' AND y.Year >= d.StartYear AND y.Year <= d.EndYear ORDER BY y.Year DESC");
+//        sql.setQuery(sb.toString());
+//        System.out.println("====================================================================================================");
+//        System.out.println(sb);
+//        System.out.println("====================================================================================================");
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT Year as Year, Year as Label FROM Warehouse.dbo.DomainYears WHERE DomainCode = '").append(domainCode).append("' ORDER BY Year DESC ");
+        sql.setQuery(sb.toString());
         return sql;
 	}
 	
