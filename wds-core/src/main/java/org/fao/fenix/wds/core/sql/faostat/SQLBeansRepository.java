@@ -316,6 +316,25 @@ public class SQLBeansRepository {
         SQLBean sql = new SQLBean(script);
         return sql;
 	}
+
+    public static SQLBean getReporterCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TMR' AND [Level] IN (5) " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        return sql;
+    }
+
+    public static SQLBean getPartnerCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TMP' " +
+                        "AND [Level] IN (5) " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        return sql;
+    }
 	
 	public static SQLBean getRegionCodes(String domainCode, String language) {
         String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
