@@ -323,7 +323,6 @@ public class SQLBeansRepository {
                         "WHERE DomainCode = 'TMR' AND [Level] IN (5) " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getReporterCodes");
         return sql;
     }
 
@@ -333,7 +332,6 @@ public class SQLBeansRepository {
                         "WHERE DomainCode = 'TM' + 'R' AND [Level] in (10, 15, 20) AND AreaGroupTypeCode <> 'p' " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getReporterGeoGroupsCodes");
         return sql;
     }
 
@@ -345,7 +343,6 @@ public class SQLBeansRepository {
                         "AND AreaGroupTypeCode = 'p' " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getReporterSpecialGroupsCodes");
         return sql;
     }
 
@@ -356,7 +353,6 @@ public class SQLBeansRepository {
                         "AND [Level] IN (5) " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getPartnerCodes");
         return sql;
     }
 
@@ -368,8 +364,6 @@ public class SQLBeansRepository {
                         "AND AreaGroupTypeCode <> 'p' " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getPartnerGeoGroupsCodes");
-        System.out.println(script);
         return sql;
     }
 
@@ -381,8 +375,6 @@ public class SQLBeansRepository {
                         "AND AreaGroupTypeCode = 'p' " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
-        System.out.println("getPartnerSpecialGroupsCodes");
-        System.out.println(script);
         return sql;
     }
 	
