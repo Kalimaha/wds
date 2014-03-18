@@ -323,6 +323,29 @@ public class SQLBeansRepository {
                         "WHERE DomainCode = 'TMR' AND [Level] IN (5) " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
+        System.out.println("getReporterCodes");
+        return sql;
+    }
+
+    public static SQLBean getReporterGeoGroupsCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TM' + 'R' AND [Level] in (10, 15, 20) AND AreaGroupTypeCode <> 'p' " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        System.out.println("getReporterGeoGroupsCodes");
+        return sql;
+    }
+
+    public static SQLBean getReporterSpecialGroupsCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TM' + 'R' " +
+                        "AND [Level] IN (10, 15, 20) " +
+                        "AND AreaGroupTypeCode = 'p' " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        System.out.println("getReporterSpecialGroupsCodes");
         return sql;
     }
 
@@ -333,6 +356,33 @@ public class SQLBeansRepository {
                         "AND [Level] IN (5) " +
                         "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
         SQLBean sql = new SQLBean(script);
+        System.out.println("getPartnerCodes");
+        return sql;
+    }
+
+    public static SQLBean getPartnerGeoGroupsCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TM' + 'P' " +
+                        "AND [Level] IN (10, 15, 20) " +
+                        "AND AreaGroupTypeCode <> 'p' " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        System.out.println("getPartnerGeoGroupsCodes");
+        System.out.println(script);
+        return sql;
+    }
+
+    public static SQLBean getPartnerSpecialGroupsCodes(String domainCode, String language) {
+        String script = "SELECT AreaCode AS Code, AreaListName" + lang(language) + " AS Label, [Order" + lang(language) + "] AS [Order], AggregateType " +
+                        "FROM Warehouse.dbo.DomainAreaList " +
+                        "WHERE DomainCode = 'TM' + 'P' " +
+                        "AND [Level] IN (10, 15, 20) " +
+                        "AND AreaGroupTypeCode = 'p' " +
+                        "ORDER BY [Order" + lang(language) + "], AreaListName" + lang(language) + ", AggregateType";
+        SQLBean sql = new SQLBean(script);
+        System.out.println("getPartnerSpecialGroupsCodes");
+        System.out.println(script);
         return sql;
     }
 	
