@@ -465,8 +465,12 @@ public class Wrapper {
 						if (nowrap)
 							sb.append(" nowrap=''");
 						if (c.getValueColumnIndex() != null && j == c.getValueColumnIndex().intValue()) {
-							Double value = Double.valueOf(table.get(i).get(j));
-							sb.append(" style='text-align: right;'>").append(df.format(value)).append("</TD>");
+                            try {
+                                Double value = Double.valueOf(table.get(i).get(j));
+                                sb.append(" style='text-align: right;'>").append(df.format(value)).append("</TD>");
+                            } catch (Exception e) {
+                                sb.append(" style='text-align: right;'>&nbsp;</TD>");
+                            }
 						} else {
 							sb.append(" style='text-align: center;'>").append(table.get(i).get(j)).append("</TD>");
 						}

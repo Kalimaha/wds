@@ -186,7 +186,7 @@ public class FAOSTATDownloadTable {
 				sql.setQuery(script);
 			}
 
-            System.out.println(sql.getQuery());
+//            System.out.println(sql.getQuery());
 
 			// compute result
 			DBBean db = new DBBean(ds);
@@ -463,7 +463,7 @@ public class FAOSTATDownloadTable {
                 try {
 
                     // Query DB
-                    System.out.println(sql.getQuery());
+//                    System.out.println(sql.getQuery());
                     it.query(db, sql.getQuery());
 
                 } catch (IllegalAccessException e) {
@@ -491,7 +491,7 @@ public class FAOSTATDownloadTable {
                         writer.write(g.toJson(s));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println(s);
+//                        System.out.println(s);
                     }
                     if (it.hasNext())
                         writer.write(",");
