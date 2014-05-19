@@ -513,6 +513,88 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/reportercountries/{datasource}/{domainCode}/{lang}")
+    public Response getReporterCountries(@PathParam("datasource") String datasource,
+                                 @PathParam("domainCode") String domainCode,
+                                 @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getCountries(dsBean, domainCode, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/partnercountries/{datasource}/{domainCode}/{lang}")
+    public Response getPartnerCountries(@PathParam("datasource") String datasource,
+                                         @PathParam("domainCode") String domainCode,
+                                         @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getCountries(dsBean, domainCode, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/regions/{datasource}/{domainCode}/{lang}")
     public Response getRegions(@PathParam("datasource") String datasource,
                                @PathParam("domainCode") String domainCode,
@@ -759,9 +841,10 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/years/{datasource}/{domainCode}")
+    @Path("/years/{datasource}/{domainCode}/{lang}")
     public Response getYears(@PathParam("datasource") String datasource,
-                             @PathParam("domainCode") String domainCode) throws Exception {
+                             @PathParam("domainCode") String domainCode,
+                             @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -779,7 +862,8 @@ public class FAOSTATProceduresRESTService {
                 // write the result of the query
                 writer.write("[");
                 while(it.hasNext()) {
-                    writer.write(g.toJson(it.next()));
+                    String tmp = g.toJson(it.next());
+                    writer.write(tmp);
                     if (it.hasNext())
                         writer.write(",");
                 }
