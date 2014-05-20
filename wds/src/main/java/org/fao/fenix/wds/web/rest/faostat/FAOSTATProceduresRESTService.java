@@ -472,10 +472,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetAreaList1/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetAreaList1(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getCountries(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/countries/{datasource}/{domainCode}/{lang}")
-    public Response getCountries(@PathParam("datasource") String datasource,
-                                 @PathParam("domainCode") String domainCode,
-                                 @PathParam("lang") String lang) throws Exception {
+    public Response getCountries(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -515,47 +520,6 @@ public class FAOSTATProceduresRESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/reportercountries/{datasource}/{domainCode}/{lang}")
     public Response getReporterCountries(@PathParam("datasource") String datasource,
-                                 @PathParam("domainCode") String domainCode,
-                                 @PathParam("lang") String lang) throws Exception {
-
-        // compute result
-        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-        final JDBCIterable it = fp.getCountries(dsBean, domainCode, lang);
-
-        // Initiate the stream
-        StreamingOutput stream = new StreamingOutput() {
-
-            @Override
-            public void write(OutputStream os) throws IOException, WebApplicationException {
-
-                // compute result
-                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-
-                // write the result of the query
-                writer.write("[");
-                while(it.hasNext()) {
-                    writer.write(g.toJson(it.next()));
-                    if (it.hasNext())
-                        writer.write(",");
-                }
-                writer.write("]");
-
-                // Convert and write the output on the stream
-                writer.flush();
-
-            }
-
-        };
-
-        // Stream result
-        return Response.status(200).entity(stream).build();
-
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/partnercountries/{datasource}/{domainCode}/{lang}")
-    public Response getPartnerCountries(@PathParam("datasource") String datasource,
                                          @PathParam("domainCode") String domainCode,
                                          @PathParam("lang") String lang) throws Exception {
 
@@ -595,10 +559,56 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/partnercountries/{datasource}/{domainCode}/{lang}")
+    public Response getPartnerCountries(@PathParam("datasource") String datasource,
+                                        @PathParam("domainCode") String domainCode,
+                                        @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getCountries(dsBean, domainCode, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetAreaList2/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetAreaList2(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getRegions(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/regions/{datasource}/{domainCode}/{lang}")
-    public Response getRegions(@PathParam("datasource") String datasource,
-                               @PathParam("domainCode") String domainCode,
-                               @PathParam("lang") String lang) throws Exception {
+    public Response getRegions(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -677,10 +687,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetAreaList3/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetAreaList3(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getSpecialGroups(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/specialgroups/{datasource}/{domainCode}/{lang}")
-    public Response getSpecialGroups(@PathParam("datasource") String datasource,
-                                     @PathParam("domainCode") String domainCode,
-                                     @PathParam("lang") String lang) throws Exception {
+    public Response getSpecialGroups(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -718,10 +733,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetItemList1/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetItemList1(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getItems(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/items/{datasource}/{domainCode}/{lang}")
-    public Response getItems(@PathParam("datasource") String datasource,
-                             @PathParam("domainCode") String domainCode,
-                             @PathParam("lang") String lang) throws Exception {
+    public Response getItems(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -759,10 +779,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetItemList2/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetItemList2(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getItemsAggregated(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/itemsaggregated/{datasource}/{domainCode}/{lang}")
-    public Response getItemsAggregated(@PathParam("datasource") String datasource,
-                                       @PathParam("domainCode") String domainCode,
-                                       @PathParam("lang") String lang) throws Exception {
+    public Response getItemsAggregated(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -800,10 +825,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetElementList/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetElementList(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getElements(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/elements/{datasource}/{domainCode}/{lang}")
-    public Response getElements(@PathParam("datasource") String datasource,
-                                @PathParam("domainCode") String domainCode,
-                                @PathParam("lang") String lang) throws Exception {
+    public Response getElements(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
@@ -841,10 +871,15 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetYearList/{datasource}/{domainCode}/{lang}")
+    public Response usp_GetYearList(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
+        return getYears(datasource, domainCode, lang);
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/years/{datasource}/{domainCode}/{lang}")
-    public Response getYears(@PathParam("datasource") String datasource,
-                             @PathParam("domainCode") String domainCode,
-                             @PathParam("lang") String lang) throws Exception {
+    public Response getYears(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
