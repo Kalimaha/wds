@@ -3,7 +3,7 @@
  * FENIX (Food security and Early warning Network and Information Exchange)
  *
  * Copyright (c) 2011, by FAO of UN under the EC-FAO Food Security
-Information for Action Programme
+ Information for Action Programme
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,22 @@ Information for Action Programme
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.fao.fenix.wds.core.constant;
+package org.fao.fenix.wds.core.datasource;
 
-/** 
- * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
- * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a> 
- * */
-public enum DATASOURCE {
+/**
+ * @author <a href="mailto:barbara.cintoli@fao.org">Barbara Cintoli</a>
+ * @author <a href="mailto:barbara.cintoli@gmail.com">Barbara Cintoli</a>
+ */
+public class POLICY {
 
-	FENIX, FENIXDATAMANAGER, FAOSTAT, FAOSTAT2, FAOSTATPROD, FAOSTATPRODDISS,
-    FAOSTATTESTDISS, FAOSTATGLBL, COUNTRYSTAT, WORLDBANK, EUROSTAT, IMF,
-	AQUASTAT, FAOSYB, USDA, STAGINGAREA, CROWDPRICES, AMISPOLICIES, POLICY;
-	
+    public static final String DRIVER = "PostgreSQL";
+
+    public static final String URL = "jdbc:postgresql://127.0.0.1:5432/amisPolicy";
+
+    public static final String DATABASE_NAME = "amisPolicy";
+
+    public static final String USERNAME = "policy";
+
+    public static final String PASSWORD = "1Q2W3E4R5T";
+
 }

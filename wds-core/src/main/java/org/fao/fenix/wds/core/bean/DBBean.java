@@ -172,6 +172,15 @@ public class DBBean {
                 this.setDatabaseName(AMISPOLICIES.DATABASE_NAME);
                 this.setConnection(CONNECTION.JDBC);
              break;
+            case POLICY:
+                this.setDatasource(DATASOURCE.POLICY);
+                this.setDriver(POLICY.DRIVER);
+                this.setPassword(POLICY.PASSWORD);
+                this.setUrl(POLICY.URL);
+                this.setUsername(POLICY.USERNAME);
+                this.setDatabaseName(POLICY.DATABASE_NAME);
+                this.setConnection(CONNECTION.JDBC);
+                break;
 		}
 	}
 	
