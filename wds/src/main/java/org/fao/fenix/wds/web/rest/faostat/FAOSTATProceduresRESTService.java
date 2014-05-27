@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -1038,7 +1039,9 @@ public class FAOSTATProceduresRESTService {
         };
 
         // Stream result
-        return Response.status(200).entity(stream).build();
+        Response.ResponseBuilder builder = Response.ok(stream);
+        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
+        return builder.build();
 
     }
 
