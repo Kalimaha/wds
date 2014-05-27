@@ -979,6 +979,12 @@ public class FAOSTATProceduresRESTService {
 
                 // write the result of the query
                 writer.write("[");
+
+                // add column names
+                List<String> cols = it.getColumnNames();
+                writer.write(g.toJson(cols));
+                writer.write(",");
+
                 while(it.hasNext()) {
                     writer.write(g.toJson(it.next()));
                     if (it.hasNext())
@@ -1018,6 +1024,17 @@ public class FAOSTATProceduresRESTService {
 
                 // write the result of the query
                 writer.write("<table>");
+
+                // add column names
+                List<String> cols = it.getColumnNames();
+                writer.write("<tr>");
+                for (int i = 0; i < cols.size(); i++) {
+                    writer.write("<td>");
+                    writer.write(cols.get(i));
+                    writer.write("</td>");
+                }
+                writer.write("</tr>");
+
                 while(it.hasNext()) {
                     List<String> l = it.next();
                     writer.write("<tr>");
