@@ -473,6 +473,49 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/usp_GetListBox/{datasource}/{domainCode}/{listbox}/{tab}/{lang}")
+    public Response getListBoxCodes(@PathParam("datasource") String datasource,
+                                    @PathParam("domainCode") String domainCode,
+                                    @PathParam("listbox") String listbox,
+                                    @PathParam("tab") String tab,
+                                    @PathParam("lang") String lang) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getListBoxCodes(dsBean, domainCode, listbox, tab, lang);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/usp_GetAreaList1/{datasource}/{domainCode}/{lang}")
     public Response usp_GetAreaList1(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
         return getCountries(datasource, domainCode, lang);

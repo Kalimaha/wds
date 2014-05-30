@@ -194,6 +194,21 @@ public class FAOSTATProcedures {
         return it;
     }
 
+    public JDBCIterable getListBoxCodes(DatasourceBean dsBean, String domainCode, String listbox, String tab, String lang) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetListBox @DomainCode = N'");
+        sb.append(domainCode);
+        sb.append("', @Lang = N'");
+        sb.append(lang);
+        sb.append("', @ListBoxNO = ");
+        sb.append(listbox);
+        sb.append(", @TabOrder = ");
+        sb.append(tab).append(" ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterable getCountries(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
