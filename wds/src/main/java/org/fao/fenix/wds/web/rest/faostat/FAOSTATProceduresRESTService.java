@@ -1001,6 +1001,45 @@ public class FAOSTATProceduresRESTService {
 
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/schema/{datasource}/{domainCode}")
+    public Response getSchema(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode) throws Exception {
+
+        // compute result
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterable it = fp.getSchema(dsBean, domainCode);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/data")

@@ -315,6 +315,16 @@ public class FAOSTATProcedures {
         return it;
     }
 
+    public JDBCIterable getSchema(DatasourceBean dsBean, String domainCode) throws Exception {
+        JDBCIterable it = new JDBCIterable();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EXEC Warehouse.dbo.usp_GetDataSchema @DomainCode = N'");
+        sb.append(domainCode);
+        sb.append("' ");
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterable getData(DatasourceBean dsBean,
                                 String domainCode,
                                 String lang,
@@ -368,55 +378,65 @@ public class FAOSTATProcedures {
 
     public JDBCIterable getData(DatasourceBean dsBean, FAOSTATProceduresBean b) throws Exception {
         JDBCIterable it = new JDBCIterable();
-        String areas = buildCollection(b.getAreaCodes());
-        String items = buildCollection(b.getItemCodes());
-        String elements = buildCollection(b.getElementListCodes());
-        String years = buildCollection(b.getYears());
+        String list1codes = buildCollection(b.getList1Codes());
+        String list2codes = buildCollection(b.getList2Codes());
+        String list3codes = buildCollection(b.getList3Codes());
+        String list4codes = buildCollection(b.getList4Codes());
+        String list5codes = buildCollection(b.getList5Codes());
+        String list6codes = buildCollection(b.getList6Codes());
+        String list7codes = buildCollection(b.getList7Codes());
         StringBuilder sb = new StringBuilder();
-        sb.append("EXECUTE Warehouse.dbo.usp_GetData @DomainCode = '");
+        sb.append("EXECUTE Warehouse.dbo.usp_GetData ");
+        sb.append("@DomainCode = '");
         sb.append(b.getDomainCode());
         sb.append("', @lang = '");
         sb.append(b.getLang());
-        sb.append("', @AreaCodes = '");
-        sb.append(areas);
-        sb.append("', @ItemCodes = '");
-        sb.append(items);
-        sb.append("', @ElementListCodes = '");
-        sb.append(elements);
-        sb.append("', @Years = '");
-        sb.append(years);
-        sb.append("', @Flags = ");
-        sb.append(b.isFlags() ? 1 : 0);
-        sb.append(", @Codes = ");
-        sb.append(b.isCodes() ? 1 : 0);
-        sb.append(", @Units = ");
-        sb.append(b.isUnits() ? 1 : 0);
-        sb.append(", @NullValues = ");
+        sb.append("', @List1Codes = '");
+        sb.append(list1codes);
+        sb.append("', @List2Codes = '");
+        sb.append(list2codes);
+        sb.append("', @List3Codes = '");
+        sb.append(list3codes);
+        sb.append("', @List4Codes = '");
+        sb.append(list4codes);
+        sb.append("', @List5Codes = '");
+        sb.append(list5codes);
+        sb.append("', @List6Codes = '");
+        sb.append(list6codes);
+        sb.append("', @List7Codes = '");
+        sb.append(list7codes);
+        sb.append("', @NullValues = ");
         sb.append(b.isNullValues() ? 1 : 0);
         sb.append(", @Thousand = '");
-        sb.append(b.getThousandSeparator());
+        sb.append(b.getThousand());
         sb.append("', @Decimal = '");
-        sb.append(b.getDecimalSeparator());
+        sb.append(b.getDecimal());
         sb.append("', @DecPlaces = ");
-        sb.append(b.getDecimalPlaces());
+        sb.append(b.getDecPlaces());
         if (b.getLimit() > -1) {
             sb.append(", @Limit = ");
             sb.append(b.getLimit());
         }
         sb.append(" ");
-        it.query(dsBean, sb.toString());
+        try {
+            it.query(dsBean, sb.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return it;
     }
 
     private String buildCollection(String[] a) {
         StringBuilder sb = new StringBuilder();
-        sb.append("(");
-        for (int i = 0 ; i < a.length ; i++) {
-            sb.append(a[i]);
-            if (i < a.length - 1)
-                sb.append(",");
+        if (a.length > 0) {
+            sb.append("(");
+            for (int i = 0; i < a.length; i++) {
+                sb.append("'").append(a[i]).append("'");
+                if (i < a.length - 1)
+                    sb.append(",");
+            }
+            sb.append(")");
         }
-        sb.append(")");
         return sb.toString();
     }
 

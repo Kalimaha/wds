@@ -14,40 +14,29 @@ public class FAOSTATProceduresBean {
 
     private String lang;
 
-    private String[] areaCodes;
+    private String[] list1Codes;
 
-    private String[] itemCodes;
+    private String[] list2Codes;
 
-    private String[] elementListCodes;
+    private String[] list3Codes;
 
-    private String[] years;
+    private String[] list4Codes;
 
-    private boolean flags;
+    private String[] list5Codes;
 
-    private boolean codes;
+    private String[] list6Codes;
 
-    private boolean units;
+    private String[] list7Codes;
 
     private boolean nullValues;
 
-    private String thousandSeparator;
+    private String thousand;
 
-    private String decimalSeparator;
+    private String decimal;
 
-    private int decimalPlaces;
+    private int decPlaces;
 
     private int limit;
-
-    public int getLimit() {
-        return limit;
-    }
-
-    /**
-     * @param limit Set this parameter to -1 to get ALL the lines
-     */
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
 
     public String getDatasource() {
         return datasource;
@@ -73,60 +62,60 @@ public class FAOSTATProceduresBean {
         this.lang = lang;
     }
 
-    public String[] getAreaCodes() {
-        return areaCodes;
+    public String[] getList1Codes() {
+        return list1Codes;
     }
 
-    public void setAreaCodes(String[] areaCodes) {
-        this.areaCodes = areaCodes;
+    public void setList1Codes(String[] list1Codes) {
+        this.list1Codes = list1Codes;
     }
 
-    public String[] getItemCodes() {
-        return itemCodes;
+    public String[] getList2Codes() {
+        return list2Codes;
     }
 
-    public void setItemCodes(String[] itemCodes) {
-        this.itemCodes = itemCodes;
+    public void setList2Codes(String[] list2Codes) {
+        this.list2Codes = list2Codes;
     }
 
-    public String[] getElementListCodes() {
-        return elementListCodes;
+    public String[] getList3Codes() {
+        return list3Codes;
     }
 
-    public void setElementListCodes(String[] elementListCodes) {
-        this.elementListCodes = elementListCodes;
+    public void setList3Codes(String[] list3Codes) {
+        this.list3Codes = list3Codes;
     }
 
-    public String[] getYears() {
-        return years;
+    public String[] getList4Codes() {
+        return list4Codes;
     }
 
-    public void setYears(String[] years) {
-        this.years = years;
+    public void setList4Codes(String[] list4Codes) {
+        this.list4Codes = list4Codes;
     }
 
-    public boolean isFlags() {
-        return flags;
+    public String[] getList5Codes() {
+        return list5Codes;
     }
 
-    public void setFlags(boolean flags) {
-        this.flags = flags;
+    public void setList5Codes(String[] list5Codes) {
+        this.list5Codes = list5Codes;
     }
 
-    public boolean isCodes() {
-        return codes;
+    public String[] getList6Codes() {
+        return list6Codes;
     }
 
-    public void setCodes(boolean codes) {
-        this.codes = codes;
+    public void setList6Codes(String[] list6Codes) {
+        this.list6Codes = list6Codes;
     }
 
-    public boolean isUnits() {
-        return units;
+    public String[] getList7Codes() {
+        return list7Codes;
     }
 
-    public void setUnits(boolean units) {
-        this.units = units;
+    public void setList7Codes(String[] list7Codes) {
+        this.list7Codes = list7Codes;
     }
 
     public boolean isNullValues() {
@@ -137,46 +126,56 @@ public class FAOSTATProceduresBean {
         this.nullValues = nullValues;
     }
 
-    public String getThousandSeparator() {
-        return thousandSeparator;
+    public String getThousand() {
+        return thousand;
     }
 
-    public void setThousandSeparator(String thousandSeparator) {
-        this.thousandSeparator = thousandSeparator;
+    public void setThousand(String thousand) {
+        this.thousand = thousand;
     }
 
-    public String getDecimalSeparator() {
-        return decimalSeparator;
+    public String getDecimal() {
+        return decimal;
     }
 
-    public void setDecimalSeparator(String decimalSeparator) {
-        this.decimalSeparator = decimalSeparator;
+    public void setDecimal(String decimal) {
+        this.decimal = decimal;
     }
 
-    public int getDecimalPlaces() {
-        return decimalPlaces;
+    public int getDecPlaces() {
+        return decPlaces;
     }
 
-    public void setDecimalPlaces(int decimalPlaces) {
-        this.decimalPlaces = decimalPlaces;
+    public void setDecPlaces(int decPlaces) {
+        this.decPlaces = decPlaces;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
     @Override
     public String toString() {
         return "FAOSTATProceduresBean{" +
-                "domainCode='" + domainCode + '\'' +
+                "datasource='" + datasource + '\'' +
+                ", domainCode='" + domainCode + '\'' +
                 ", lang='" + lang + '\'' +
-                ", areaCodes=" + Arrays.toString(areaCodes) +
-                ", itemCodes=" + Arrays.toString(itemCodes) +
-                ", elementListCodes=" + Arrays.toString(elementListCodes) +
-                ", years=" + Arrays.toString(years) +
-                ", flags=" + flags +
-                ", codes=" + codes +
-                ", units=" + units +
+                ", list1Codes=" + Arrays.toString(list1Codes) +
+                ", list2Codes=" + Arrays.toString(list2Codes) +
+                ", list3Codes=" + Arrays.toString(list3Codes) +
+                ", list4Codes=" + Arrays.toString(list4Codes) +
+                ", list5Codes=" + Arrays.toString(list5Codes) +
+                ", list6Codes=" + Arrays.toString(list6Codes) +
+                ", list7Codes=" + Arrays.toString(list7Codes) +
                 ", nullValues=" + nullValues +
-                ", thousandSeparator='" + thousandSeparator + '\'' +
-                ", decimalSeparator='" + decimalSeparator + '\'' +
-                ", decimalPlaces=" + decimalPlaces +
+                ", thousand='" + thousand + '\'' +
+                ", decimal='" + decimal + '\'' +
+                ", decPlaces=" + decPlaces +
+                ", limit=" + limit +
                 '}';
     }
 
