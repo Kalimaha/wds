@@ -1003,12 +1003,12 @@ public class FAOSTATProceduresRESTService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/schema/{datasource}/{domainCode}")
-    public Response getSchema(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode) throws Exception {
+    @Path("/schema/{datasource}/{domainCode}/{lang}")
+    public Response getSchema(@PathParam("datasource") String datasource, @PathParam("domainCode") String domainCode, @PathParam("lang") String lang) throws Exception {
 
         // compute result
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
-        final JDBCIterable it = fp.getSchema(dsBean, domainCode);
+        final JDBCIterable it = fp.getSchema(dsBean, domainCode, lang);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {

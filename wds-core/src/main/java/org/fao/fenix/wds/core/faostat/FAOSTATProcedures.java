@@ -315,11 +315,13 @@ public class FAOSTATProcedures {
         return it;
     }
 
-    public JDBCIterable getSchema(DatasourceBean dsBean, String domainCode) throws Exception {
+    public JDBCIterable getSchema(DatasourceBean dsBean, String domainCode, String lang) throws Exception {
         JDBCIterable it = new JDBCIterable();
         StringBuilder sb = new StringBuilder();
         sb.append("EXEC Warehouse.dbo.usp_GetDataSchema @DomainCode = N'");
         sb.append(domainCode);
+        sb.append("', @Lang = N'");
+        sb.append(lang);
         sb.append("' ");
         it.query(dsBean, sb.toString());
         return it;
