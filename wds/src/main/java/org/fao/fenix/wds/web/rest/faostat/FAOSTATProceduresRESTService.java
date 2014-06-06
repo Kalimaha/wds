@@ -1144,4 +1144,58 @@ public class FAOSTATProceduresRESTService {
 
     }
 
+    @POST
+    @Path("/csv")
+    public Response getCSV(@FormParam("payload") String payload) throws Exception {
+
+        System.out.println("CSV!!!");
+
+        // compute result
+        FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(b.getDatasource());
+        final JDBCIterable it = fp.getData(dsBean, b);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // add column names
+                List<String> cols = it.getColumnNames();
+                for (int i = 0; i < cols.size(); i++) {
+                    writer.write(cols.get(i));
+                    if (i < cols.size() - 1)
+                        writer.write(",");
+                }
+                writer.write("\n");
+
+                while(it.hasNext()) {
+                    List<String> l = it.next();
+                    for (int i = 0; i < l.size(); i++) {
+                        writer.write(l.get(i));
+                        if (i < l.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("\n");
+                }
+
+                // Convert and write the output on the stream
+                writer.flush();
+                writer.close();
+
+            }
+
+        };
+
+        // Stream result
+        Response.ResponseBuilder builder = Response.ok(stream);
+        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".csv");
+        return builder.build();
+
+    }
+
 }
