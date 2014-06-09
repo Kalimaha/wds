@@ -1088,7 +1088,7 @@ public class FAOSTATProceduresRESTService {
 
     @POST
     @Path("/excel")
-    public Response getExcel(@FormParam("payload") String payload) throws Exception {
+    public Response getExcel(@FormParam("payload_excel") String payload) throws Exception {
 
         // compute result
         FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
@@ -1110,7 +1110,7 @@ public class FAOSTATProceduresRESTService {
                 // add column names
                 List<String> cols = it.getColumnNames();
                 writer.write("<tr>");
-                for (int i = 0; i < cols.size(); i++) {
+                for (int i = 2; i < cols.size() - 4; i++) {
                     writer.write("<td>");
                     writer.write(cols.get(i));
                     writer.write("</td>");
@@ -1120,7 +1120,7 @@ public class FAOSTATProceduresRESTService {
                 while(it.hasNext()) {
                     List<String> l = it.next();
                     writer.write("<tr>");
-                    for (int i = 0; i < l.size(); i++) {
+                    for (int i = 2; i < l.size() - 4; i++) {
                         writer.write("<td>");
                         writer.write(l.get(i));
                         writer.write("</td>");
@@ -1146,9 +1146,7 @@ public class FAOSTATProceduresRESTService {
 
     @POST
     @Path("/csv")
-    public Response getCSV(@FormParam("payload") String payload) throws Exception {
-
-        System.out.println("CSV!!!");
+    public Response getCSV(@FormParam("payload_csv") String payload) throws Exception {
 
         // compute result
         FAOSTATProceduresBean b = g.fromJson(payload, FAOSTATProceduresBean.class);
@@ -1166,18 +1164,18 @@ public class FAOSTATProceduresRESTService {
 
                 // add column names
                 List<String> cols = it.getColumnNames();
-                for (int i = 0; i < cols.size(); i++) {
-                    writer.write(cols.get(i));
-                    if (i < cols.size() - 1)
+                for (int i = 2; i < cols.size() - 4; i++) {
+                    writer.write("\"" + cols.get(i) + "\"");
+                    if (i < cols.size() - 5)
                         writer.write(",");
                 }
                 writer.write("\n");
 
                 while(it.hasNext()) {
                     List<String> l = it.next();
-                    for (int i = 0; i < l.size(); i++) {
-                        writer.write(l.get(i));
-                        if (i < l.size() - 1)
+                    for (int i = 2; i < l.size() - 4; i++) {
+                        writer.write("\"" + l.get(i) + "\"");
+                        if (i < l.size() - 5)
                             writer.write(",");
                     }
                     writer.write("\n");
