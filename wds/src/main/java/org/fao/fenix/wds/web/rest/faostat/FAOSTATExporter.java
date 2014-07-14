@@ -207,7 +207,7 @@ public class FAOSTATExporter {
                 // add column names
                 List<String> cols = it.getColumnNames();
                 writer.write("<tr>");
-                for (int i = 0; i < cols.size() - 4; i++) {
+                for (int i = 0; i < cols.size(); i++) {
                     writer.write("<td>");
                     writer.write(cols.get(i));
                     writer.write("</td>");
