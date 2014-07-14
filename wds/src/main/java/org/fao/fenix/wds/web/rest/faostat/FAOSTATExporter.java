@@ -61,6 +61,95 @@ public class FAOSTATExporter {
     DatasourcePool datasourcePool;
 
     @POST
+    @Path("/streamcsv")
+    public Response streamCSV(final @FormParam("datasource_WQ_csv") String datasource,
+                              final @FormParam("json_WQ_csv") String json,
+                              final @FormParam("cssFilename_WQ_csv") String cssFilename,
+                              final @FormParam("valueIndex_WQ_csv") String valueIndex,
+                              final @FormParam("thousandSeparator_WQ_csv") String thousandSeparator,
+                              final @FormParam("decimalSeparator_WQ_csv") String decimalSeparator,
+                              final @FormParam("decimalNumbers_WQ_csv") String decimalNumbers,
+                              final @FormParam("quote_WQ_csv") String quote,
+                              final @FormParam("title_WQ_csv") String title,
+                              final @FormParam("subtitle_WQ_csv") String subtitle) {
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Gson g = new Gson();
+                SQLBean sql = g.fromJson(json, SQLBean.class);
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // compute result
+                JDBCIterable it = new JDBCIterable();
+
+                try {
+
+                    // alter the query to switch from LIMIT to TOP
+                    if (datasource.toUpperCase().startsWith("FAOSTAT"))
+                        sql.setQuery(replaceLimitWithTop(sql));
+
+                    it.query(db, Bean2SQL.convert(sql).toString());
+
+
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
+                    WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
+                }
+
+                List<String> cols = it.getColumnNames();
+                for (int i = 0; i < cols.size(); i++) {
+                    writer.write(cols.get(i));
+                    if (i < cols.size() - 1)
+                        writer.write(",");
+                }
+                writer.write("\n");
+
+                // write the result of the query
+                while(it.hasNext()) {
+                    List<String> l = it.next();
+                    for (int i = 0; i < l.size(); i++) {
+                        writer.write("\"" + l.get(i) + "\"");
+                        if (i < l.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("\n");
+                }
+
+                // Convert and write the output on the stream
+                writer.flush();
+                writer.close();
+
+            }
+
+        };
+
+        // Wrap result
+        ResponseBuilder builder = Response.ok(stream);
+        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".csv");
+
+        // Stream Excel
+        return builder.build();
+
+    }
+
+    @POST
     @Path("/streamexcel")
     public Response streamExcel(final @FormParam("datasource_WQ") String datasource,
                                 final @FormParam("json_WQ") String json,
@@ -113,8 +202,19 @@ public class FAOSTATExporter {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
-                // write the result of the query
                 writer.write("<table>");
+
+                // add column names
+                List<String> cols = it.getColumnNames();
+                writer.write("<tr>");
+                for (int i = 0; i < cols.size() - 4; i++) {
+                    writer.write("<td>");
+                    writer.write(cols.get(i));
+                    writer.write("</td>");
+                }
+                writer.write("</tr>");
+
+                // write the result of the query
                 while(it.hasNext()) {
                     List<String> l = it.next();
                     writer.write("<tr>");

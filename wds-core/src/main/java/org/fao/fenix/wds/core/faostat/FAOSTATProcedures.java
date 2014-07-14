@@ -420,6 +420,7 @@ public class FAOSTATProcedures {
             sb.append(b.getLimit());
         }
         sb.append(" ");
+        System.out.println(sb);
         try {
             it.query(dsBean, sb.toString());
         } catch (Exception e) {
