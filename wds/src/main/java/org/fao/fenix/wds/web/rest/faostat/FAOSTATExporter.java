@@ -43,6 +43,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,6 +116,8 @@ public class FAOSTATExporter {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
                 }
 
+                writer.write("\ufeff");
+
                 List<String> cols = it.getColumnNames();
                 for (int i = 0; i < cols.size(); i++) {
                     writer.write(cols.get(i));
@@ -131,6 +136,10 @@ public class FAOSTATExporter {
                     }
                     writer.write("\n");
                 }
+
+                writer.write("\n");
+                writer.write(createMetadata());
+                writer.write("\n");
 
                 // Convert and write the output on the stream
                 writer.flush();
@@ -202,6 +211,7 @@ public class FAOSTATExporter {
                     WDSExceptionStreamWriter.streamException(os, ("Method 'getDomains' thrown an error: " + e.getMessage()));
                 }
 
+                writer.write("\ufeff");
                 writer.write("<table>");
 
                 // add column names
@@ -225,6 +235,15 @@ public class FAOSTATExporter {
                     }
                     writer.write("</tr>");
                 }
+
+                // add metadata
+                writer.write("<tr><td>&nbsp;</td></tr>");
+                writer.write("<tr>");
+                writer.write("<td>");
+                writer.write(createMetadata());
+                writer.write("<td>");
+                writer.write("</tr>");
+
                 writer.write("</table>");
 
                 // Convert and write the output on the stream
@@ -237,15 +256,17 @@ public class FAOSTATExporter {
 
         // Wrap result
         ResponseBuilder builder = Response.ok(stream);
-//        builder.header("Access-Control-Allow-Origin", "*");
-//        builder.header("Access-Control-Max-Age", "3600");
-//        builder.header("Access-Control-Allow-Methods", "POST");
-//        builder.header("Access-Control-Allow-Headers", "X-Requested-With, Host, User-Agent, Accept, Accept-Language, Accept-Encoding, Accept-Charset, Keep-Alive, Connection, Referer,Origin");
         builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
 
         // Stream Excel
         return builder.build();
 
+    }
+
+    private String createMetadata() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("FAOSTAT Date: ").append(new Date());
+        return sb.toString();
     }
 
     @POST
@@ -299,9 +320,6 @@ public class FAOSTATExporter {
     @POST
     @Path("/htmltable")
     public Response createExcelFromHTML(@FormParam("data") final String data) {
-
-        System.out.println("here we are");
-        System.out.println(data);
 
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
