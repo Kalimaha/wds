@@ -165,7 +165,7 @@ public class POLICYDataRestService {
     @Path("/biofuelPoliciesTimeSeries")
     public Response biofuelPolicies_timeSeries(@FormParam("pdObj") String pdObject) throws Exception {
         // System.out.println("biofuelPolicies_timeSeries start "+pdObject);
-        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        final POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
         //The format of cplId is this: 'code1', 'code2', 'code3'
         final Map<String, LinkedHashMap<String, String>> map=  pp.biofuelPolicies_timeSeries(dsBean, pd_obj);
@@ -213,7 +213,8 @@ public class POLICYDataRestService {
                     int i=0;
                     for(String key2: keySet2) {
                         //System.out.println("time key2 "+key2);
-                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
                         Date date = null;
                         try {
                             date = df.parse(key2);
@@ -240,7 +241,187 @@ public class POLICYDataRestService {
                     jsonArrayTot.add(jsonobj);
                     series_count++;
                 }
-                writer.write(g.toJson(jsonArrayTot));
+                JSONObject jsonobj_to_return = new JSONObject();
+                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("dataArray",jsonArrayTot);
+                writer.write(g.toJson(jsonobj_to_return));
+//                writer.write(g.toJson(jsonArrayTot));
+
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    //Highstock Chart
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/biofuelPoliciesMeasuresTimeSeries")
+    public Response biofuelPolicyMeasures_timeSeries(@FormParam("pdObj") String pdObject) throws Exception {
+        // System.out.println("biofuelPolicies_timeSeries start "+pdObject);
+        final POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final Map<String, LinkedHashMap<String, String>> map=  pp.biofuelPolicyMeasures_timeSeries(dsBean, pd_obj);
+
+//        for( String key: map.keySet())
+//        {
+//            System.out.println("key "+key);
+//            if(key!=null)
+//            {
+//                Set<String> keySet2= map.get(key).keySet();
+//                for(String key2: keySet2)
+//                {
+//                    System.out.println("time key2 "+key2);
+//                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                    Date date = df.parse(key2);
+////                    Date date = new Date(key2);
+//                    long epoch = date.getTime();
+//                    System.out.println(epoch);
+//                    System.out.println("country count key "+map.get(key).get(key2));
+//                }
+//            }
+//        }
+
+        final JDBCIterablePolicy it = new JDBCIterablePolicy();
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                JSONArray jsonArrayTot = new JSONArray();
+                int series_count = 1;
+                //For each policy type
+                for( String key: map.keySet())
+                {
+                    //writer.write("[");
+                    JSONObject jsonobj = new JSONObject();
+                    jsonobj.put("name", series_count);
+                    JSONArray jsonArray = new JSONArray();
+                    Set<String> keySet2= map.get(key).keySet();
+                    int i=0;
+                    for(String key2: keySet2) {
+                        //System.out.println("time key2 "+key2);
+//                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
+                        Date date = null;
+                        try {
+                            date = df.parse(key2);
+                        } catch (ParseException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+//                    Date date = new Date(key2);
+                        long epoch = date.getTime();
+                        //System.out.println(epoch);
+                        //System.out.println("country count key "+map.get(key).get(key2));
+                        //writer.write(g1.toJson("["+epoch+","+map.get(key).get(key2)+"]"));
+                        JSONArray jsonArrayInside = new JSONArray();
+                        jsonArrayInside.add(epoch);
+                        jsonArrayInside.add(Integer.parseInt(map.get(key).get(key2)));
+                        jsonArray.add(jsonArrayInside);
+                        i++;
+//                        if (i< keySet2.size())
+//                            writer.write(",");
+                    }
+
+                    jsonobj.put("data", jsonArray);
+                    // writer.write("]");
+//                    writer.write("]");
+                    jsonArrayTot.add(jsonobj);
+                    series_count++;
+                }
+                JSONObject jsonobj_to_return = new JSONObject();
+                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("dataArray",jsonArrayTot);
+                writer.write(g.toJson(jsonobj_to_return));
+//                writer.write(g.toJson(jsonArrayTot));
+
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    //Highstock Chart
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/exportRestrictionsPoliciesMeasuresTimeSeries")
+    public Response exportRestrictionsPolicyMeasures_timeSeries(@FormParam("pdObj") String pdObject) throws Exception {
+        // System.out.println("biofuelPolicies_timeSeries start "+pdObject);
+        final POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final Map<String, LinkedHashMap<String, String>> map=  pp.exportRestrictionsPolicyMeasures_timeSeries(dsBean, pd_obj);
+
+        final JDBCIterablePolicy it = new JDBCIterablePolicy();
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                JSONArray jsonArrayTot = new JSONArray();
+                int series_count = 1;
+                //For each policy type
+                for( String key: map.keySet())
+                {
+                    //writer.write("[");
+                    JSONObject jsonobj = new JSONObject();
+                    jsonobj.put("name", series_count);
+                    JSONArray jsonArray = new JSONArray();
+                    Set<String> keySet2= map.get(key).keySet();
+                    int i=0;
+                    for(String key2: keySet2) {
+                        //System.out.println("time key2 "+key2);
+//                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
+                        Date date = null;
+                        try {
+                            date = df.parse(key2);
+                        } catch (ParseException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+//                    Date date = new Date(key2);
+                        long epoch = date.getTime();
+                        //System.out.println(epoch);
+                        //System.out.println("country count key "+map.get(key).get(key2));
+                        //writer.write(g1.toJson("["+epoch+","+map.get(key).get(key2)+"]"));
+                        JSONArray jsonArrayInside = new JSONArray();
+                        jsonArrayInside.add(epoch);
+                        jsonArrayInside.add(Integer.parseInt(map.get(key).get(key2)));
+                        jsonArray.add(jsonArrayInside);
+                        i++;
+//                        if (i< keySet2.size())
+//                            writer.write(",");
+                    }
+
+                    jsonobj.put("data", jsonArray);
+                    // writer.write("]");
+//                    writer.write("]");
+                    jsonArrayTot.add(jsonobj);
+                    series_count++;
+                }
+                JSONObject jsonobj_to_return = new JSONObject();
+                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
+                jsonobj_to_return.put("dataArray",jsonArrayTot);
+                writer.write(g.toJson(jsonobj_to_return));
+//                writer.write(g.toJson(jsonArrayTot));
 
                 // Convert and write the output on the stream
                 writer.flush();
@@ -290,16 +471,138 @@ public class POLICYDataRestService {
         return Response.status(200).entity(stream).build();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/exportSubsidiesCountries/{datasource}/{policyType}/{policyMeasure}")
+    public Response getcountries_fromExportSubsidies(@PathParam("datasource") String datasource, @PathParam("policyType") String policyType, @PathParam("policyMeasure") String policyMeasure) throws Exception {
+
+        System.out.println(" getcountries_fromExportSubsidies start ");
+        System.out.println(" getcountries_fromExportSubsidies policyType= "+policyType);
+        System.out.println(" getcountries_fromExportSubsidies policyMeasure= "+policyMeasure);
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getcountries_fromPolicy(dsBean, policyType, policyMeasure);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
     //Highchart Chart
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/biofuelPoliciesBarChart")
     public Response biofuelPolicies_barchart(@FormParam("pdObj") String pdObject) throws Exception {
-        // System.out.println("biofuelPolicies_timeSeries start "+pdObject);
+         System.out.println("biofuelPolicies_timeSeries start New"+pdObject);
+        System.out.println(pdObject);
         POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
         //The format of cplId is this: 'code1', 'code2', 'code3'
+        System.out.println("Before biofuelPolicies_barchart ");
         final Map<String, LinkedHashMap<String, String>> map=  pp.biofuelPolicies_barchart(dsBean, pd_obj);
+        System.out.println("2222222");
+//        final Map<String, LinkedHashMap<String, String>> map= new HashMap<String, LinkedHashMap<String, String>>();
+        //        for( String key: map.keySet())
+//        {
+//            System.out.println("key "+key);
+//            if(key!=null)
+//            {
+//                Set<String> keySet2= map.get(key).keySet();
+//                for(String key2: keySet2)
+//                {
+//                    System.out.println("time key2 "+key2);
+//                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                    Date date = df.parse(key2);
+////                    Date date = new Date(key2);
+//                    long epoch = date.getTime();
+//                    System.out.println(epoch);
+//                    System.out.println("country count key "+map.get(key).get(key2));
+//                }
+//            }
+//        }
+        /*
+        * series: [{
+                        name: '1',
+                        data: [49, 71, 106]
+                    }, {
+                        name: '2',
+                        data: [93, 106, 84]
+                    }]*/
+
+        final JDBCIterablePolicy it = new JDBCIterablePolicy();
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+                System.out.println("333333");
+                JSONArray jsonArrayTot = new JSONArray();
+                int series_count = 1;
+                for( String key: map.keySet())
+                {
+                    //One obj for each policy type
+                    //writer.write("[");
+                    JSONObject jsonobj = new JSONObject();
+                    jsonobj.put("name", series_count);
+                    JSONArray jsonArray = new JSONArray();
+                    Set<String> keySet2= map.get(key).keySet();
+
+                    //Three elements... Ethanol, Biodisel, Biofuel
+                    for(String key2: keySet2) {
+                        jsonArray.add(Integer.parseInt(map.get(key).get(key2)));
+                    }
+
+                    jsonobj.put("data", jsonArray);
+                    // writer.write("]");
+//                    writer.write("]");
+                    jsonArrayTot.add(jsonobj);
+                    series_count++;
+                }
+                writer.write(g.toJson(jsonArrayTot));
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    //Highchart Chart
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/biofuelPolicyMeasuresBarChart")
+    public Response biofuelPolicyMeasures_barchart(@FormParam("pdObj") String pdObject) throws Exception {
+         System.out.println("biofuelPolicies_timeSeries start "+pdObject);
+        System.out.println(pdObject);
+        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final Map<String, LinkedHashMap<String, String>> map=  pp.biofuelMeasures_barchart(dsBean, pd_obj);
 //        final Map<String, LinkedHashMap<String, String>> map= new HashMap<String, LinkedHashMap<String, String>>();
         //        for( String key: map.keySet())
 //        {
@@ -369,6 +672,333 @@ public class POLICYDataRestService {
         // Stream result
         return Response.status(200).entity(stream).build();
     }
+
+    //Highchart Chart
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/exportRestrictionsPolicyMeasuresBarChart")
+    public Response exportRestrictionsPolicyMeasures_barchart(@FormParam("pdObj") String pdObject) throws Exception {
+        //System.out.println("biofuelPolicies_timeSeries start "+pdObject);
+        //System.out.println(pdObject);
+        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final Map<String, LinkedHashMap<String, String>> map=  pp.exportRestrictionsMeasures_barchart(dsBean, pd_obj);
+//        final Map<String, LinkedHashMap<String, String>> map= new HashMap<String, LinkedHashMap<String, String>>();
+        //        for( String key: map.keySet())
+//        {
+//            System.out.println("key "+key);
+//            if(key!=null)
+//            {
+//                Set<String> keySet2= map.get(key).keySet();
+//                for(String key2: keySet2)
+//                {
+//                    System.out.println("time key2 "+key2);
+//                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                    Date date = df.parse(key2);
+////                    Date date = new Date(key2);
+//                    long epoch = date.getTime();
+//                    System.out.println(epoch);
+//                    System.out.println("country count key "+map.get(key).get(key2));
+//                }
+//            }
+//        }
+        /*
+        * series: [{
+                        name: '1',
+                        data: [49, 71, 106]
+                    }, {
+                        name: '2',
+                        data: [93, 106, 84]
+                    }]*/
+
+        final JDBCIterablePolicy it = new JDBCIterablePolicy();
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                JSONArray jsonArrayTot = new JSONArray();
+                int series_count = 1;
+                for( String key: map.keySet())
+                {
+                    //One obj for each policy type
+                    //writer.write("[");
+                    JSONObject jsonobj = new JSONObject();
+                    jsonobj.put("name", series_count);
+                    JSONArray jsonArray = new JSONArray();
+                    Set<String> keySet2= map.get(key).keySet();
+
+                    //Three elements... Ethanol, Biodisel, Biofuel
+                    for(String key2: keySet2) {
+                        jsonArray.add(Integer.parseInt(map.get(key).get(key2)));
+                    }
+
+                    jsonobj.put("data", jsonArray);
+                    // writer.write("]");
+//                    writer.write("]");
+                    jsonArrayTot.add(jsonobj);
+                    series_count++;
+                }
+                writer.write(g.toJson(jsonArrayTot));
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+        @POST
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/exportSubsidiesPolicyElementLineChart")
+        public Response exportSubsidiesPolicyElementLineChart(@FormParam("pdObj") String pdObject) throws Exception {
+            System.out.println(" exportSubsidiesPolicyElementLineChart ");
+            POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+            System.out.println(pd_obj);
+
+            DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+            String policy_type = "";
+            if (pd_obj.getPolicy_type_code() != null)
+            {
+                for(int i=0; i< pd_obj.getPolicy_type_code().length; i++)
+                {
+                    policy_type+=pd_obj.getPolicy_type_code()[i];
+                    if(i<pd_obj.getPolicy_type_code().length-1)
+                    {
+                        policy_type+=",";
+                    }
+                }
+            }
+
+            String policy_measure = "";
+            if (pd_obj.getPolicy_measure_code() != null)
+            {
+                for(int i=0; i< pd_obj.getPolicy_measure_code().length; i++)
+                {
+                    policy_measure+=pd_obj.getPolicy_measure_code()[i];
+                    if(i<pd_obj.getPolicy_measure_code().length-1)
+                    {
+                        policy_measure+=",";
+                    }
+                }
+            }
+
+            final JDBCIterablePolicy it =  pp.getDistinctcpl_id(dsBean, pd_obj, policy_type, policy_measure);
+
+            String cpl_id = "";
+            while(it.hasNext()) {
+                //[2, Domestic, 1, Agricultural]
+                String val = it.next().toString();
+                System.out.println("val = "+val);
+                int index = val.lastIndexOf(']');
+                val = val.substring(1, index);
+                cpl_id +=val;
+                cpl_id +=",";
+//                val = val.replaceAll("\\s+", "");
+            }
+
+            if((cpl_id==null)||(cpl_id.length()==0))
+            {
+                //  System.out.println("(s.length()==0)");
+                //It is not a share group
+                // Initiate the stream
+                StreamingOutput stream = new StreamingOutput() {
+
+                    @Override
+                    public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                        // compute result
+                        Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                        // write the result of the query
+                        writer.write("[");
+                        writer.write("\"NOT_FOUND\"");
+                        writer.write("]");
+                        // System.out.println("writer "+writer.toString());
+                        // Convert and write the output on the stream
+                        writer.flush();
+                    }
+
+                };
+                // Stream result
+                return Response.status(200).entity(stream).build();
+            }
+            else
+            {
+                System.out.println("cpl_id "+cpl_id);
+                cpl_id = cpl_id.substring(0, cpl_id.length()-1);
+                final Map<String, LinkedHashMap<String, String>> map=  pp.exportSubsidiesPolicyMeasures_timeSeries(dsBean, pd_obj, cpl_id);
+                if((map==null)||(map.size()==0))
+                {
+                    //  System.out.println("(s.length()==0)");
+                    //It is not a share group
+                    // Initiate the stream
+                    StreamingOutput stream = new StreamingOutput() {
+
+                        @Override
+                        public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                            // compute result
+                            Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                            // write the result of the query
+                            writer.write("[");
+                            writer.write("\"NOT_FOUND\"");
+                            writer.write("]");
+                            // System.out.println("writer "+writer.toString());
+                            // Convert and write the output on the stream
+                            writer.flush();
+                        }
+
+                    };
+                    // Stream result
+                    return Response.status(200).entity(stream).build();
+                }
+                else
+                {
+                    System.out.println("After exportSubsidiesPolicyMeasures_timeSeries ");
+                    StreamingOutput stream = new StreamingOutput() {
+
+                        @Override
+                        public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                            // compute result
+                            Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                            JSONArray jsonArrayTot = new JSONArray();
+                            int series_count = 1;
+                            System.out.println("series_count =  "+series_count);
+                            for( String key: map.keySet())
+                            {
+                                System.out.println("key "+key);
+                                System.out.println("series_count =  "+series_count);
+                                //One obj for each policy type
+                                //writer.write("[");
+                                JSONObject jsonobj = new JSONObject();
+                                jsonobj.put("name", series_count);
+                                JSONArray jsonArray = new JSONArray();
+                                Set<String> keySet2= map.get(key).keySet();
+
+                                //Three elements... Ethanol, Biodisel, Biofuel
+                                for(String key2: keySet2) {
+                                    String valueD = map.get(key).get(key2);
+                                    if((valueD!=null)&&(valueD.length()>0))
+                                    {
+                                        jsonArray.add(Double.parseDouble(valueD));
+                                    }
+                                    else{
+                                        jsonArray.add(null);
+                                    }
+                                }
+
+                                jsonobj.put("data", jsonArray);
+                                System.out.println(jsonArray);
+                                jsonArrayTot.add(jsonobj);
+                                series_count++;
+                            }
+                            writer.write(g.toJson(jsonArrayTot));
+                            // Convert and write the output on the stream
+                            writer.flush();
+                        }
+                    };
+                    // Stream result
+                    return Response.status(200).entity(stream).build();
+                }
+            }
+    }
+
+    //Highchart Chart
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/importTariffsPolicyMeasuresBarChart")
+    public Response importTariffsPolicyMeasures_barchart(@FormParam("pdObj") String pdObject) throws Exception {
+        System.out.println(pdObject);
+        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final Map<String, LinkedHashMap<String, String>> map=  pp.importTariffs_barchart(dsBean, pd_obj);
+//        final Map<String, LinkedHashMap<String, String>> map= new HashMap<String, LinkedHashMap<String, String>>();
+        //        for( String key: map.keySet())
+//        {
+//            System.out.println("key "+key);
+//            if(key!=null)
+//            {
+//                Set<String> keySet2= map.get(key).keySet();
+//                for(String key2: keySet2)
+//                {
+//                    System.out.println("time key2 "+key2);
+//                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//                    Date date = df.parse(key2);
+////                    Date date = new Date(key2);
+//                    long epoch = date.getTime();
+//                    System.out.println(epoch);
+//                    System.out.println("country count key "+map.get(key).get(key2));
+//                }
+//            }
+//        }
+        /*
+        * series: [{
+                        name: '1',
+                        data: [49, 71, 106]
+                    }, {
+                        name: '2',
+                        data: [93, 106, 84]
+                    }]*/
+
+        final JDBCIterablePolicy it = new JDBCIterablePolicy();
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                JSONArray jsonArrayTot = new JSONArray();
+                int series_count = 1;
+                for( String key: map.keySet())
+                {
+                    //One obj for each policy type
+                    //writer.write("[");
+                    JSONObject jsonobj = new JSONObject();
+                    jsonobj.put("name", series_count);
+                    JSONArray jsonArray = new JSONArray();
+                    Set<String> keySet2= map.get(key).keySet();
+
+                    for(String key2: keySet2) {
+                        String percentage = map.get(key).get(key2);
+                        if((percentage!=null)&&(percentage.length()>0))
+                        {
+                            jsonArray.add(Double.parseDouble(percentage));
+                        }
+                        else{
+                            jsonArray.add(null);
+                        }
+                    }
+
+                    jsonobj.put("data", jsonArray);
+                    // writer.write("]");
+//                    writer.write("]");
+                    jsonArrayTot.add(jsonobj);
+                    series_count++;
+                }
+                writer.write(g.toJson(jsonArrayTot));
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
     //Policy at a Glance Functions End
 
     //Query and Download Functions Start
@@ -376,10 +1006,6 @@ public class POLICYDataRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/cplid/{datasource}")
     public Response getCplid(@PathParam("datasource") String datasource) throws Exception {
-
-        // compute result
-//        DATASOURCE ds = DATASOURCE.POLICY;
-//        DBBean db = new DBBean(ds);
 
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
         final JDBCIterablePolicy it =  pp.getcpl_id(dsBean);
@@ -716,28 +1342,28 @@ public class POLICYDataRestService {
                 //  Gson g = new Gson();
 //                SQLBean sql = g.fromJson(json, SQLBean.class);
 //                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
-                //   System.out.println("streamExcel 1 ");
+                   System.out.println("streamExcel 1 ");
                 POLICYDataObject pd_obj = g.fromJson(json, POLICYDataObject.class);
-//                System.out.println("streamExcel 2 ");
-//                System.out.println(" pd_obj datasource "+pd_obj.getDatasource());
-//                System.out.println(" pd_obj policy_domain_code "+pd_obj.getPolicy_domain_code());
-//                System.out.println(" pd_obj commodity_domain_code "+pd_obj.getCommodity_domain_code());
-//                System.out.println(" pd_obj commodity_class_code "+pd_obj.getCommodity_class_code());
-//                System.out.println(" pd_obj policy_type_code "+pd_obj.getPolicy_type_code());
-//                for(int i=0; i<pd_obj.getPolicy_type_code().length;i++)
-//                {
-//                    System.out.println(" pd_obj policy_type_code i "+i+" ="+pd_obj.getPolicy_type_code()[i]);
-//                }
-//                System.out.println(" pd_obj policy_measure_code "+pd_obj.getPolicy_measure_code());
-//                for(int i=0; i<pd_obj.getPolicy_measure_code().length;i++)
-//                {
-//                    System.out.println(" pd_obj policy_measure_code i "+i+" ="+pd_obj.getPolicy_measure_code()[i]);
-//                }
-//                System.out.println(" pd_obj country_code "+pd_obj.getCountry_code());
-//                System.out.println(" pd_obj yearTab "+pd_obj.getYearTab());
-//                System.out.println(" pd_obj year_list "+pd_obj.getYear_list());
-//                System.out.println(" pd_obj start_date "+pd_obj.getStart_date());
-//                System.out.println(" pd_obj end_date "+pd_obj.getEnd_date());
+                System.out.println("streamExcel 2 ");
+                System.out.println(" pd_obj datasource "+pd_obj.getDatasource());
+                System.out.println(" pd_obj policy_domain_code "+pd_obj.getPolicy_domain_code());
+                System.out.println(" pd_obj commodity_domain_code "+pd_obj.getCommodity_domain_code());
+                System.out.println(" pd_obj commodity_class_code "+pd_obj.getCommodity_class_code());
+                System.out.println(" pd_obj policy_type_code "+pd_obj.getPolicy_type_code());
+                for(int i=0; i<pd_obj.getPolicy_type_code().length;i++)
+                {
+                    System.out.println(" pd_obj policy_type_code i "+i+" ="+pd_obj.getPolicy_type_code()[i]);
+                }
+                System.out.println(" pd_obj policy_measure_code len  "+pd_obj.getPolicy_measure_code().length);
+                for(int i=0; i<pd_obj.getPolicy_measure_code().length;i++)
+                {
+                    System.out.println(" pd_obj policy_measure_code i "+i+" ="+pd_obj.getPolicy_measure_code()[i]);
+                }
+                System.out.println(" pd_obj country_code "+pd_obj.getCountry_code());
+                System.out.println(" pd_obj yearTab "+pd_obj.getYearTab());
+                System.out.println(" pd_obj year_list "+pd_obj.getYear_list());
+                System.out.println(" pd_obj start_date "+pd_obj.getStart_date());
+                System.out.println(" pd_obj end_date "+pd_obj.getEnd_date());
 
                 DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
 
@@ -770,7 +1396,13 @@ public class POLICYDataRestService {
                 //String[] headerArray = {"metadata_id","policy_id","cpl_id","country_code", "country_name", "subnational_code", "subnational_name", "commoditydomain_code", "commoditydomain_name", "commodityclass_code", "commodityclass_name", "policydomain_code", "policydomain_name", "policytype_code", "policytype_name", "policymeasure_code", "policymeasure_name", "condition","commodity_id","hs_version","hs_code","hs_suffix","commodity_description","shared_group_code","location_condition","start_date","end_date","units","value","value_text","exemptions","value_calculated","notes","link","source","title_of_notice","legal_basis_name","measure_descr","short_description","original_dataset","type_of_change_name","type_of_change_code","product_original_hs","product_original_name","policy_element","impl","second_generation_specific","imposed_end_date", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "source_benchmark", "date_of_publication", "xs_yeartype", "notes_datepub"};
 
 //                String[] headerArray = {"metadata_id","policy_id","cpl_id","cpl_code","country_code", "country_name", "subnational_code", "subnational_name", "commoditydomain_code", "commoditydomain_name", "commodityclass_code", "commodityclass_name", "policydomain_code", "policydomain_name", "policytype_code", "policytype_name", "policymeasure_code", "policymeasure_name", "condition_code", "condition", "individualpolicy_code", "individualpolicy_name", "commodity_id","hs_version","hs_code","hs_suffix", "short_description", "shared_group_code", "policy_element", "start_date","end_date", "units","value","value_text", "value_type", "exemptions", "location_condition", "notes", "link","source","title_of_notice", "legal_basis_name", "date_of_publication", "imposed_end_date", "second_generation_specific", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "benchmark_link", "original_dataset", "type_of_change_code", "type_of_change_name", "measure_descr", "product_original_hs","product_original_name", "implementationprocedure","xs_yeartype", "link_pdf", "benchmark_link_pdf"};
-                String[] headerArray = {"policy_id","cpl_id","cpl_code","country_code", "country_name", "subnational_code", "subnational_name", "commoditydomain_code", "commoditydomain_name", "commodityclass_code", "commodityclass_name", "policydomain_code", "policydomain_name", "policytype_code", "policytype_name", "policymeasure_code", "policymeasure_name", "condition_code", "condition", "individualpolicy_code", "individualpolicy_name", "commodity_id","hs_version","hs_code","hs_suffix", "short_description", "shared_group_code", "policy_element", "start_date","end_date", "units","value","value_text", "value_type", "exemptions", "location_condition", "notes", "link","source","title_of_notice", "legal_basis_name", "date_of_publication", "imposed_end_date", "second_generation_specific", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "benchmark_link", "original_dataset", "type_of_change_code", "type_of_change_name", "measure_descr", "product_original_hs","product_original_name", "implementationprocedure","xs_yeartype", "link_pdf", "benchmark_link_pdf"};
+                //Before removing policy_id
+//                String[] headerArray = {"policy_id","cpl_id","cpl_code","country_code", "country_name", "subnational_code", "subnational_name", "commoditydomain_code", "commoditydomain_name", "commodityclass_code", "commodityclass_name", "policydomain_code", "policydomain_name", "policytype_code", "policytype_name", "policymeasure_code", "policymeasure_name", "condition_code", "condition", "individualpolicy_code", "individualpolicy_name", "commodity_id","hs_version","hs_code","hs_suffix", "short_description", "shared_group_code", "policy_element", "start_date","end_date", "units","value","value_text", "value_type", "exemptions", "location_condition", "notes", "link","source","title_of_notice", "legal_basis_name", "date_of_publication", "imposed_end_date", "second_generation_specific", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "benchmark_link", "original_dataset", "type_of_change_code", "type_of_change_name", "measure_descr", "product_original_hs","product_original_name", "implementationprocedure","xs_yeartype", "link_pdf", "benchmark_link_pdf"};
+                //After removing policy_id
+                //String[] headerArray = {"cpl_id","cpl_code","country_code", "country_name", "subnational_code", "subnational_name", "commoditydomain_code", "commoditydomain_name", "commodityclass_code", "commodityclass_name", "policydomain_code", "policydomain_name", "policytype_code", "policytype_name", "policymeasure_code", "policymeasure_name", "condition_code", "condition", "individualpolicy_code", "individualpolicy_name", "commodity_id","hs_version","hs_code","hs_suffix", "short_description", "shared_group_code", "policy_element", "start_date","end_date", "units","value","value_text", "value_type", "exemptions", "location_condition", "notes", "link","source","title_of_notice", "legal_basis_name", "date_of_publication", "imposed_end_date", "second_generation_specific", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "benchmark_link", "original_dataset", "type_of_change_code", "type_of_change_name", "measure_descr", "product_original_hs","product_original_name", "implementationprocedure","xs_yeartype", "link_pdf", "benchmark_link_pdf"};
+                //New order
+                String[] headerArray = {"policy_id","cpl_id", "country_name", "subnational_name", "commoditydomain_name", "commodityclass_name", "policydomain_name", "policytype_name", "policymeasure_name", "condition", "individualpolicy_name", "commodity_id","hs_version","hs_code","hs_suffix", "short_description", "description", "shared_group_code", "policy_element", "start_date","end_date", "units","value","value_text", "value_type", "exemptions", "location_condition", "notes", "link","source","title_of_notice", "legal_basis_name", "date_of_publication", "imposed_end_date", "second_generation_specific", "benchmark_tax", "benchmark_product", "tax_rate_biofuel", "tax_rate_benchmark", "start_date_tax", "benchmark_link", "original_dataset", "type_of_change_name", "measure_descr", "product_original_hs","product_original_name", "implementationprocedure","xs_yeartype", "link_pdf", "benchmark_link_pdf","cpl_code","country_code","subnational_code","commoditydomain_code","commodityclass_code","policydomain_code","policytype_code","policymeasure_code","condition_code","individualpolicy_code","type_of_change_code"};
+
                 // write the result of the query
                 writer.write("<html><head><meta charset=\"UTF-8\"></head><body>");
 //                <html>
@@ -797,7 +1429,15 @@ public class POLICYDataRestService {
                     // System.out.println("loop it.hasNext() "+it.hasNext()+" "+l.size());
                     writer.write("<tr>");
                     for (int i = 0; i < l.size(); i++) {
-                        writer.write("<td>");
+                        if(i==16)
+                        {
+                            //Description.... no wrap
+                            writer.write("<td nowrap>");
+                        }
+                        else{
+                            writer.write("<td>");
+                        }
+                        //writer.write("<td>");
                         if((l==null)||(l.isEmpty())||(l.get(i)==null))
                         {
                             writer.write("");
@@ -1175,10 +1815,10 @@ public class POLICYDataRestService {
                 return Response.status(200).entity(stream).build();
             }
         }
-
         //It never arrives here
         return Response.status(200).entity("").build();
     }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/downloadPreviewPolicyTable")
@@ -1231,15 +1871,12 @@ public class POLICYDataRestService {
                 }
                 writer.write("]");
 
-                // Convert and write the output on the stream
+                //Convert and write the output on the stream
                 writer.flush();
             }
-
         };
         // Stream result
         return Response.status(200).entity(stream).build();
     }
     //Query and Download Functions End
-
-
 }

@@ -38,6 +38,34 @@ public class PolicyProcedures {
         return it;
     }
 
+    public JDBCIterablePolicy getDistinctcpl_id(DatasourceBean dsBean, POLICYDataObject policyDataObject, String policy_type, String policy_measure) throws Exception {
+        System.out.println("getDistinctcpl_id START");
+        JDBCIterablePolicy it = new JDBCIterablePolicy();
+        StringBuilder sb = new StringBuilder();
+//        sb.append("EXEC Warehouse.dbo.usp_GetODADonors @tablelanguage='");
+//        sb.append(lang);
+//        sb.append("' ");
+        sb.append("SELECT DISTINCT(cpl_id) FROM mastertable where country_code =" +policyDataObject.getCountry_code() +" and commodityclass_code ="+policyDataObject.getCommodity_class_code());
+        sb.append(" and policytype_code IN ("+policy_type+") and policymeasure_code IN ("+policy_measure+")");
+        System.out.println("getDistinctcpl_id sb.toString() = "+sb.toString());
+
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
+    public JDBCIterablePolicy getcountries_fromPolicy(DatasourceBean dsBean, String policyType, String policyMeasure)throws Exception {
+        System.out.println("getcountries_fromPolicy START");
+        //SELECT country_code, country_name FROM mastertable where commodityclass_code =3 and policytype_code IN (1) and policymeasure_code IN (3);
+        JDBCIterablePolicy it = new JDBCIterablePolicy();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT DISTINCT(country_code), country_name FROM mastertable where policytype_code IN ("+policyType+") and policymeasure_code IN ("+policyMeasure+") ORDER BY country_name ASC");
+
+        System.out.println(sb.toString());
+        it.query(dsBean, sb.toString());
+        return it;
+    }
+
     public JDBCIterablePolicy getpolicyAndcommodityDomain(DatasourceBean dsBean) throws Exception {
         JDBCIterablePolicy it = new JDBCIterablePolicy();
         StringBuilder sb = new StringBuilder();
@@ -96,16 +124,23 @@ public class PolicyProcedures {
     }
 
     public JDBCIterablePolicy getDownloadPreview(DatasourceBean dsBean, POLICYDataObject pd_obj, boolean with_commodity_id) throws Exception{
-        // System.out.println("getDownloadPreview start ");
+         System.out.println("getDownloadPreview start ");
 //      select DISTINCT(mastertable.cpl_id) from mastertable, policytable where mastertable.cpl_id=policytable.cpl_id AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR
 //      (policytable.end_date IS NULL AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.start_date < '05/05/2010')))) AND commoditydomain_code IN () AND policydomain_code IN () AND commodityclass_code IN () AND policytype_code IN () AND policymeasure_code IN () AND country_code IN () ORDER BY mastertable.cpl_id;
         JDBCIterablePolicy it = new JDBCIterablePolicy();
         StringBuilder sb = new StringBuilder();
         StringBuilder sbApp = new StringBuilder();
+        System.out.println("getDownloadPreview Before  policyMeasuresCodesArray");
         String policyMeasuresCodesArray[] = pd_obj.getPolicy_measure_code();
+        System.out.println("getDownloadPreview start "+policyMeasuresCodesArray.length);
+        for(int i=0; i< policyMeasuresCodesArray.length; i++)
+        {
+            System.out.println("getDownloadPreview policyMeasuresCodesArray[i] "+policyMeasuresCodesArray[i]);
+        }
         boolean unique = true;
         if((policyMeasuresCodesArray!=null)&&(policyMeasuresCodesArray.length>0))
         {
+            System.out.println("getDownloadPreview policyMeasuresCodesArray !=null");
             int unionCount = 0;
             for(int i=0; i<policyMeasuresCodesArray.length;i++)
             {
@@ -146,13 +181,16 @@ public class PolicyProcedures {
                 }
             }
             // System.out.println("unique "+unique);
-            //   System.out.println("getDownloadPreview sb "+sb.toString());
+               System.out.println("getDownloadPreview sb "+sb.toString());
         }
+        System.out.println("getDownloadPreview Before return ");
         it.query(dsBean, sb.toString());
+        System.out.println("getDownloadPreview Before return 2");
         return it;
     }
 
     public StringBuilder getCplId_downloadPreview(POLICYDataObject pd_obj, String policy_type_code, String policy_measure_code, boolean with_commodity_id){
+        System.out.println("getCplId_downloadPreview start ");
         StringBuilder sb = new StringBuilder();
         if(with_commodity_id)
         {
@@ -201,6 +239,7 @@ public class PolicyProcedures {
         }
         sb.append(" ORDER BY mastertable.cpl_id ASC");
 
+        System.out.println("getCplId_downloadPreview end  "+sb);
         return sb;
     }
 
@@ -350,7 +389,7 @@ public class PolicyProcedures {
     }
 
     public JDBCIterablePolicy getDownloadExport(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
-        //System.out.println("getDownloadExport start ");
+        System.out.println("getDownloadExport start ");
 //      select DISTINCT(mastertable.cpl_id) from mastertable, policytable where mastertable.cpl_id=policytable.cpl_id AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR
 //      (policytable.end_date IS NULL AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.start_date < '05/05/2010')))) AND commoditydomain_code IN () AND policydomain_code IN () AND commodityclass_code IN () AND policytype_code IN () AND policymeasure_code IN () AND country_code IN () ORDER BY mastertable.cpl_id;
         JDBCIterablePolicy it = new JDBCIterablePolicy();
@@ -359,7 +398,9 @@ public class PolicyProcedures {
         //StringBuilder sbCplId = getDistinctCplId_fromMaster(pd_obj);
         StringBuilder total = new StringBuilder();
         boolean with_commodity_id = true;
+        System.out.println(" getDownloadExport with_commodity_id "+with_commodity_id);
         JDBCIterablePolicy itCplId = getDownloadPreview(dsBean, pd_obj, with_commodity_id);
+        System.out.println(" getDownloadExport after getDownloadPreview ");
         String s_cpl_id="";
         String s_commodity_id="";
         //To avoid duplicates
@@ -416,7 +457,7 @@ public class PolicyProcedures {
     ON Orders.CustomerID=Customers.CustomerID;*/
 
         total.append("SELECT "+getSelectForJoinMasterPolicyTable_fromMaster()+" FROM ("+sbPolicyWithTime.toString()+") sbPolicy JOIN mastertable ON sbPolicy.cpl_id = mastertable.cpl_id ORDER BY sbPolicy.policy_element, sbPolicy.start_date, sbPolicy.exemptions ASC");
-        // System.out.println("getDownloadExport "+total.toString());
+         System.out.println("getDownloadExport "+total.toString());
         it.query(dsBean, total.toString());
         return it;
     }
@@ -849,7 +890,35 @@ public class PolicyProcedures {
 //With Metadata id
 //        select.append("sbPolicy.metadata_id, sbPolicy.policy_id, mastertable.cpl_id, mastertable.cpl_code, mastertable.country_code, mastertable.country_name, mastertable.subnational_code, mastertable.subnational_name, mastertable.commoditydomain_code, mastertable.commoditydomain_name, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policydomain_code, mastertable.policydomain_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.condition_code, mastertable.condition, mastertable.individualpolicy_code, mastertable.individualpolicy_name, sbPolicy.commodity_id, sbPolicy.hs_version, sbPolicy.hs_code, sbPolicy.hs_suffix, sbPolicy.short_description, sbPolicy.shared_group_code, sbPolicy.policy_element, EXTRACT(day FROM sbPolicy.start_date) || '/' || EXTRACT(month FROM sbPolicy.start_date) || '/' || EXTRACT(year FROM sbPolicy.start_date), EXTRACT(day FROM sbPolicy.end_date) || '/' || EXTRACT(month FROM sbPolicy.end_date) || '/' || EXTRACT(year FROM sbPolicy.end_date), sbPolicy.units, sbPolicy.value, sbPolicy.value_text, sbPolicy.value_type, sbPolicy.exemptions, sbPolicy.location_condition, sbPolicy.notes, sbPolicy.link, sbPolicy.source, sbPolicy.title_of_notice, sbPolicy.legal_basis_name, EXTRACT(day FROM sbPolicy.date_of_publication) || '/' || EXTRACT(month FROM sbPolicy.date_of_publication) || '/' || EXTRACT(year FROM sbPolicy.date_of_publication), imposed_end_date, sbPolicy.second_generation_specific, sbPolicy.benchmark_tax, sbPolicy.benchmark_product, sbPolicy.tax_rate_biofuel, sbPolicy.tax_rate_benchmark, sbPolicy.start_date_tax, sbPolicy.benchmark_link, sbPolicy.original_dataset, sbPolicy.type_of_change_code, sbPolicy.type_of_change_name, sbPolicy.measure_descr, sbPolicy.product_original_hs, sbPolicy.product_original_name, sbPolicy.implementationprocedure, sbPolicy.xs_yeartype, sbPolicy.link_pdf, sbPolicy.benchmark_link_pdf ");
 //Without Metadata id
-        select.append("sbPolicy.policy_id, mastertable.cpl_id, mastertable.cpl_code, mastertable.country_code, mastertable.country_name, mastertable.subnational_code, mastertable.subnational_name, mastertable.commoditydomain_code, mastertable.commoditydomain_name, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policydomain_code, mastertable.policydomain_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.condition_code, mastertable.condition, mastertable.individualpolicy_code, mastertable.individualpolicy_name, sbPolicy.commodity_id, sbPolicy.hs_version, sbPolicy.hs_code, sbPolicy.hs_suffix, sbPolicy.short_description, sbPolicy.shared_group_code, sbPolicy.policy_element, EXTRACT(day FROM sbPolicy.start_date) || '/' || EXTRACT(month FROM sbPolicy.start_date) || '/' || EXTRACT(year FROM sbPolicy.start_date), EXTRACT(day FROM sbPolicy.end_date) || '/' || EXTRACT(month FROM sbPolicy.end_date) || '/' || EXTRACT(year FROM sbPolicy.end_date), sbPolicy.units, sbPolicy.value, sbPolicy.value_text, sbPolicy.value_type, sbPolicy.exemptions, sbPolicy.location_condition, sbPolicy.notes, sbPolicy.link, sbPolicy.source, sbPolicy.title_of_notice, sbPolicy.legal_basis_name, EXTRACT(day FROM sbPolicy.date_of_publication) || '/' || EXTRACT(month FROM sbPolicy.date_of_publication) || '/' || EXTRACT(year FROM sbPolicy.date_of_publication), imposed_end_date, sbPolicy.second_generation_specific, sbPolicy.benchmark_tax, sbPolicy.benchmark_product, sbPolicy.tax_rate_biofuel, sbPolicy.tax_rate_benchmark, sbPolicy.start_date_tax, sbPolicy.benchmark_link, sbPolicy.original_dataset, sbPolicy.type_of_change_code, sbPolicy.type_of_change_name, sbPolicy.measure_descr, sbPolicy.product_original_hs, sbPolicy.product_original_name, sbPolicy.implementationprocedure, sbPolicy.xs_yeartype, sbPolicy.link_pdf, sbPolicy.benchmark_link_pdf ");
+        //Before removing policy_id
+//        select.append("sbPolicy.policy_id, mastertable.cpl_id, mastertable.cpl_code, mastertable.country_code, mastertable.country_name, mastertable.subnational_code, mastertable.subnational_name, mastertable.commoditydomain_code, mastertable.commoditydomain_name, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policydomain_code, mastertable.policydomain_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.condition_code, mastertable.condition, mastertable.individualpolicy_code, mastertable.individualpolicy_name, sbPolicy.commodity_id, sbPolicy.hs_version, sbPolicy.hs_code, sbPolicy.hs_suffix, sbPolicy.short_description, sbPolicy.shared_group_code, sbPolicy.policy_element, EXTRACT(day FROM sbPolicy.start_date) || '/' || EXTRACT(month FROM sbPolicy.start_date) || '/' || EXTRACT(year FROM sbPolicy.start_date), EXTRACT(day FROM sbPolicy.end_date) || '/' || EXTRACT(month FROM sbPolicy.end_date) || '/' || EXTRACT(year FROM sbPolicy.end_date), sbPolicy.units, sbPolicy.value, sbPolicy.value_text, sbPolicy.value_type, sbPolicy.exemptions, sbPolicy.location_condition, sbPolicy.notes, sbPolicy.link, sbPolicy.source, sbPolicy.title_of_notice, sbPolicy.legal_basis_name, EXTRACT(day FROM sbPolicy.date_of_publication) || '/' || EXTRACT(month FROM sbPolicy.date_of_publication) || '/' || EXTRACT(year FROM sbPolicy.date_of_publication), imposed_end_date, sbPolicy.second_generation_specific, sbPolicy.benchmark_tax, sbPolicy.benchmark_product, sbPolicy.tax_rate_biofuel, sbPolicy.tax_rate_benchmark, sbPolicy.start_date_tax, sbPolicy.benchmark_link, sbPolicy.original_dataset, sbPolicy.type_of_change_code, sbPolicy.type_of_change_name, sbPolicy.measure_descr, sbPolicy.product_original_hs, sbPolicy.product_original_name, sbPolicy.implementationprocedure, sbPolicy.xs_yeartype, sbPolicy.link_pdf, sbPolicy.benchmark_link_pdf ");
+        //After removing policy_id
+        //select.append("mastertable.cpl_id, mastertable.cpl_code, mastertable.country_code, mastertable.country_name, mastertable.subnational_code, mastertable.subnational_name, mastertable.commoditydomain_code, mastertable.commoditydomain_name, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policydomain_code, mastertable.policydomain_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.condition_code, mastertable.condition, mastertable.individualpolicy_code, mastertable.individualpolicy_name, sbPolicy.commodity_id, sbPolicy.hs_version, sbPolicy.hs_code, sbPolicy.hs_suffix, sbPolicy.short_description, sbPolicy.shared_group_code, sbPolicy.policy_element, EXTRACT(day FROM sbPolicy.start_date) || '/' || EXTRACT(month FROM sbPolicy.start_date) || '/' || EXTRACT(year FROM sbPolicy.start_date), EXTRACT(day FROM sbPolicy.end_date) || '/' || EXTRACT(month FROM sbPolicy.end_date) || '/' || EXTRACT(year FROM sbPolicy.end_date), sbPolicy.units, sbPolicy.value, sbPolicy.value_text, sbPolicy.value_type, sbPolicy.exemptions, sbPolicy.location_condition, sbPolicy.notes, sbPolicy.link, sbPolicy.source, sbPolicy.title_of_notice, sbPolicy.legal_basis_name, EXTRACT(day FROM sbPolicy.date_of_publication) || '/' || EXTRACT(month FROM sbPolicy.date_of_publication) || '/' || EXTRACT(year FROM sbPolicy.date_of_publication), imposed_end_date, sbPolicy.second_generation_specific, sbPolicy.benchmark_tax, sbPolicy.benchmark_product, sbPolicy.tax_rate_biofuel, sbPolicy.tax_rate_benchmark, sbPolicy.start_date_tax, sbPolicy.benchmark_link, sbPolicy.original_dataset, sbPolicy.type_of_change_code, sbPolicy.type_of_change_name, sbPolicy.measure_descr, sbPolicy.product_original_hs, sbPolicy.product_original_name, sbPolicy.implementationprocedure, sbPolicy.xs_yeartype, sbPolicy.link_pdf, sbPolicy.benchmark_link_pdf ");
+//
+//        ·         cpl_code
+//
+//        ·         country_code
+//
+//        ·         subnational_code
+//
+//        ·         commoditydomain_code
+//
+//        ·         commodityclass_code
+//
+//        ·         policydomain_code
+//
+//        ·         policytype_code
+//
+//        ·         policymeasure_code
+//
+//        ·         condition_code
+//
+//        ·         individualpolicy_code
+//
+//        ·         type_of_change_code
+
+        //New order
+        select.append("sbPolicy.policy_id, mastertable.cpl_id, mastertable.country_name, mastertable.subnational_name, mastertable.commoditydomain_name, mastertable.commodityclass_name, mastertable.policydomain_name, mastertable.policytype_name, mastertable.policymeasure_name, mastertable.condition, mastertable.individualpolicy_name, sbPolicy.commodity_id, sbPolicy.hs_version, sbPolicy.hs_code, sbPolicy.hs_suffix, sbPolicy.short_description, sbPolicy.description, sbPolicy.shared_group_code, sbPolicy.policy_element, EXTRACT(day FROM sbPolicy.start_date) || '/' || EXTRACT(month FROM sbPolicy.start_date) || '/' || EXTRACT(year FROM sbPolicy.start_date), EXTRACT(day FROM sbPolicy.end_date) || '/' || EXTRACT(month FROM sbPolicy.end_date) || '/' || EXTRACT(year FROM sbPolicy.end_date), sbPolicy.units, sbPolicy.value, sbPolicy.value_text, sbPolicy.value_type, sbPolicy.exemptions, sbPolicy.location_condition, sbPolicy.notes, sbPolicy.link, sbPolicy.source, sbPolicy.title_of_notice, sbPolicy.legal_basis_name, EXTRACT(day FROM sbPolicy.date_of_publication) || '/' || EXTRACT(month FROM sbPolicy.date_of_publication) || '/' || EXTRACT(year FROM sbPolicy.date_of_publication), imposed_end_date, sbPolicy.second_generation_specific, sbPolicy.benchmark_tax, sbPolicy.benchmark_product, sbPolicy.tax_rate_biofuel, sbPolicy.tax_rate_benchmark, sbPolicy.start_date_tax, sbPolicy.benchmark_link, sbPolicy.original_dataset, sbPolicy.type_of_change_name, sbPolicy.measure_descr, sbPolicy.product_original_hs, sbPolicy.product_original_name, sbPolicy.implementationprocedure, sbPolicy.xs_yeartype, sbPolicy.link_pdf, sbPolicy.benchmark_link_pdf,mastertable.cpl_code, mastertable.country_code, mastertable.subnational_code, mastertable.commoditydomain_code, mastertable.commodityclass_code, mastertable.policydomain_code, mastertable.policytype_code, mastertable.policymeasure_code, mastertable.condition_code, mastertable.individualpolicy_code, sbPolicy.type_of_change_code");
         return select;
     }
 
@@ -858,7 +927,7 @@ public class PolicyProcedures {
 //      select DISTINCT(mastertable.cpl_id) from mastertable, policytable where mastertable.cpl_id=policytable.cpl_id AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR
 //      (policytable.end_date IS NULL AND ((policytable.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policytable.start_date < '05/05/2010')))) AND commoditydomain_code IN () AND policydomain_code IN () AND commodityclass_code IN () AND policytype_code IN () AND policymeasure_code IN () AND country_code IN () ORDER BY mastertable.cpl_id;
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT policytable.metadata_id, policytable.policy_id, policytable.cpl_id, policytable.commodity_id, commlistwithid.hs_code, commlistwithid.hs_suffix, commlistwithid.hs_version, commlistwithid.short_description, commlistwithid.shared_group_code, policytable.policy_element, policytable.start_date, policytable.end_date, policytable.units, policytable.value, policytable.value_text, policytable.value_type, policytable.exemptions, policytable.location_condition, policytable.notes, policytable.link, policytable.source, policytable.title_of_notice, policytable.legal_basis_name, policytable.date_of_publication, policytable.imposed_end_date, policytable.second_generation_specific, policytable.benchmark_tax, policytable.benchmark_product, policytable.tax_rate_biofuel, policytable.tax_rate_benchmark, policytable.start_date_tax, policytable.benchmark_link, policytable.original_dataset, policytable.type_of_change_code, policytable.type_of_change_name, policytable.measure_descr, policytable.product_original_hs, policytable.product_original_name, policytable.implementationprocedure, policytable.xs_yeartype, policytable.link_pdf, policytable.benchmark_link_pdf ");
+        sb.append("SELECT policytable.metadata_id, policytable.policy_id, policytable.cpl_id, policytable.commodity_id, commlistwithid.hs_code, commlistwithid.hs_suffix, commlistwithid.hs_version, commlistwithid.short_description, commlistwithid.description, commlistwithid.shared_group_code, policytable.policy_element, policytable.start_date, policytable.end_date, policytable.units, policytable.value, policytable.value_text, policytable.value_type, policytable.exemptions, policytable.location_condition, policytable.notes, policytable.link, policytable.source, policytable.title_of_notice, policytable.legal_basis_name, policytable.date_of_publication, policytable.imposed_end_date, policytable.second_generation_specific, policytable.benchmark_tax, policytable.benchmark_product, policytable.tax_rate_biofuel, policytable.tax_rate_benchmark, policytable.start_date_tax, policytable.benchmark_link, policytable.original_dataset, policytable.type_of_change_code, policytable.type_of_change_name, policytable.measure_descr, policytable.product_original_hs, policytable.product_original_name, policytable.implementationprocedure, policytable.xs_yeartype, policytable.link_pdf, policytable.benchmark_link_pdf ");
         sb.append("from policytable, commlistwithid where cpl_id IN ("+sbCplId+") AND commlistwithid.commodity_id IN ("+sCommodityId+") AND policytable.commodity_id=commlistwithid.commodity_id ");
         if(pd_obj.getYearTab().equals("classic"))
         {
@@ -886,7 +955,7 @@ public class PolicyProcedures {
         for(int i=0; i<policy_type_code_array.length; i++)
         {
             String single_policy_type = policy_type_code_array[i];
-            StringBuilder timeSeries_query = getStringQueryBiofuelPolicies_TimeSeries(pd_obj, single_policy_type);
+            StringBuilder timeSeries_query = getStringQueryBiofuelPolicyTypes_TimeSeries(pd_obj, single_policy_type);
 
             final JDBCIterablePolicy it =  new JDBCIterablePolicy();
             it.query(dsBean, timeSeries_query.toString());
@@ -920,7 +989,146 @@ public class PolicyProcedures {
         return pt_map;
     }
 
-    public StringBuilder getStringQueryBiofuelPolicies_TimeSeries(POLICYDataObject pd_obj, String single_policy_type) throws Exception{
+    public Map<String, LinkedHashMap<String, String>> biofuelPolicyMeasures_timeSeries(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
+        // System.out.println("biofuelPolicies_timeSeries start ");
+        Map<String, LinkedHashMap<String, String>> pt_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+        String policy_type_code_array[]= pd_obj.getPolicy_type_code();
+        String single_policy_type = policy_type_code_array[0];
+        String policy_meaure_code_array[]= pd_obj.getPolicy_measure_code();
+        for(int i=0; i<policy_meaure_code_array.length; i++)
+        {
+            String single_policy_measure = policy_meaure_code_array[i];
+            StringBuilder timeSeries_query = getStringQueryBiofuelPolicyMeasures_TimeSeries(pd_obj, single_policy_type, single_policy_measure);
+
+            final JDBCIterablePolicy it =  new JDBCIterablePolicy();
+            it.query(dsBean, timeSeries_query.toString());
+            //it.closeConnection();
+            LinkedHashMap<String, String> countryCount_map = new LinkedHashMap<String, String>();
+            while(it.hasNext()) {
+                //[2006-01-01, India]
+                //System.out.println(it.next());
+                String time_country = it.next().toString();
+                String time = time_country.substring(1, time_country.indexOf(','));
+                // System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time );
+                if(countryCount_map.containsKey(time))
+                {
+                    String country_cont= countryCount_map.get(time);
+                    Integer count = Integer.parseInt(country_cont);
+                    count++;
+                    countryCount_map.put(time, ""+count);
+//                    System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time+" count "+countryCount_map.get(time) );
+                    //countryCount_map.get(time).
+                }
+                else
+                {
+                    countryCount_map.put(time, "1");
+
+                }
+                // System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time+" count "+countryCount_map.get(time) );
+            }
+            pt_map.put(policy_meaure_code_array[i], countryCount_map);
+        }
+
+        return pt_map;
+    }
+
+    public Map<String, LinkedHashMap<String, String>> exportRestrictionsPolicyMeasures_timeSeries(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
+        // System.out.println("biofuelPolicies_timeSeries start ");
+        Map<String, LinkedHashMap<String, String>> pt_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+        String policy_type_code_array[]= pd_obj.getPolicy_type_code();
+        String single_policy_type = policy_type_code_array[0];
+        String policy_meaure_code_array[]= pd_obj.getPolicy_measure_code();
+        for(int i=0; i<policy_meaure_code_array.length; i++)
+        {
+            String single_policy_measure = policy_meaure_code_array[i];
+            StringBuilder timeSeries_query = getStringQueryExportRestrictionsPolicyMeasures_TimeSeries(pd_obj, single_policy_type, single_policy_measure);
+
+            final JDBCIterablePolicy it =  new JDBCIterablePolicy();
+            it.query(dsBean, timeSeries_query.toString());
+            //it.closeConnection();
+            LinkedHashMap<String, String> countryCount_map = new LinkedHashMap<String, String>();
+            while(it.hasNext()) {
+                //[2006-01-01, India]
+                //System.out.println(it.next());
+                String time_country = it.next().toString();
+                String time = time_country.substring(1, time_country.indexOf(','));
+                // System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time );
+                if(countryCount_map.containsKey(time))
+                {
+                    String country_cont= countryCount_map.get(time);
+                    Integer count = Integer.parseInt(country_cont);
+                    count++;
+                    countryCount_map.put(time, ""+count);
+//                    System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time+" count "+countryCount_map.get(time) );
+                    //countryCount_map.get(time).
+                }
+                else
+                {
+                    countryCount_map.put(time, "1");
+
+                }
+                // System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time+" count "+countryCount_map.get(time) );
+            }
+            pt_map.put(policy_meaure_code_array[i], countryCount_map);
+        }
+
+        return pt_map;
+    }
+
+    public Map<String, LinkedHashMap<String, String>> exportSubsidiesPolicyMeasures_timeSeries(DatasourceBean dsBean, POLICYDataObject pd_obj, String cpl_id) throws Exception{
+         System.out.println("biofuelPolicies_timeSeries start ");
+        String start_date = pd_obj.getStart_date();
+        System.out.println("start_date="+start_date);
+        //1995-01-01
+//        int year_index = start_date.lastIndexOf('/');
+//        String year = start_date.substring(year_index+1);
+        String year = start_date.substring(0,4);
+        Integer start_year_integer = Integer.parseInt(year);
+        System.out.println("biofuelPolicies_timeSeries start_year_integer= "+start_year_integer);
+        String end_date = pd_obj.getEnd_date();
+//        year_index = end_date.lastIndexOf('/');
+//        year = end_date.substring(year_index+1);
+        year = end_date.substring(0,4);
+        Integer end_year_integer = Integer.parseInt(year);
+        System.out.println("biofuelPolicies_timeSeries end_year_integer= "+end_year_integer);
+
+        Map<String, LinkedHashMap<String, String>> pelem_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+
+        String policy_element_array[]= pd_obj.getPolicy_element();
+        System.out.println("policy_element_array= "+policy_element_array);
+        System.out.println(policy_element_array);
+       // String policy_element_array[]= null;
+
+        for(int i=0; i<policy_element_array.length; i++)
+        {
+            String single_policy_element = "'"+policy_element_array[i]+"'";
+            System.out.println("single_policy_element= "+single_policy_element);
+            StringBuilder timeSeries_query = getStringQueryExportSubsidiesPolicyMeasures_TimeSeries(pd_obj, cpl_id, single_policy_element);
+
+            final JDBCIterablePolicy it =  new JDBCIterablePolicy();
+            it.query(dsBean, timeSeries_query.toString());
+            //it.closeConnection();
+            LinkedHashMap<String, String> policyElementValue_map = new LinkedHashMap<String, String>();
+            for(int j=start_year_integer; j<=end_year_integer; j++)
+            {
+                policyElementValue_map.put(""+j,"");
+            }
+            while(it.hasNext()) {
+                //[1995, 2238378.1]
+                //System.out.println(it.next());
+                String time_policyElem = it.next().toString();
+                String time = time_policyElem.substring(1, time_policyElem.indexOf(','));
+                String value = time_policyElem.substring(time_policyElem.indexOf(',')+1, time_policyElem.length()-1);
+                // System.out.println("single_policy_type "+single_policy_type+" time_country= "+time_country + " time "+time );
+                policyElementValue_map.put(time,value);
+            }
+            pelem_map.put(policy_element_array[i], policyElementValue_map);
+        }
+
+        return pelem_map;
+    }
+
+    public StringBuilder getStringQueryBiofuelPolicyTypes_TimeSeries(POLICYDataObject pd_obj, String single_policy_type) throws Exception{
 
         //select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=6 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday limit 50;
         //select a.byday, a.country_name from (select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=9 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday)a GROUP BY a.byday, a.country_name order by a.byday limit 20;
@@ -928,18 +1136,110 @@ public class PolicyProcedures {
         String end_date = pd_obj.getEnd_date();
         StringBuilder sb = new StringBuilder();
         sb.append("select a.byday, a.country_name from (");
-        sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        //sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name");
+//        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name");
+//        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM') AS byday, tot.country_name");
+//        sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN '2024-12-31' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        start_date = "2003-01-01";
+//        end_date = "2020-12-31";
+        end_date = "2024-12-31";
+        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN '"+end_date+"' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
         sb.append(" from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable");
         sb.append(" JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy");
-        sb.append(" ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") AND ");
+        sb.append(" ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+")");
 //        sb.append(" ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
-        sb.append(" ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.start_date < '"+start_date+"'))))) tot ");
+        sb.append(") tot ");
         sb.append(" where tot.policytype_code= "+single_policy_type+" GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday ASC");
         sb.append(")a GROUP BY a.byday, a.country_name order by a.byday ASC");
-        // System.out.println("getStringQueryBiofuelPolicies_TimeSeries sb "+sb.toString());
+        //System.out.println("getStringQueryBiofuelPolicies_TimeSeries sb "+sb.toString());
 
         return sb;
     }
+
+    public StringBuilder getStringQueryBiofuelPolicyMeasures_TimeSeries(POLICYDataObject pd_obj, String single_policy_type, String single_policy_measure) throws Exception{
+
+        //select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=6 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday limit 50;
+        //select a.byday, a.country_name from (select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=9 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday)a GROUP BY a.byday, a.country_name order by a.byday limit 20;
+        String start_date = pd_obj.getStart_date();
+        String end_date = pd_obj.getEnd_date();
+        StringBuilder sb = new StringBuilder();
+        start_date = "2003-01-01";
+        //end_date = "2020-12-31";
+        end_date = "2024-12-31";
+        sb.append("select a.byday, a.country_name from (");
+//        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        //sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN '2024-12-31' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN '"+end_date+"' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        sb.append(" from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable");
+        sb.append(" JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy");
+        sb.append(" ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+")");
+//        sb.append(" ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
+        sb.append(") tot ");
+        sb.append(" where tot.policytype_code= "+single_policy_type+" and tot.policymeasure_code= "+single_policy_measure+" GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.policymeasure_code, tot.policymeasure_name, tot.country_code, tot.country_name, byday ORDER BY byday ASC");
+        sb.append(")a GROUP BY a.byday, a.country_name order by a.byday ASC");
+        System.out.println("getStringQueryBiofuelPolicyMeasures_TimeSeries sb "+sb.toString());
+
+        return sb;
+    }
+
+    //(pd_obj, cpl_id, single_policy_element)
+    public StringBuilder getStringQueryExportSubsidiesPolicyMeasures_TimeSeries(POLICYDataObject pd_obj, String cpl_id, String single_policy_element) throws Exception{
+        System.out.println("getStringQueryExportSubsidiesPolicyMeasures_TimeSeries start");
+        StringBuilder sb = new StringBuilder();
+        sb.append("select EXTRACT(year FROM start_date) AS year_label, SUM(CAST (value AS FLOAT)) from policytable where cpl_id IN("+cpl_id+") and (EXTRACT(year FROM start_date)>=1995 and EXTRACT(year FROM start_date)<=2011) and policy_element ="+single_policy_element+" GROUP BY year_label ORDER BY year_label ASC;");
+        System.out.println("getStringQueryExportSubsidiesPolicyMeasures_TimeSeries end");
+        System.out.println("sb = "+sb.toString());
+        return sb;
+    }
+
+    public StringBuilder getStringQueryExportRestrictionsPolicyMeasures_TimeSeries(POLICYDataObject pd_obj, String single_policy_type, String single_policy_measure) throws Exception{
+
+        //select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=6 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday limit 50;
+        //select a.byday, a.country_name from (select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=9 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday)a GROUP BY a.byday, a.country_name order by a.byday limit 20;
+        String start_date = pd_obj.getStart_date();
+        String end_date = pd_obj.getEnd_date();
+        StringBuilder sb = new StringBuilder();
+        sb.append("select a.byday, a.country_name from (");
+        start_date = "2006-01-01";
+//        end_date = "2014-12-31";
+        end_date = "2024-12-31";
+//        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        //sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN '2024-12-31' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        sb.append("select to_char(generate_series('"+start_date+"'::timestamp, CASE WHEN tot.end_date IS NULL THEN '"+end_date+"' ELSE tot.end_date END, interval '1 mon'), 'YYYY-MM-DD') AS byday, tot.country_name");
+        sb.append(" from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date, policy.value_text from mastertable");
+        sb.append(" JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date, policytable.value_text from policytable)policy");
+        sb.append(" ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+")");
+//        sb.append(" ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
+        sb.append(") tot ");
+        sb.append(" where tot.policytype_code= "+single_policy_type+" and tot.policymeasure_code= "+single_policy_measure+" and (tot.value_text<>'elim' OR tot.value_text IS NULL) GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.policymeasure_code, tot.policymeasure_name, tot.country_code, tot.country_name, byday ORDER BY byday ASC");
+        sb.append(")a GROUP BY a.byday, a.country_name order by a.byday ASC");
+        //System.out.println("getStringQueryExportRestrictionsPolicyMeasures_TimeSeries sb "+sb.toString());
+
+        return sb;
+    }
+
+    //Old with Start and End Date Start
+//    public StringBuilder getStringQueryBiofuelPolicies_TimeSeries(POLICYDataObject pd_obj, String single_policy_type) throws Exception{
+//
+//        //select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=6 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday limit 50;
+//        //select a.byday, a.country_name from (select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=9 GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday)a GROUP BY a.byday, a.country_name order by a.byday limit 20;
+//        String start_date = pd_obj.getStart_date();
+//        String end_date = pd_obj.getEnd_date();
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("select a.byday, a.country_name from (");
+//        sb.append("select to_char(generate_series(tot.start_date::timestamp, CASE WHEN tot.end_date IS NULL THEN CURRENT_DATE ELSE tot.end_date END, '1 DAY'), 'YYYY-MM-DD') AS byday, tot.country_name");
+//        sb.append(" from (select mastertable.cpl_id, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable");
+//        sb.append(" JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy");
+//        sb.append(" ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") AND ");
+////        sb.append(" ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
+//        sb.append(" ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.start_date < '"+start_date+"'))))) tot ");
+//        sb.append(" where tot.policytype_code= "+single_policy_type+" GROUP BY tot.cpl_id, tot.policytype_code, tot.policytype_name, tot.country_code, tot.country_name, byday ORDER BY byday ASC");
+//        sb.append(")a GROUP BY a.byday, a.country_name order by a.byday ASC");
+//        System.out.println("getStringQueryBiofuelPolicies_TimeSeries sb "+sb.toString());
+//
+//        return sb;
+//    }
+    //Old with Start and End Date End
 
     public JDBCIterablePolicy getpolicyTypes_fromPolicyDomain(DatasourceBean dsBean, String commodityDomainCodes) throws Exception {
         //select DISTINCT(policytype_code), policytype_name from mastertable where commoditydomain_code = 2 order by policytype_code;
@@ -953,18 +1253,18 @@ public class PolicyProcedures {
 
     public Map<String, LinkedHashMap<String, String>> biofuelPolicies_barchart(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
         String commodity_class_code_array[]= pd_obj.getCommodity_class_code().split(",");
-        //System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code()+" commodity_class_code_array "+commodity_class_code_array);
+        System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code()+" commodity_class_code_array "+commodity_class_code_array);
         String policy_type_code_array[]= pd_obj.getPolicy_type_code();
         Map<String, LinkedHashMap<String, String>> pt_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
         for(int i=0; i<policy_type_code_array.length; i++)
         {
             String single_policy_type = policy_type_code_array[i];
-            //System.out.println("single_policy_type "+single_policy_type);
+            System.out.println("single_policy_type "+single_policy_type);
             LinkedHashMap<String, String> countryCount_map = new LinkedHashMap<String, String>();
             for(int j=0; j<commodity_class_code_array.length; j++)
             {
                 String single_commodity_class = commodity_class_code_array[j];
-                StringBuilder barchart_query = getStringQueryBiofuelPolicies_barchart(pd_obj, single_policy_type, single_commodity_class);
+                StringBuilder barchart_query = getStringQueryBiofuelPolicyTypes_barchart(pd_obj, single_policy_type, single_commodity_class);
 
                 final JDBCIterablePolicy it =  new JDBCIterablePolicy();
                 it.query(dsBean, barchart_query.toString());
@@ -978,16 +1278,174 @@ public class PolicyProcedures {
                     country_count = next.substring(1,lastsquare);
                 }
                 //It will have three values
-                //System.out.println("single_commodity_class "+single_commodity_class+" country_count "+country_count);
+                System.out.println("single_commodity_class "+single_commodity_class+" country_count "+country_count);
                 countryCount_map.put(single_commodity_class, country_count);
             }
             pt_map.put(single_policy_type, countryCount_map);
+        }
+        return pt_map;
+    }
+
+    public Map<String, LinkedHashMap<String, String>> biofuelMeasures_barchart(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
+        String commodity_class_code_array[]= pd_obj.getCommodity_class_code().split(",");
+        //System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code()+" commodity_class_code_array "+commodity_class_code_array);
+        String policy_type_code_array[]= pd_obj.getPolicy_type_code();
+        String policy_measures_code_array[]= pd_obj.getPolicy_measure_code();
+        //The request is for all the Policy Measures of a specific Policy Type
+        String single_policy_type = policy_type_code_array[0];
+        Map<String, LinkedHashMap<String, String>> pt_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+        for(int i=0; i<policy_measures_code_array.length; i++)
+        {
+            //System.out.println("single_policy_type "+single_policy_type);
+            String single_policy_measure = policy_measures_code_array[i];
+            LinkedHashMap<String, String> countryCount_map = new LinkedHashMap<String, String>();
+            for(int j=0; j<commodity_class_code_array.length; j++)
+            {
+                String single_commodity_class = commodity_class_code_array[j];
+                StringBuilder barchart_query = getStringQueryBiofuelPolicyMeasures_barchart(pd_obj, single_policy_type, single_policy_measure, single_commodity_class);
+
+                final JDBCIterablePolicy it =  new JDBCIterablePolicy();
+                it.query(dsBean, barchart_query.toString());
+                //Counter for the country
+                String country_count = "0";
+                //Return one value that is the number of country
+                while(it.hasNext()) {
+                    //[8] -> 8
+                    String next = it.next().toString();
+                    int lastsquare = next.lastIndexOf("]");
+                    country_count = next.substring(1,lastsquare);
+                    //System.out.println("country_count "+country_count);
+                }
+                //It will have three values
+                //System.out.println("single_commodity_class "+single_commodity_class+" country_count "+country_count);
+                countryCount_map.put(single_commodity_class, country_count);
+            }
+            pt_map.put(single_policy_measure, countryCount_map);
         }
 
         return pt_map;
     }
 
-    public StringBuilder getStringQueryBiofuelPolicies_barchart(POLICYDataObject pd_obj, String single_policy_type, String single_commodity_class) throws Exception{
+    public Map<String, LinkedHashMap<String, String>> importTariffs_barchart(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
+        String commodity_class_code_array[]= pd_obj.getCommodity_class_code().split(",");
+        //System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code()+" commodity_class_code_array "+commodity_class_code_array);
+        String policy_type_code_array[]= pd_obj.getPolicy_type_code();
+        String policy_measures_code_array[]= pd_obj.getPolicy_measure_code();
+        String policy_element[]= pd_obj.getPolicy_element();
+        String year_list= pd_obj.getYear_list();
+        String year_list_array[]= year_list.split(",");
+        String year_list_string = "";
+        for(int iYear = 0; iYear<year_list_array.length; iYear++)
+        {
+            year_list_string += "'"+year_list_array[iYear]+"-01-01',";
+        }
+
+        if(year_list.length()>0)
+        {
+            year_list_string = year_list_string.substring(0,year_list_string.length()-1);
+        }
+        //'Final bound tariff' and 'MFN applied tariff'
+
+        boolean min = pd_obj.getChartType();
+        String chart_type = "fbt";
+        StringBuilder barchart_query_fbt = getStringQueryImportTariffs_barchart(pd_obj, min, chart_type, policy_type_code_array[0], policy_measures_code_array[0], year_list_string);
+        final JDBCIterablePolicy it_fbt =  new JDBCIterablePolicy();
+        chart_type = "mfn";
+        StringBuilder barchart_query_mfn = getStringQueryImportTariffs_barchart(pd_obj, min, chart_type, policy_type_code_array[0], policy_measures_code_array[0], year_list_string);
+        final JDBCIterablePolicy it_mfn =  new JDBCIterablePolicy();
+
+//        LinkedHashMap<String, String> commodity_policyElem_map = new LinkedHashMap<String, String>();
+        Map<String, LinkedHashMap<String, String>> commodity_policyElem_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+        for(int i=0; i<commodity_class_code_array.length; i++)
+        {
+            for(int j=0; j<policy_element.length; j++)
+            {
+                String key = ""+commodity_class_code_array[i]+"_"+policy_element[j].replaceAll("\\s+","");
+
+                LinkedHashMap<String, String> yearPercentage_map = new LinkedHashMap<String, String>();
+                for(int z=0; z<year_list_array.length; z++)
+                {
+                    yearPercentage_map.put(year_list_array[z], "");
+                }
+                commodity_policyElem_map.put(key, yearPercentage_map);
+            }
+        }
+
+        it_fbt.query(dsBean, barchart_query_fbt.toString());
+        while(it_fbt.hasNext()) {
+            String next = it_fbt.next().toString();
+            //[18, 1, Final bound tariff, 2010-01-01]
+            String row = (next.substring(1, next.length()-1)).replaceAll("\\s+","");
+            String row_array[] = row.split(",");
+            String percentage = row_array[0];
+            String commodity = row_array[1];
+            String policy_element_i = row_array[2];
+            String year = row_array[3];
+            int year_index = year.indexOf("-01-01");
+            year = year.substring(0, year_index);
+            LinkedHashMap<String, String> yearPercentage_map_2 = commodity_policyElem_map.get(""+commodity+"_"+policy_element_i);
+            yearPercentage_map_2.put(year, percentage);
+        }
+
+        it_mfn.query(dsBean, barchart_query_mfn.toString());
+        while(it_mfn.hasNext()) {
+            String next = it_mfn.next().toString();
+            //[80, 2, MFN applied tariff, 2012-01-01]
+            String row = (next.substring(1, next.length()-1)).replaceAll("\\s+","");
+            String row_array[] = row.split(",");
+            String percentage = row_array[0];
+            String commodity = row_array[1];
+            String policy_element_i = row_array[2];
+            String year = row_array[3];
+            int year_index = year.indexOf("-01-01");
+            year = year.substring(0, year_index);
+            LinkedHashMap<String, String> yearPercentage_map_2 = commodity_policyElem_map.get(""+commodity+"_"+policy_element_i);
+            yearPercentage_map_2.put(year, percentage);
+        }
+        return commodity_policyElem_map;
+    }
+
+    public Map<String, LinkedHashMap<String, String>> exportRestrictionsMeasures_barchart(DatasourceBean dsBean, POLICYDataObject pd_obj) throws Exception{
+        String commodity_class_code_array[]= pd_obj.getCommodity_class_code().split(",");
+        //System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code()+" commodity_class_code_array "+commodity_class_code_array);
+        String policy_type_code_array[]= pd_obj.getPolicy_type_code();
+        String policy_measures_code_array[]= pd_obj.getPolicy_measure_code();
+        //The request is for all the Policy Measures of a specific Policy Type
+        String single_policy_type = policy_type_code_array[0];
+        Map<String, LinkedHashMap<String, String>> pt_map = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+        for(int i=0; i<policy_measures_code_array.length; i++)
+        {
+            //System.out.println("single_policy_type "+single_policy_type);
+            String single_policy_measure = policy_measures_code_array[i];
+            LinkedHashMap<String, String> countryCount_map = new LinkedHashMap<String, String>();
+            for(int j=0; j<commodity_class_code_array.length; j++)
+            {
+                String single_commodity_class = commodity_class_code_array[j];
+                StringBuilder barchart_query = getStringQueryExportRestrictionsPolicyMeasures_barchart(pd_obj, single_policy_type, single_policy_measure, single_commodity_class);
+
+                final JDBCIterablePolicy it =  new JDBCIterablePolicy();
+                it.query(dsBean, barchart_query.toString());
+                //Counter for the country
+                String country_count = "0";
+                //Return one value that is the number of country
+                while(it.hasNext()) {
+                    //[8] -> 8
+                    String next = it.next().toString();
+                    int lastsquare = next.lastIndexOf("]");
+                    country_count = next.substring(1,lastsquare);
+                    //System.out.println("country_count "+country_count);
+                }
+                //It will have three values
+                //System.out.println("single_commodity_class "+single_commodity_class+" country_count "+country_count);
+                countryCount_map.put(single_commodity_class, country_count);
+            }
+            pt_map.put(single_policy_measure, countryCount_map);
+        }
+
+        return pt_map;
+    }
+
+    public StringBuilder getStringQueryBiofuelPolicyTypes_barchart(POLICYDataObject pd_obj, String single_policy_type, String single_commodity_class) throws Exception{
 
         //select count(DISTINCT(tot.country_code)) from (select mastertable.cpl_id, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot where tot.policytype_code=2 and tot.commodityclass_code=5;
         String start_date = pd_obj.getStart_date();
@@ -998,7 +1456,96 @@ public class PolicyProcedures {
         sb.append("JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.start_date < '"+start_date+"'))))) tot ");
         sb.append("where tot.policytype_code="+single_policy_type+" and tot.commodityclass_code="+single_commodity_class+"");
 
-        //System.out.println("getStringQueryBiofuelPolicies_barchart sb "+sb.toString());
+        System.out.println("getStringQueryBiofuelPolicies_barchart sb "+sb.toString());
+        return sb;
+    }
+
+    public StringBuilder getStringQueryBiofuelPolicyMeasures_barchart(POLICYDataObject pd_obj, String single_policy_type, String single_policy_measure, String single_commodity_class) throws Exception{
+
+        //select count(DISTINCT(tot.country_code)) from (select mastertable.cpl_id, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.end_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.start_date < '1/1/2013'))))) tot where tot.policytype_code=2 and tot.policymeasure_code=8 and tot.commodityclass_code=6
+        String start_date = pd_obj.getStart_date();
+        String end_date = pd_obj.getEnd_date();
+        StringBuilder sb = new StringBuilder();
+        sb.append("select count(DISTINCT(tot.country_code)) from (select mastertable.cpl_id, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable ");
+//        sb.append("JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
+        sb.append("JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.start_date < '"+start_date+"'))))) tot ");
+        sb.append("where tot.policytype_code="+single_policy_type+ " and tot.policymeasure_code="+single_policy_measure+" and tot.commodityclass_code="+single_commodity_class+"");
+
+        System.out.println("getStringQueryBiofuelPolicies_barchart sb "+sb.toString());
+        return sb;
+    }
+
+    public StringBuilder getStringQueryImportTariffs_barchart(POLICYDataObject pd_obj, boolean min, String chart_type, String single_policy_type, String single_policy_measure, String year_list) throws Exception{
+
+        /*select MAX(tot.mfn_value), tot.commodityclass_code, tot.mfn_policy_element, tot.start_date FROM (SELECT mfn_table.policy_element as mfn_policy_element, fbt_table.policy_element as fbt_policy_element, mfn_table.value as mfn_value, fbt_table.value as fbt_value, mfn_table.start_date, mfn_table.commodityclass_code from ((select * from policytable, mastertable where policytable.cpl_id = mastertable.cpl_id and policytype_code=2 and policymeasure_code=11 and commodityclass_code IN (1,2,3,4) and value_text IS NULL and (start_date>='2010-01-01' AND start_date<='2014-01-01') and policy_element='MFN applied tariff' and units='%' and value IS NOT NULL) mfn_table INNER JOIN (select * from policytable, mastertable where policytable.cpl_id = mastertable.cpl_id and policytype_code=2 and policymeasure_code=11 and commodityclass_code IN (1,2,3,4) and value_text IS NULL and (start_date>='2010-01-01' AND start_date<='2014-01-01') and policy_element='Final bound tariff' and units='%' and value IS NOT NULL) fbt_table ON mfn_table.start_date=fbt_table.start_date and mfn_table.commodityclass_code=fbt_table.commodityclass_code)) tot group by tot.commodityclass_code, tot.mfn_policy_element, tot.start_date ORDER BY tot.commodityclass_code, tot.mfn_policy_element, tot.start_date;*/
+        StringBuilder sb = new StringBuilder();
+//        if(min)
+//        {
+//            if(chart_type.equalsIgnoreCase("mfn"))
+//            {
+//                sb.append("select MIN(tot.mfn_value), ");
+//            }
+//            else{
+//                sb.append("select MIN(tot.fbt_value), ");
+//            }
+//        }
+//        else{
+//            if(chart_type.equalsIgnoreCase("mfn"))
+//            {
+//                sb.append("select MAX(tot.mfn_value), ");
+//            }
+//            else{
+//                sb.append("select MAX(tot.fbt_value), ");
+//            }
+//        }
+
+        if(chart_type.equalsIgnoreCase("mfn"))
+        {
+            sb.append("select AVG(CAST (tot.mfn_value AS FLOAT)), ");
+        }
+        else{
+            sb.append("select AVG(CAST (tot.fbt_value AS FLOAT)), ");
+        }
+//        sb.append("select AVG(CAST (tot.mfn_value AS FLOAT)), ");
+
+        if(chart_type.equalsIgnoreCase("mfn"))
+        {
+            sb.append("tot.commodityclass_code, tot.mfn_policy_element, tot.start_date FROM ");
+        }
+        else{
+            sb.append("tot.commodityclass_code, tot.fbt_policy_element, tot.start_date FROM ");
+        }
+        sb.append("(SELECT mfn_table.policy_element as mfn_policy_element, fbt_table.policy_element as fbt_policy_element, mfn_table.value as mfn_value, fbt_table.value as fbt_value, mfn_table.start_date, mfn_table.commodityclass_code from ");
+        sb.append("((select * from policytable, mastertable where policytable.cpl_id = mastertable.cpl_id and policytype_code="+single_policy_type+" and policymeasure_code="+single_policy_measure+" and commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") ");
+        sb.append("and value_text IS NULL and start_date IN ("+year_list+") and policy_element='"+pd_obj.getPolicy_element()[0]+"' and units='"+pd_obj.getUnit()+"' and value IS NOT NULL) mfn_table ");
+        sb.append("INNER JOIN (select * from policytable, mastertable where policytable.cpl_id = mastertable.cpl_id and policytype_code="+single_policy_type+" and policymeasure_code="+single_policy_measure+" and commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") ");
+        sb.append("and value_text IS NULL and start_date IN ("+year_list+") and policy_element='"+pd_obj.getPolicy_element()[1]+"' and units='"+pd_obj.getUnit()+"' and value IS NOT NULL) ");
+        sb.append("fbt_table ON mfn_table.start_date=fbt_table.start_date and mfn_table.commodityclass_code=fbt_table.commodityclass_code)) tot ");
+
+        if(chart_type.equalsIgnoreCase("mfn"))
+        {
+            sb.append("group by tot.commodityclass_code, tot.mfn_policy_element, tot.start_date ORDER BY tot.commodityclass_code, tot.mfn_policy_element, tot.start_date");
+        }
+        else{
+            sb.append("group by tot.commodityclass_code, tot.fbt_policy_element, tot.start_date ORDER BY tot.commodityclass_code, tot.fbt_policy_element, tot.start_date");
+        }
+
+        System.out.println(sb.toString());
+        return sb;
+    }
+
+    public StringBuilder getStringQueryExportRestrictionsPolicyMeasures_barchart(POLICYDataObject pd_obj, String single_policy_type, String single_policy_measure, String single_commodity_class) throws Exception{
+
+        //select count(DISTINCT(tot.country_code)) from (select mastertable.cpl_id, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date from mastertable JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.end_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '1/1/2013' AND '1/1/2014') OR (policy.start_date < '1/1/2013'))))) tot where tot.policytype_code=2 and tot.policymeasure_code=8 and tot.commodityclass_code=6
+        String start_date = pd_obj.getStart_date();
+        String end_date = pd_obj.getEnd_date();
+        StringBuilder sb = new StringBuilder();
+        sb.append("select count(DISTINCT(tot.country_code)) from (select mastertable.cpl_id, mastertable.commodityclass_code, mastertable.commodityclass_name, mastertable.policytype_code, mastertable.policytype_name, mastertable.policymeasure_code, mastertable.policymeasure_name, mastertable.country_code, mastertable.country_name, policy.start_date, policy.end_date, policy.value_text from mastertable ");
+//        sb.append("JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN (5,6,7) AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '05/05/2010' AND '05/04/2011') OR (policy.start_date < '05/05/2010'))))) tot ");
+        sb.append("JOIN (select policytable.cpl_id, policytable.start_date, policytable.end_date, policytable.value_text from policytable)policy ON mastertable.cpl_id = policy.cpl_id AND mastertable.commodityclass_code IN ("+pd_obj.getCommodity_class_code()+") AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.end_date IS NULL AND ((policy.start_date BETWEEN '"+start_date+"' AND '"+end_date+"') OR (policy.start_date < '"+start_date+"'))))) tot ");
+        sb.append("where tot.policytype_code="+single_policy_type+ " and tot.policymeasure_code="+single_policy_measure+" and tot.commodityclass_code="+single_commodity_class+" AND (tot.value_text<>'elim' OR tot.value_text IS NULL)");
+
+        //System.out.println("getStringQueryExportRestrictionsPolicyMeasures_barchart sb "+sb.toString());
         return sb;
     }
 

@@ -19,6 +19,11 @@ public class POLICYDataObject {
     private String year_list = "";
     private String start_date = "";
     private String end_date = "";
+    private String unit = "";
+
+    private boolean chart_type = false;
+    //It's an array
+    private String[] policy_element;
 
     private String cpl_id = "";
 
@@ -126,5 +131,25 @@ public class POLICYDataObject {
 
     public void setCommodity_id(String commodity_id) {
         this.commodity_id = commodity_id;
+    }
+
+    public String[] getPolicy_element() {return policy_element;}
+
+    public void setPolicy_element(String[] policy_element) {this.policy_element = policy_element;}
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public boolean getChartType() {
+        return chart_type;
+    }
+
+    public void setChartType(boolean chart_type) {
+        this.chart_type = chart_type;
     }
 }
