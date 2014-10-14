@@ -24,6 +24,14 @@
         "password": "Qwaszx"
     },
     {
+        "id": "AFRICAFERTILIZER",
+        "driver": "PostgreSQL",
+        "url": "jdbc:postgresql://EXLPRFAOSTAT1.ext.fao.org:5432/africafertilizer",
+        "dbName": "africanfertilizers",
+        "username": "fenix",
+        "password": "Qwaszx"
+    },
+    {
         "id": "FAOSTAT",
         "driver": "SQLServer2000",
         "url": "jdbc:sqlserver://HQWPRFAOSTATDB1\\Dissemination;databaseName=Warehouse;",
@@ -35,6 +43,30 @@
         "id": "FAOSTAT2",
         "driver": "SQLServer2000",
         "url": "jdbc:sqlserver://HQWPRFAOSTATDB2\\Dissemination;databaseName=Warehouse;",
+        "dbName": "Warehouse",
+        "username": "Warehouse",
+        "password": "w@reh0use"
+    },
+    {
+        "id": "FAOSTAT3",
+        "driver": "SQLServer2000",
+        "url": "jdbc:sqlserver://HQWPRFAOSTATDB3\\Dissemination;databaseName=Warehouse;",
+        "dbName": "Warehouse",
+        "username": "Warehouse",
+        "password": "w@reh0use"
+    },
+    {
+        "id": "FAOSTAT4",
+        "driver": "SQLServer2000",
+        "url": "jdbc:sqlserver://HQWPRFAOSTATDB4\\Dissemination;databaseName=Warehouse;",
+        "dbName": "Warehouse",
+        "username": "Warehouse",
+        "password": "w@reh0use"
+    },
+    {
+        "id": "FAOSTATDB",
+        "driver": "SQLServer2000",
+        "url": "jdbc:sqlserver://HQWPRFAOSTATDB4\\Dissemination;databaseName=Warehouse;",
         "dbName": "Warehouse",
         "username": "Warehouse",
         "password": "w@reh0use"
@@ -82,7 +114,7 @@
     {
         "id": "FENIX",
         "driver": "PostgreSQL",
-        "url": "jdbc:postgresql://127.0.0.1:5432/fenix",
+        "url": "jdbc:postgresql://EXLPRFAOSTAT1.ext.fao.org:5432/fenix",
         "dbName": "fenix",
         "username": "fenix",
         "password": "Qwaszx"

@@ -19,17 +19,22 @@ Information for Action Programme
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.fao.fenix.wds.core.constant;
+package org.fao.fenix.wds.core.datasource;
 
 /** 
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a> 
  * */
-public enum DATASOURCE {
+public class FAOSTAT3 {
 
-	FENIX, FENIXDATAMANAGER, FAOSTAT, FAOSTAT2, FAOSTAT3, FAOSTAT4, FAOSTATDB,
-    FAOSTATPROD, FAOSTATPRODDISS,
-    FAOSTATTESTDISS, FAOSTATGLBL, COUNTRYSTAT, WORLDBANK, EUROSTAT, IMF,
-	AQUASTAT, FAOSYB, USDA, STAGINGAREA, CROWDPRICES, AMISPOLICIES, POLICY;
+	public static final String DRIVER = "SQLServer2000";
+	
+	public static final String URL = "jdbc:sqlserver://HQWPRFAOSTATDB3\\Dissemination;databaseName=Warehouse;";
+	
+	public static final String DATABASE_NAME = "Warehouse";
+	
+	public static final String USERNAME = "Warehouse";
+	
+	public static final String PASSWORD = "w@reh0use";
 	
 }

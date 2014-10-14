@@ -64,6 +64,9 @@ public class JDBCConnector {
         switch (db.getDatasource()) {
             case FAOSTAT: return querySQLServer(db, sql, headers);
             case FAOSTAT2: return querySQLServer(db, sql, headers);
+            case FAOSTAT3: return querySQLServer(db, sql, headers);
+            case FAOSTAT4: return querySQLServer(db, sql, headers);
+            case FAOSTATDB: return querySQLServer(db, sql, headers);
             case FAOSTATPROD: return querySQLServer(db, sql, headers);
             case FAOSTATPRODDISS: return querySQLServer(db, sql, headers);
             case FAOSTATTESTDISS: return querySQLServer(db, sql, headers);
@@ -86,6 +89,9 @@ public class JDBCConnector {
         boolean isFAOSTAT = (db.getDatasource() == DATASOURCE.FAOSTAT) ||
                             (db.getDatasource() == DATASOURCE.FAOSTATGLBL) ||
                             (db.getDatasource() == DATASOURCE.FAOSTAT2) ||
+                            (db.getDatasource() == DATASOURCE.FAOSTAT3) ||
+                            (db.getDatasource() == DATASOURCE.FAOSTAT4) ||
+                            (db.getDatasource() == DATASOURCE.FAOSTATDB) ||
                             (db.getDatasource() == DATASOURCE.FAOSTATPROD) ||
                             (db.getDatasource() == DATASOURCE.FAOSTATTESTDISS) ||
                             (db.getDatasource() == DATASOURCE.FAOSTATPRODDISS);
@@ -129,6 +135,9 @@ public class JDBCConnector {
         switch (db.getDatasource()) {
             case FAOSTAT: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
             case FAOSTAT2: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
+            case FAOSTAT3: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
+            case FAOSTAT4: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
+            case FAOSTATDB: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
             case FAOSTATPROD: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
             case FAOSTATPRODDISS: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
             case FAOSTATTESTDISS: return querySQLServerSkipCharactersReplacemet(db, sql, headers);
