@@ -540,16 +540,16 @@ public class FAOSTATDownloadTable {
     }
 
     private void save(Date date, String rest, String payload) throws UnknownHostException {
-        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
-        DB db = mongo.getDB(SCHEMA);
-        DBCollection collection = db.getCollection("logs");
-        BasicDBObject document = new BasicDBObject();
-        document.put("date", date);
-        document.put("rest", rest);
-        DBObject dbObject = (DBObject) JSON.parse(payload);
-        document.put("payload", dbObject);
-        collection.insert(document);
+//        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
+//        Mongo mongo = mgr.getMongo();
+//        DB db = mongo.getDB(SCHEMA);
+//        DBCollection collection = db.getCollection("logs");
+//        BasicDBObject document = new BasicDBObject();
+//        document.put("date", date);
+//        document.put("rest", rest);
+//        DBObject dbObject = (DBObject) JSON.parse(payload);
+//        document.put("payload", dbObject);
+//        collection.insert(document);
     }
 
 }
