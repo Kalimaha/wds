@@ -1,0 +1,72 @@
+<html>
+
+    <head>
+        <script type='application/javascript' src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
+        <script type='text/javascript'>
+            function query() {
+                var sql = "EXECUTE Warehouse.dbo.usp_GetDataTE " +
+                          "@DomainCode = 'TM', " +
+                          "@lang = 'E',  " +
+                          "@List1Codes = '(2)', " +
+                          "@List2Codes = '(2)', " +
+                          "@List3Codes = '(2)', " +
+                          "@List4Codes = '(2)', " +
+                          "@List5Codes = '(2)', " +
+                          "@List6Codes = '',  " +
+                          "@List7Codes = '',  " +
+                          "@NullValues = 0,  " +
+                          "@Thousand = ',',  " +
+                          "@Decimal = '.',  " +
+                          "@DecPlaces = 2 ";
+                console.log(sql);
+                $('#json_WQ').attr('value', JSON.stringify({"limit": null,"query": query, "frequency": "NONE"}));
+                document.excelFormWithQuotes.submit();
+            }
+        </script>
+    </head>
+
+    <body>
+        <!-- action='http://faostat3.fao.org/wds/rest/exporter/streamexcel' -->
+        <form id='excelFormWithQuotes'
+              name='excelFormWithQuotes'
+              method='POST'
+              action='http://localhost:8080/wds/rest/exporter/streamexcel'
+              target='_new'>
+            <div>
+                <input type='text' value='faostat' name='cssFilename_WQ' id='cssFilename_WQ' style='display: none;'/>
+            </div>
+            <div>
+                <input type='text' value='' name='datasource_WQ' id='datasource_WQ' style='display: none;'/>
+            </div>
+            <div>
+                Decimal Numbers:
+                <input type='text' value='2' name='decimalNumbers_WQ' id='decimalNumbers_WQ'/>
+            </div>
+            <div>
+                Decimal Separator:
+                <input type='text' value='.' name='decimalSeparator_WQ' id='decimalSeparator_WQ'/>
+            </div>
+            <div>
+                Thousand Separator:
+                <input type='text' value=',' name='thousandSeparator_WQ' id='thousandSeparator_WQ'/>
+            </div>
+            <div>
+                <input type='text' value='6' name='valueIndex_WQ' id='valueIndex_WQ' style='display: none;'/>
+            </div>
+            <div>
+                <input type='text' value='' name='json_WQ' id='json_WQ' style='display: inline;'/>
+            </div>
+            <div>
+                <input type='text' value='' name='quote_WQ' id='quote_WQ' style='display: none;'/>
+            </div>
+            <div>
+                <input type='text' value='' name='title_WQ' id='title_WQ' style='display: none;'/>
+            </div>
+            <div>
+                <input type='text' value='' name='subtitle_WQ' id='subtitle_WQ' style='display: none;'/>
+            </div>
+        </form>
+        <button onclick='query();'>Download Data</button>
+    </body>
+
+</html>

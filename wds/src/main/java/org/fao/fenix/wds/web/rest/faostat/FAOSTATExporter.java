@@ -76,6 +76,10 @@ public class FAOSTATExporter {
                               final @FormParam("title_WQ_csv") String title,
                               final @FormParam("subtitle_WQ_csv") String subtitle) {
 
+        System.out.println("WE ARE IN LOCALHOST");
+        System.out.println(valueIndex);
+        System.out.println(json);
+
         // Initiate the stream
         StreamingOutput stream = new StreamingOutput() {
 
@@ -85,6 +89,8 @@ public class FAOSTATExporter {
                 // compute result
                 Gson g = new Gson();
                 SQLBean sql = g.fromJson(json, SQLBean.class);
+                System.out.println(sql.getQuery());
+                System.out.println();
                 DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
@@ -97,6 +103,7 @@ public class FAOSTATExporter {
                     if (datasource.toUpperCase().startsWith("FAOSTAT"))
                         sql.setQuery(replaceLimitWithTop(sql));
 
+                    System.out.println(Bean2SQL.convert(sql));
                     it.query(db, Bean2SQL.convert(sql).toString());
 
 
@@ -113,6 +120,7 @@ public class FAOSTATExporter {
                     e.printStackTrace();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     WDSExceptionStreamWriter.streamException(os, ("Method 'streamCSV' thrown an error: " + e.getMessage()));
                 }
 
