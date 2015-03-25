@@ -16,6 +16,9 @@
         <tag>HEAD</tag>
         <url>https://joinup.ec.europa.eu/svn/fenix/trunk/wds</url>
     </scm>
+    <properties>
+        <orient.version>2.0.5</orient.version>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -191,6 +194,16 @@
             <groupId>org.fao.fenix</groupId>
             <artifactId>fenix-cross-domain</artifactId>
             <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-object</artifactId>
+            <version>${orient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-client</artifactId>
+            <version>${orient.version}</version>
         </dependency>
     </dependencies>
 </project>

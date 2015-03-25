@@ -18,6 +18,9 @@
         <tag>HEAD</tag>
         <url>https://joinup.ec.europa.eu/svn/fenix/trunk/wds-core</url>
     </scm>
+    <properties>
+        <orient.version>2.0.5</orient.version>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -136,6 +139,26 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fao.fenix</groupId>
+            <artifactId>fenix-commons-search</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fao.fenix</groupId>
+            <artifactId>fenix-D3S-mdsd</artifactId>
+            <version>2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-object</artifactId>
+            <version>${orient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-client</artifactId>
+            <version>${orient.version}</version>
         </dependency>
     </dependencies>
 </project>
