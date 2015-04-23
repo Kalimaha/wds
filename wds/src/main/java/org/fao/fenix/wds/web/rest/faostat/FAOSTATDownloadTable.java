@@ -562,15 +562,22 @@ public class FAOSTATDownloadTable {
                     sql.setQuery(replaceLimitWithTop(sql));
 
                 /* Get headers from SQL query. */
-                ArrayList<String> headers = getHeadersFromSQL(sql.getQuery());
+//                ArrayList<String> headers = getHeadersFromSQL(sql.getQuery());
+
 
                 /* Compute result. */
                 JDBCIterable it = new JDBCIterable();
+                List<String> headers = new ArrayList<String>();
 
                 try {
 
                     /* Query DB. */
                     it.query(db, sql.getQuery());
+
+                    /* Get column names. */
+                    headers = it.getColumnNames();
+                    for (String h : headers)
+                        System.out.println(h);
 
                 } catch (IllegalAccessException e) {
                     e.getMessage();
