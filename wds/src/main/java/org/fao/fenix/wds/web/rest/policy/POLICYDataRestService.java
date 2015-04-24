@@ -1,6 +1,7 @@
 package org.fao.fenix.wds.web.rest.policy;
 
 import com.google.gson.Gson;
+import com.mongodb.util.JSON;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
 import org.fao.fenix.wds.core.bean.policy.POLICYDataObject;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -242,7 +244,7 @@ public class POLICYDataRestService {
                     series_count++;
                 }
                 JSONObject jsonobj_to_return = new JSONObject();
-                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
+
                 jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
                 jsonobj_to_return.put("dataArray",jsonArrayTot);
                 writer.write(g.toJson(jsonobj_to_return));
@@ -339,7 +341,6 @@ public class POLICYDataRestService {
                     series_count++;
                 }
                 JSONObject jsonobj_to_return = new JSONObject();
-                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
                 jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
                 jsonobj_to_return.put("dataArray",jsonArrayTot);
                 writer.write(g.toJson(jsonobj_to_return));
@@ -417,7 +418,6 @@ public class POLICYDataRestService {
                     series_count++;
                 }
                 JSONObject jsonobj_to_return = new JSONObject();
-                System.out.println("pd_obj.getCommodity_class_code() "+pd_obj.getCommodity_class_code());
                 jsonobj_to_return.put("commodityClassCode",pd_obj.getCommodity_class_code());
                 jsonobj_to_return.put("dataArray",jsonArrayTot);
                 writer.write(g.toJson(jsonobj_to_return));
@@ -476,9 +476,6 @@ public class POLICYDataRestService {
     @Path("/exportSubsidiesCountries/{datasource}/{policyType}/{policyMeasure}")
     public Response getcountries_fromExportSubsidies(@PathParam("datasource") String datasource, @PathParam("policyType") String policyType, @PathParam("policyMeasure") String policyMeasure) throws Exception {
 
-        System.out.println(" getcountries_fromExportSubsidies start ");
-        System.out.println(" getcountries_fromExportSubsidies policyType= "+policyType);
-        System.out.println(" getcountries_fromExportSubsidies policyMeasure= "+policyMeasure);
         DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
         final JDBCIterablePolicy it =  pp.getcountries_fromPolicy(dsBean, policyType, policyMeasure);
 
@@ -514,14 +511,12 @@ public class POLICYDataRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/biofuelPoliciesBarChart")
     public Response biofuelPolicies_barchart(@FormParam("pdObj") String pdObject) throws Exception {
-         System.out.println("biofuelPolicies_timeSeries start New"+pdObject);
         System.out.println(pdObject);
         POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
         //The format of cplId is this: 'code1', 'code2', 'code3'
-        System.out.println("Before biofuelPolicies_barchart ");
+
         final Map<String, LinkedHashMap<String, String>> map=  pp.biofuelPolicies_barchart(dsBean, pd_obj);
-        System.out.println("2222222");
 //        final Map<String, LinkedHashMap<String, String>> map= new HashMap<String, LinkedHashMap<String, String>>();
         //        for( String key: map.keySet())
 //        {
@@ -560,7 +555,6 @@ public class POLICYDataRestService {
 
                 // compute result
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-                System.out.println("333333");
                 JSONArray jsonArrayTot = new JSONArray();
                 int series_count = 1;
                 for( String key: map.keySet())
@@ -576,7 +570,6 @@ public class POLICYDataRestService {
                     for(String key2: keySet2) {
                         jsonArray.add(Integer.parseInt(map.get(key).get(key2)));
                     }
-
                     jsonobj.put("data", jsonArray);
                     // writer.write("]");
 //                    writer.write("]");
@@ -597,7 +590,6 @@ public class POLICYDataRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/biofuelPolicyMeasuresBarChart")
     public Response biofuelPolicyMeasures_barchart(@FormParam("pdObj") String pdObject) throws Exception {
-         System.out.println("biofuelPolicies_timeSeries start "+pdObject);
         System.out.println(pdObject);
         POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
@@ -758,9 +750,8 @@ public class POLICYDataRestService {
         @Produces(MediaType.APPLICATION_JSON)
         @Path("/exportSubsidiesPolicyElementLineChart")
         public Response exportSubsidiesPolicyElementLineChart(@FormParam("pdObj") String pdObject) throws Exception {
-            System.out.println(" exportSubsidiesPolicyElementLineChart ");
+
             POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
-            System.out.println(pd_obj);
 
             DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
             String policy_type = "";
@@ -795,7 +786,6 @@ public class POLICYDataRestService {
             while(it.hasNext()) {
                 //[2, Domestic, 1, Agricultural]
                 String val = it.next().toString();
-                System.out.println("val = "+val);
                 int index = val.lastIndexOf(']');
                 val = val.substring(1, index);
                 cpl_id +=val;
@@ -831,7 +821,6 @@ public class POLICYDataRestService {
             }
             else
             {
-                System.out.println("cpl_id "+cpl_id);
                 cpl_id = cpl_id.substring(0, cpl_id.length()-1);
                 final Map<String, LinkedHashMap<String, String>> map=  pp.exportSubsidiesPolicyMeasures_timeSeries(dsBean, pd_obj, cpl_id);
                 if((map==null)||(map.size()==0))
@@ -862,7 +851,6 @@ public class POLICYDataRestService {
                 }
                 else
                 {
-                    System.out.println("After exportSubsidiesPolicyMeasures_timeSeries ");
                     StreamingOutput stream = new StreamingOutput() {
 
                         @Override
@@ -873,11 +861,8 @@ public class POLICYDataRestService {
 
                             JSONArray jsonArrayTot = new JSONArray();
                             int series_count = 1;
-                            System.out.println("series_count =  "+series_count);
                             for( String key: map.keySet())
                             {
-                                System.out.println("key "+key);
-                                System.out.println("series_count =  "+series_count);
                                 //One obj for each policy type
                                 //writer.write("[");
                                 JSONObject jsonobj = new JSONObject();
@@ -898,7 +883,6 @@ public class POLICYDataRestService {
                                 }
 
                                 jsonobj.put("data", jsonArray);
-                                System.out.println(jsonArray);
                                 jsonArrayTot.add(jsonobj);
                                 series_count++;
                             }
@@ -918,7 +902,6 @@ public class POLICYDataRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/importTariffsPolicyMeasuresBarChart")
     public Response importTariffsPolicyMeasures_barchart(@FormParam("pdObj") String pdObject) throws Exception {
-        System.out.println(pdObject);
         POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
         //The format of cplId is this: 'code1', 'code2', 'code3'
@@ -971,20 +954,31 @@ public class POLICYDataRestService {
                     JSONObject jsonobj = new JSONObject();
                     jsonobj.put("name", series_count);
                     JSONArray jsonArray = new JSONArray();
+                    JSONArray jsonArrayObservation = new JSONArray();
                     Set<String> keySet2= map.get(key).keySet();
-
+                    JSONObject jsonobjData = new JSONObject();
                     for(String key2: keySet2) {
-                        String percentage = map.get(key).get(key2);
-                        if((percentage!=null)&&(percentage.length()>0))
+                        String percentagePlusObs = map.get(key).get(key2);
+                        String percentage = "";
+                        if((percentagePlusObs!=null)&&(percentagePlusObs.length()>1))
                         {
-                            jsonArray.add(Double.parseDouble(percentage));
+                            int index = percentagePlusObs.indexOf("%");
+                            percentage = percentagePlusObs.substring(0, index);
+                            jsonobjData = new JSONObject();
+                            jsonobjData.put("y", Double.parseDouble(percentage));
+                            jsonobjData.put("name", percentagePlusObs.substring(index+1));
                         }
                         else{
-                            jsonArray.add(null);
+                            //jsonArray.add(null);
+                            jsonobjData = null;
+                            jsonArrayObservation.add(null);
                         }
+                        jsonArray.add(jsonobjData);
                     }
 
+                    //jsonobj.put("data", jsonArray);
                     jsonobj.put("data", jsonArray);
+                    jsonobj.put("obs", jsonArrayObservation);
                     // writer.write("]");
 //                    writer.write("]");
                     jsonArrayTot.add(jsonobj);
@@ -1412,14 +1406,38 @@ public class POLICYDataRestService {
 //                <body>
 //                </body>
 //                </html>
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                Date date = new Date();
+                //System.out.println(dateFormat.format(date));
 
                 writer.write("<table border=\"1\">");
                 // System.out.println("Table");
                 writer.write("<tr>");
+                writer.write("<td><b>");
+                writer.write("Date:");
+                writer.write("</b></td>");
+                writer.write("<td>");
+                writer.write(dateFormat.format(date));
+                writer.write("</td>");
+                writer.write("</tr>");
+
+                writer.write("<tr>");
+                writer.write("<td><b>");
+                writer.write("Source:");
+                writer.write("</b></td>");
+                writer.write("<td>");
+                writer.write("AMIS Policy Database");
+                writer.write("</td>");
+                writer.write("</tr>");
+
+                writer.write("<tr>");
+                writer.write("</tr>");
+
+                writer.write("<tr>");
                 for (int i = 0; i < headerArray.length; i++) {
-                    writer.write("<td>");
+                    writer.write("<td><b>");
                     writer.write(headerArray[i]);
-                    writer.write("</td>");
+                    writer.write("</b></td>");
                 }
                 writer.write("</tr>");
                 //   System.out.println("it.hasNext() "+it.hasNext());
@@ -1429,14 +1447,15 @@ public class POLICYDataRestService {
                     // System.out.println("loop it.hasNext() "+it.hasNext()+" "+l.size());
                     writer.write("<tr>");
                     for (int i = 0; i < l.size(); i++) {
-                        if(i==16)
-                        {
-                            //Description.... no wrap
-                            writer.write("<td nowrap>");
-                        }
-                        else{
-                            writer.write("<td>");
-                        }
+                        writer.write("<td nowrap>");
+//                        if((i==15)||(i==16))
+//                        {
+//                            //Short Description and Description  .... no wrap
+//                            writer.write("<td nowrap>");
+//                        }
+//                        else{
+//                            writer.write("<td>");
+//                        }
                         //writer.write("<td>");
                         if((l==null)||(l.isEmpty())||(l.get(i)==null))
                         {
@@ -1653,7 +1672,6 @@ public class POLICYDataRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/masterFromCplId")
     public Response getMasterFromCplId(@FormParam("pdObj") String pdObject) throws Exception {
-        // System.out.println("getMasterFromCplId start ");
         POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
         DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
         //The format of cplId is this: 'code1', 'code2', 'code3'
@@ -1675,6 +1693,113 @@ public class POLICYDataRestService {
                         writer.write(",");
                 }
                 writer.write("]");
+
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/masterFromCplIdAndSubnational")
+    public Response getMasterFromCplIdAndSubnational(@FormParam("pdObj") String pdObject, @FormParam("map") String map2, @FormParam("map2") String map4, @FormParam("map3") String map5,@FormParam("map4") String map6) throws Exception {
+
+        LinkedHashMap<String,String> map=new LinkedHashMap<String,String>();
+        map=(LinkedHashMap<String,String>) g.fromJson(map2, map.getClass());
+
+        LinkedHashMap<String,LinkedHashMap<String,String>> map3=new LinkedHashMap<String,LinkedHashMap<String,String>>();
+        map3=(LinkedHashMap<String,LinkedHashMap<String,String>>) g.fromJson(map4, map3.getClass());
+
+        LinkedHashMap<String,String> map7=new LinkedHashMap<String,String>();
+        map7=(LinkedHashMap<String,String>) g.fromJson(map5, map7.getClass());
+
+        LinkedHashMap<String,LinkedHashMap<String,String>> map8=new LinkedHashMap<String,LinkedHashMap<String,String>>();
+        map8=(LinkedHashMap<String,LinkedHashMap<String,String>>) g.fromJson(map6, map8.getClass());
+
+        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        pd_obj.setSubnationalMap(map);
+        pd_obj.setSubnational_for_coutryMap(map3);
+        pd_obj.setSubnationalMap_level_3(map7);
+        pd_obj.setSubnational_for_coutryMap_level_3(map8);
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        //The format of cplId is this: 'code1', 'code2', 'code3'
+        final LinkedList<String[]> list =  pp.getMasterFromCplIdAndSubnational(dsBean, pd_obj);
+        //  System.out.println("getMasterFromCplId after getMasterFromCplId");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                //writer.write("[");
+//                while(it.hasNext()) {
+//                    writer.write(g.toJson(it.next()));
+//                    if (it.hasNext())
+//                        writer.write(",");
+//                }
+//                for(int i =0; i<list.size(); i++){
+//                    String stringArray[] = list.get(i);
+//                    String sApp ="[";
+//                    System.out.println("Before string array");
+//                    for(int j=0; j<stringArray.length; j++){
+////                        System.out.println(stringArray[j]);
+//                        sApp += "\""+stringArray[j]+"\",";
+//                    }
+//                    if((sApp!=null)&&(sApp.length()>0)){
+//                        sApp = sApp.substring(0, sApp.length()-1);
+//                        sApp += "]";
+//                    }
+//                    System.out.println(sApp);
+//                    //writer.write(g.toJson(stringArray.toString()));
+////                    writer.write(g.toJson(Arrays.toString(stringArray)));
+//                    writer.write(g.toJson(sApp));
+//                    if (i<list.size()-1)
+//                        writer.write(",");
+//                }
+                    writer.write(g.toJson(list));
+
+               // writer.write("]");
+                // Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/mapData")
+    public Response getMapData(@FormParam("pdObj") String pdObject) throws Exception {
+
+        POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+        DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+        final LinkedHashMap<String, String> countryMap = pp.getCountryMapData(dsBean, pd_obj);
+        final LinkedHashMap<String, String> subnationalMap = pp.getSubnationalMapData(dsBean, pd_obj);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put("country_map", countryMap);
+                jsonObj.put("subnational_map", subnationalMap);
+
+                writer.write(g.toJson(jsonObj));
 
                 // Convert and write the output on the stream
                 writer.flush();
@@ -1879,4 +2004,520 @@ public class POLICYDataRestService {
         return Response.status(200).entity(stream).build();
     }
     //Query and Download Functions End
+
+    //Policy Data Entry
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/units/{datasource}")
+    public Response getUnits(@PathParam("datasource") String datasource) throws Exception {
+
+        // compute result
+//        DATASOURCE ds = DATASOURCE.POLICY;
+//        DBBean db = new DBBean(ds);
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getUnits(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//                    int comma_index = s.indexOf(",");
+//                    s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    //Policy Data Entry
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/policyElement/{datasource}/{policyMeasure}")
+    public Response getPolicyElement(@PathParam("datasource") String datasource, @PathParam("policyMeasure") String policyMeasure) throws Exception {
+
+        // compute result
+//        DATASOURCE ds = DATASOURCE.POLICY;
+//        DBBean db = new DBBean(ds);
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getPolicyElement(dsBean, policyMeasure);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//                    int comma_index = s.indexOf(",");
+//                    s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/source/{datasource}/{countryCode}/{cplId}")
+    public Response getSource(@PathParam("datasource") String datasource, @PathParam("countryCode") String countryCode, @PathParam("cplId") String cplId) throws Exception {
+
+        // compute result
+//        DATASOURCE ds = DATASOURCE.POLICY;
+//        DBBean db = new DBBean(ds);
+
+        System.out.println("getSource countryCode= "+countryCode +" cpl_id= "+cplId);
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getSource(dsBean, countryCode);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+                    //int comma_index = s.indexOf(",");
+                    //System.out.println(s);
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+
+                    //s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/secondGenerationSpecific/{datasource}")
+    public Response getSecondGenerationSpecific(@PathParam("datasource") String datasource) throws Exception {
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getSecondGenerationSpecific(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//                    int comma_index = s.indexOf(",");
+//                    s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/imposedEndDate/{datasource}")
+    public Response getImposedEndDate(@PathParam("datasource") String datasource) throws Exception {
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getImposedEndDate(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//                    int comma_index = s.indexOf(",");
+//                    s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/localCondition/{datasource}")
+    public Response getLocalCondition(@PathParam("datasource") String datasource) throws Exception {
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getLocalCondition(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("{\"data\": [");
+                while(it.hasNext()) {
+                    // System.out.println(it.next());
+                    String s = g.toJson(it.next());
+                    s = s.substring(1, s.length()-1);
+//                    System.out.println(s);
+//                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//                    int comma_index = s.indexOf(",");
+//                    s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+
+                    writer.write(s);
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]}");
+
+                // Convert and write the output on the stream
+                writer.flush();
+
+            }
+        };
+        // Stream result
+        return Response.status(200).entity(stream).build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/savePolicyDataEntry")
+    public Response savePolicy_dataEditor(@FormParam("pdObj") String pdObject) throws Exception {
+          System.out.println(" savePolicy_dataEditor start");
+
+        System.out.println(pdObject);
+
+ //       POLICYDataObject pd_obj = g.fromJson(pdObject, POLICYDataObject.class);
+//        System.out.println(" getDownloadPreviewPolicyTable after class");
+//        System.out.println(" pd_obj datasource "+pd_obj.getDatasource());
+//        System.out.println(" pd_obj policy_domain_code "+pd_obj.getPolicy_domain_code());
+//        System.out.println(" pd_obj commodity_domain_code "+pd_obj.getCommodity_domain_code());
+//        System.out.println(" pd_obj commodity_class_code "+pd_obj.getCommodity_class_code());
+//        System.out.println(" pd_obj policy_type_code "+pd_obj.getPolicy_type_code());
+//        for(int i=0; i<pd_obj.getPolicy_type_code().length;i++)
+//        {
+//            System.out.println(" pd_obj policy_type_code i "+i+" ="+pd_obj.getPolicy_type_code()[i]);
+//        }
+//        System.out.println(" pd_obj policy_measure_code "+pd_obj.getPolicy_measure_code());
+//        for(int i=0; i<pd_obj.getPolicy_measure_code().length;i++)
+//        {
+//            System.out.println(" pd_obj policy_measure_code i "+i+" ="+pd_obj.getPolicy_measure_code()[i]);
+//        }
+//        System.out.println(" pd_obj country_code "+pd_obj.getCountry_code());
+//        System.out.println(" pd_obj yearTab "+pd_obj.getYearTab());
+//        System.out.println(" pd_obj year_list "+pd_obj.getYear_list());
+//        System.out.println(" pd_obj start_date "+pd_obj.getStart_date());
+//        System.out.println(" pd_obj end_date "+pd_obj.getEnd_date());
+  //      DatasourceBean dsBean = datasourcePool.getDatasource(pd_obj.getDatasource());
+
+   //     final JDBCIterablePolicy it =  pp.getPolicyFromCplId(dsBean, pd_obj);
+        //  System.out.println("after pp.getDownloadPreviewPolicyTable");
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+                int i=0;
+                // write the result of the query
+                writer.write("[");
+//                while(it.hasNext()) {
+//                    //  System.out.println("in loop next i="+i+" elem "+it.next());
+//
+//                    writer.write(g.toJson(it.next()));
+//                    if (it.hasNext())
+//                        writer.write(",");
+//                    i++;
+//                }
+                writer.write("]");
+
+                //Convert and write the output on the stream
+                writer.flush();
+            }
+        };
+
+        return Response.status(200).entity(stream).build();
+        //return Response.status(200).entity(null).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/commodity/{datasource}/{commodityClassCode}")
+    public Response getCommodity(@PathParam("datasource") String datasource, @PathParam("commodityClassCode") String commodityClassCode) throws Exception {
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getCommodityInfo(dsBean, commodityClassCode);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    //Without saving commodity_id
+                    // String commodity_id = it3.next().toString();
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+                // Convert and write the output on the stream
+                writer.flush();
+                // Stream result
+            }
+
+        };
+        //  System.out.println("stream "+stream);
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/condition/{datasource}")
+    public Response getCondition(@PathParam("datasource") String datasource) throws Exception {
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getCondition(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    //Without saving commodity_id
+                    // String commodity_id = it3.next().toString();
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+                // Convert and write the output on the stream
+                writer.flush();
+                // Stream result
+            }
+
+        };
+        //  System.out.println("stream "+stream);
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/individualPolicy/{datasource}")
+    public Response getIndividualPolicy(@PathParam("datasource") String datasource) throws Exception {
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        final JDBCIterablePolicy it =  pp.getIndividualPolicy(dsBean);
+
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    //Without saving commodity_id
+                    // String commodity_id = it3.next().toString();
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+                // Convert and write the output on the stream
+                writer.flush();
+                // Stream result
+            }
+
+        };
+        //  System.out.println("stream "+stream);
+        return Response.status(200).entity(stream).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/cplIdForCountry/{datasource}/{countryCode}")
+    public Response getCplIdBasedOnCountry(@PathParam("datasource") String datasource, @PathParam("countryCode") String countryCode) throws Exception {
+
+        DatasourceBean dsBean = datasourcePool.getDatasource(datasource);
+        //final JDBCIterablePolicy it =  pp.get(dsBean, countryCode);
+        final JDBCIterablePolicy it = pp.getDistinctcpl_id_basedOnCountry(dsBean, countryCode);
+        // Initiate the stream
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                // compute result
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+                // write the result of the query
+                writer.write("[");
+                while(it.hasNext()) {
+                    //Without saving commodity_id
+                    // String commodity_id = it3.next().toString();
+                    writer.write(g.toJson(it.next()));
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+                // Convert and write the output on the stream
+                writer.flush();
+                // Stream result
+            }
+
+        };
+        //  System.out.println("stream "+stream);
+        return Response.status(200).entity(stream).build();
+
+//        // Initiate the stream
+//        StreamingOutput stream = new StreamingOutput() {
+//
+//            @Override
+//            public void write(OutputStream os) throws IOException, WebApplicationException {
+//
+//                // compute result
+//                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+//
+//                // write the result of the query
+//                writer.write("{\"data\": [");
+//                while(it.hasNext()) {
+//                    // System.out.println(it.next());
+//                    String s = g.toJson(it.next());
+//                    s = s.substring(1, s.length()-1);
+//                    //int comma_index = s.indexOf(",");
+//                    //System.out.println(s);
+//                    s = "{\"code\":"+s+ ", \"title\":{\"EN\":" +s+"}}";
+//
+//                    //s = "{\"code\":"+s.substring(0, comma_index)+ ", \"title\":{\"EN\":" +s.substring(comma_index+1)+"}}";
+//
+//                    writer.write(s);
+//                    if (it.hasNext())
+//                        writer.write(",");
+//                }
+//                writer.write("]}");
+//
+//                // Convert and write the output on the stream
+//                writer.flush();
+//
+//            }
+//        };
+//        // Stream result
+//        return Response.status(200).entity(stream).build();
+    }
 }

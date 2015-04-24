@@ -4,7 +4,7 @@
          version="2.5">
 
     <!-- General information -->
-    <display-name>wds</display-name>
+    <display-name>wdspolicy</display-name>
 
     <!-- Context parameters -->
     <context-param>

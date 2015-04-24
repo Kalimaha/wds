@@ -29,9 +29,12 @@ public class POLICY {
 
     public static final String DRIVER = "PostgreSQL";
 
-    public static final String URL = "jdbc:postgresql://127.0.0.1:5432/amisPolicy";
+//    public static final String URL = "jdbc:postgresql://127.0.0.1:5432/amisPolicy2";
+    public static final String URL = "jdbc:postgresql://127.0.0.1:5432/amisPolicy3";
+//    public static final String URL = "jdbc:postgresql://EXLPRAMIS1.ext.fao.org:5432/amisPolicy";
 
-    public static final String DATABASE_NAME = "amisPolicy";
+//    public static final String DATABASE_NAME = "amisPolicy2";
+    public static final String DATABASE_NAME = "amisPolicy3";
 
     public static final String USERNAME = "policy";
 

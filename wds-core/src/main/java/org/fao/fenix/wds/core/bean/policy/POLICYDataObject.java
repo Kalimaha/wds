@@ -1,5 +1,7 @@
 package org.fao.fenix.wds.core.bean.policy;
 
+import java.util.LinkedHashMap;
+
 /**
  * @author <a href="mailto:barbara.cintoli@fao.org">Barbara Cintoli</a>
  * @author <a href="mailto:barbara.cintoli@gmail.com">Barbara Cintoli</a>
@@ -28,6 +30,16 @@ public class POLICYDataObject {
     private String cpl_id = "";
 
     private String commodity_id = "";
+
+    private LinkedHashMap<String, String> subnationalMap = new LinkedHashMap<String, String>();
+
+    private LinkedHashMap<String, String> countryMap = new LinkedHashMap<String, String>();
+
+    private LinkedHashMap<String, LinkedHashMap<String, String>> subnational_for_coutryMap = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+
+    private LinkedHashMap<String, String> subnationalMap_level_3 = new LinkedHashMap<String, String>();
+
+    private LinkedHashMap<String, LinkedHashMap<String, String>> subnational_for_coutryMap_level_3 = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 
     public String getDatasource() {
         return datasource;
@@ -151,5 +163,45 @@ public class POLICYDataObject {
 
     public void setChartType(boolean chart_type) {
         this.chart_type = chart_type;
+    }
+
+    public LinkedHashMap<String, String> getSubnationalMap() {
+        return subnationalMap;
+    }
+
+    public void setSubnationalMap(LinkedHashMap<String, String> subnationalMap) {
+        this.subnationalMap = subnationalMap;
+    }
+
+    public LinkedHashMap<String, LinkedHashMap<String, String>> getSubnational_for_coutryMap() {
+        return subnational_for_coutryMap;
+    }
+
+    public void setSubnational_for_coutryMap(LinkedHashMap<String, LinkedHashMap<String, String>> subnational_for_coutryMap) {
+        this.subnational_for_coutryMap = subnational_for_coutryMap;
+    }
+
+    public LinkedHashMap<String, LinkedHashMap<String, String>> getSubnational_for_coutryMap_level_3() {
+        return subnational_for_coutryMap_level_3;
+    }
+
+    public void setSubnational_for_coutryMap_level_3(LinkedHashMap<String, LinkedHashMap<String, String>> subnational_for_coutryMap_level_3) {
+        this.subnational_for_coutryMap_level_3 = subnational_for_coutryMap_level_3;
+    }
+
+    public LinkedHashMap<String, String> getSubnationalMap_level_3() {
+        return subnationalMap_level_3;
+    }
+
+    public void setSubnationalMap_level_3(LinkedHashMap<String, String> subnationalMap_level_3) {
+        this.subnationalMap_level_3 = subnationalMap_level_3;
+    }
+
+    public LinkedHashMap<String, String> getCountryMap() {
+        return countryMap;
+    }
+
+    public void setCountryMap(LinkedHashMap<String, String> countryMap) {
+        this.countryMap = countryMap;
     }
 }
