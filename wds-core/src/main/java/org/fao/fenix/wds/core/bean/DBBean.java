@@ -72,6 +72,33 @@ public class DBBean {
                 this.setDatabaseName(FAOSTAT2.DATABASE_NAME);
                 this.setConnection(CONNECTION.JDBC);
                 break;
+            case FAOSTAT3:
+                this.setDatasource(DATASOURCE.FAOSTAT3);
+                this.setDriver(FAOSTAT3.DRIVER);
+                this.setPassword(FAOSTAT3.PASSWORD);
+                this.setUrl(FAOSTAT3.URL);
+                this.setUsername(FAOSTAT3.USERNAME);
+                this.setDatabaseName(FAOSTAT3.DATABASE_NAME);
+                this.setConnection(CONNECTION.JDBC);
+                break;
+            case FAOSTAT4:
+                this.setDatasource(DATASOURCE.FAOSTAT4);
+                this.setDriver(FAOSTAT4.DRIVER);
+                this.setPassword(FAOSTAT4.PASSWORD);
+                this.setUrl(FAOSTAT4.URL);
+                this.setUsername(FAOSTAT4.USERNAME);
+                this.setDatabaseName(FAOSTAT4.DATABASE_NAME);
+                this.setConnection(CONNECTION.JDBC);
+                break;
+            case FAOSTATDB:
+                this.setDatasource(DATASOURCE.FAOSTATDB);
+                this.setDriver(FAOSTATDB.DRIVER);
+                this.setPassword(FAOSTATDB.PASSWORD);
+                this.setUrl(FAOSTATDB.URL);
+                this.setUsername(FAOSTATDB.USERNAME);
+                this.setDatabaseName(FAOSTATDB.DATABASE_NAME);
+                this.setConnection(CONNECTION.JDBC);
+                break;
 			case FAOSTATPROD:
 				this.setDatasource(DATASOURCE.FAOSTATPROD);
 				this.setDriver(FAOSTATPROD.DRIVER);

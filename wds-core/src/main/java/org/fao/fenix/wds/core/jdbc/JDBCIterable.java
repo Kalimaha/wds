@@ -77,6 +77,8 @@ public class JDBCIterable implements Iterator<List<String>> {
         try {
             for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++)
                 l.add(this.getResultSet().getMetaData().getColumnLabel(i));
+        } catch (NullPointerException e) {
+
         } catch (SQLException e) {
 
         }

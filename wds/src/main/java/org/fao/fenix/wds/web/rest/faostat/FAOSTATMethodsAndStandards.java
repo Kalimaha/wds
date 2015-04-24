@@ -154,7 +154,14 @@ public class FAOSTATMethodsAndStandards {
         };
 
         /* Stream result */
-        return Response.status(200).entity(stream).build();
+//        return Response.status(200).entity(stream).build();
+
+        // Wrap result
+        Response.ResponseBuilder builder = Response.ok(stream);
+        builder.header("Content-Disposition", "attachment; filename=" + UUID.randomUUID().toString() + ".xls");
+
+        // Stream Excel
+        return builder.build();
 		
 	}
 	
@@ -275,7 +282,7 @@ public class FAOSTATMethodsAndStandards {
 
         /* Stream result */
         return Response.status(200).entity(stream).build();
-		
+
 	}
 
 	private List<List<String>> createTable(String code, String datasource, String domainCode, String lang) throws IllegalAccessException, InstantiationException, SQLException, ClassNotFoundException {

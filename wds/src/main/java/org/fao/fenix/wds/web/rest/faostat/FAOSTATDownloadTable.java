@@ -473,7 +473,6 @@ public class FAOSTATDownloadTable {
 
                 // compute result
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
-//                Gson g = new Gson();
                 SQLBean sql = null;
                 try {
                     sql = g.fromJson(json, SQLBean.class);
@@ -495,7 +494,6 @@ public class FAOSTATDownloadTable {
                     save(new Date(), "/table/json", json);
 
                     // Query DB
-//                    System.out.println(sql.getQuery());
                     it.query(db, sql.getQuery());
 
                 } catch (IllegalAccessException e) {
@@ -523,7 +521,6 @@ public class FAOSTATDownloadTable {
                         writer.write(g.toJson(s));
                     } catch (Exception e) {
                         e.printStackTrace();
-//                        System.out.println(s);
                     }
                     if (it.hasNext())
                         writer.write(",");

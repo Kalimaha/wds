@@ -203,6 +203,9 @@ public class WDSRESTService extends HttpServlet implements Servlet {
 		switch (db.getDatasource()) {
 			case FAOSTAT: return parseFAOSTAT(parameters);
             case FAOSTAT2: return parseFAOSTAT(parameters);
+            case FAOSTAT3: return parseFAOSTAT(parameters);
+            case FAOSTAT4: return parseFAOSTAT(parameters);
+            case FAOSTATDB: return parseFAOSTAT(parameters);
 			case FAOSTATPROD: return parseFAOSTAT(parameters);
 			case FAOSTATPRODDISS: return parseFAOSTAT(parameters);
 			case FAOSTATGLBL: return parseFAOSTAT(parameters);
