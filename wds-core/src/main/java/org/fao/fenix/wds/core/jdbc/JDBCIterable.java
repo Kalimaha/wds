@@ -1,6 +1,7 @@
 package org.fao.fenix.wds.core.jdbc;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.SQL;
 import org.fao.fenix.wds.core.exception.WDSException;
@@ -45,6 +46,11 @@ public class JDBCIterable implements Iterator<List<String>> {
         SQLServerDriver.class.newInstance();
         this.setConnection(DriverManager.getConnection(db.getUrl(), db.getUsername(), db.getPassword()));
         this.setStatement(this.getConnection().createStatement());
+
+        System.out.println("***");
+        System.out.println(sql);
+        System.out.println("***");
+
         this.getStatement().executeQuery(sql);
         this.setResultSet(this.getStatement().getResultSet());
 
@@ -145,7 +151,10 @@ public class JDBCIterable implements Iterator<List<String>> {
         this.resultSet = resultSet;
         try {
             this.setHasNext(this.getResultSet().next());
+        } catch (SQLServerException e) {
+            e.printStackTrace();
         } catch (SQLException e) {
+            System.out.println("***********************");
             e.printStackTrace();
         }
     }
