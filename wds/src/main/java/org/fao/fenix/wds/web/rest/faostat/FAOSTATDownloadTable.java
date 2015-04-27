@@ -561,10 +561,6 @@ public class FAOSTATDownloadTable {
                 if (datasource.toUpperCase().startsWith("FAOSTAT"))
                     sql.setQuery(replaceLimitWithTop(sql));
 
-                /* Get headers from SQL query. */
-//                ArrayList<String> headers = getHeadersFromSQL(sql.getQuery());
-
-
                 /* Compute result. */
                 JDBCIterable it = new JDBCIterable();
                 List<String> headers = new ArrayList<String>();
@@ -576,8 +572,6 @@ public class FAOSTATDownloadTable {
 
                     /* Get column names. */
                     headers = it.getColumnNames();
-                    for (String h : headers)
-                        System.out.println(h);
 
                 } catch (IllegalAccessException e) {
                     e.getMessage();
