@@ -67,18 +67,31 @@ public class WDSUtils {
                 Mongo mongo = mgr.getMongo();
                 DB db = mongo.getDB(ds.getDbName());
                 DBCollection dbCollection = db.getCollection(collection);
-                DBObject dbobj = (DBObject) JSON.parse(query);
-                DBCursor cursor = dbCollection.find(dbobj);
+                DBObject dbobj;
+                DBCursor cursor;
+                try {
+                    dbobj = (DBObject) JSON.parse(query);
+                    cursor = dbCollection.find(dbobj);
+                } catch (Exception e) {
+                    cursor = dbCollection.find();
+                }
+
 
                 /* Compute result. */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
                 try {
+                    writer.write("[");
+                    int count = 0;
                     while(cursor.hasNext()) {
                         writer.write(cursor.next().toString());
+                        if (count < cursor.size() - 1)
+                            writer.write(",");
+                        count++;
                     }
                 } finally {
                     cursor.close();
+                    writer.write("]");
                 }
 
                 /* Convert and write the output on the stream. */
