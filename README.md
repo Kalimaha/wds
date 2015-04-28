@@ -71,5 +71,39 @@ $.ajax({
         alert(a.responseText);
     }
     
-);
+});
+```
+
+The code needed to query a NoSQL database is exactly the same: only the specified datasource code and the query change.
+
+```javascript
+$.ajax({
+
+    type: 'POST',
+    url: 'rest/fenix/query',
+    data: {
+        datasource  :   'MYNOSQLDATASOURCE',
+        query       :   JSON.stringify('{"reporting_system": "my_system"}'),
+        collection  :   'logs'
+    },
+
+    success: function (response) {
+
+        /* Fetch the response. */
+        var json = response;
+
+        /* Cast it to JSON, if needed. */
+        if (typeof json == 'string')
+            json = $.parseJSON(response);
+
+        /* Do something with the data. */
+        $('#out').val(JSON.stringify(json));
+
+    },
+
+    error: function(a) {
+        alert(a.responseText);
+    }
+    
+});
 ```
