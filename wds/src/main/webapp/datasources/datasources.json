@@ -134,5 +134,13 @@
         "dbName": "fenix",
         "username": "fenix",
         "password": "Qwaszx"
-    }
+    },
+   {
+      "id": "GUIDOTEST",
+      "driver": "MongoDB",
+      "url": "",
+      "dbName": "guido",
+      "username": "fenix",
+      "password": "Qwaszx"
+   }
 ]
