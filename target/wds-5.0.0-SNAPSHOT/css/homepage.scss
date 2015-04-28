@@ -1,0 +1,54 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.box {
+  width: 500px;
+  background-color: #ffffff;
+  margin: 50px auto 0;
+  padding: 16px;
+}
+
+.title {
+  color: #9B2335;
+  font-weight: bold;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: #9B2335;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.img {
+  float: right;
+  height: 32px;
+  width: 32px;
+  margin-left: 8px;;
+}
+
+.button {
+  width: 25%;
+  line-height: 25px;
+}
+
+a {
+  color: #9c9c9c;
+}
+
+a:link {
+  color: #9c9c9c;
+}
+
+a:visited {
+  color: #9c9c9c;
+}
+
+a:hover {
+  color: #9c9c9c;
+}
+
+a:active {
+  color: #9c9c9c;
+}

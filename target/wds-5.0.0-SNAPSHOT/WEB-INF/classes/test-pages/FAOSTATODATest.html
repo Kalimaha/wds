@@ -1,0 +1,84 @@
+<html>
+	<head>
+		<title>FAOSTAT3 API</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<script type='text/javascript' src='http://netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js'></script>
+		<script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+		<script type='text/javascript'>
+			function test() {
+				var data = {};
+				var payload = {
+					"datasource"            : "faostatproddiss",
+					"donors"                : ["702","10","11"],
+					"recipients"            : ["5000","5100","5200"],
+					"purposes"              : ["1000","997","998"],
+					"lgTypes"               : ["1","2"],
+					"lgTerms"               : ["6096","6097","6098"],
+					"years"                 : ["2007","2006","2005"],
+					"lang"                  : "E",
+					"thousandSeparator"     : ",",
+					"decimalSeparator"      : ".",
+					"decimals"              : "2",
+					"page"                  : "0"
+				};
+				data.payload = JSON.stringify(payload);
+				$.ajax({
+					type : 'POST',
+               url : 'http://localhost:8080/wds/rest/procedures/oda/data',
+               data : data,
+					success : function(response) {
+						var s = '<table class="table table-striped table-bordered table-condensed table-responsive">';
+                        s += '<thead><tr>';
+                        s += '<th></th>';
+                        s += '<th>Donor</th>';
+                        s += '<th>Donor Code</th>';
+                        s += '<th>Recipient</th>';
+                        s += '<th>Recipient Code</th>';
+                        s += '<th>Purpose</th>';
+                        s += '<th>Purpose Code</th>';
+                        s += '<th>Flow</th>';
+                        s += '<th>Flow Code</th>';
+                        s += '<th>Element</th>';
+                        s += '<th>Element Code</th>';
+                        s += '<th>Year</th>';
+                        s += '<th></th>';
+                        s += '<th></th>';
+                        s += '<th>Value</th>';
+                        s += '</tr></thead>';
+                        s += '<tbody>';
+						for (var i = 0 ; i < response.length ; i++) {
+							s += '<tr>';
+							for (var j = 0 ; j < response[i].length ; j++)
+								s += '<td>' + response[i][j] + '</td>';
+						}
+                        s += '</tbody>';
+						s += '</table>';
+						document.getElementById('placeholder').innerHTML = s;
+					},	
+					error : function(err, b, c) {
+						console.log(err);
+						console.log(b);
+						console.log(c);
+					}	
+				});
+			}
+		</script>
+		<link href='http://netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css' rel='stylesheet'>
+	</head>
+	<body>
+		<div class='container'>
+			<br><br>
+			<div class='row'>
+				<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+					<button class='btn btn-default' onclick='test();'>Get ODA Data</button>
+				</div>
+			</div>
+			<br><br>
+			<div class='row'>
+				<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+					<div id='placeholder'>Your Table Will Be Shown Here</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
