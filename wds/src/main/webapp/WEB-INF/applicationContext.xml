@@ -32,4 +32,7 @@
         <constructor-arg value="/datasources" />
     </bean>
 
+    <bean id="mdsdGenerator" class="org.fao.fenix.d3s.mdsd.MDSDGenerator">
+    </bean>
+
 </beans>

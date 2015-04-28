@@ -47,10 +47,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -539,17 +536,115 @@ public class FAOSTATDownloadTable {
 
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/jsonobjects")
+    public Response createJSONObjects(@FormParam("datasource") final String datasource, @FormParam("json") final String json) {
+
+        /* Initiate the stream */
+        StreamingOutput stream = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream os) throws IOException, WebApplicationException {
+
+                /* Compute result. */
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+                SQLBean sql = null;
+                try {
+                    sql = g.fromJson(json, SQLBean.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                }
+                DatasourceBean db = datasourcePool.getDatasource(datasource.toUpperCase());
+
+                /* Alter the query to switch from LIMIT to TOP. */
+                if (datasource.toUpperCase().startsWith("FAOSTAT"))
+                    sql.setQuery(replaceLimitWithTop(sql));
+
+                /* Compute result. */
+                JDBCIterable it = new JDBCIterable();
+                List<String> headers = new ArrayList<String>();
+
+                try {
+
+                    /* Query DB. */
+                    it.query(db, sql.getQuery());
+
+                    /* Get column names. */
+                    headers = it.getColumnNames();
+
+                } catch (IllegalAccessException e) {
+                    e.getMessage();
+                    WDSExceptionStreamWriter.streamException(os, ("REST '/table/jsonobjects' thrown an error: " + e.getMessage()));
+                } catch (InstantiationException e) {
+                    e.getMessage();
+                    WDSExceptionStreamWriter.streamException(os, ("REST '/table/jsonobjects' thrown an error: " + e.getMessage()));
+                } catch (SQLException e) {
+                    e.getMessage();
+                    WDSExceptionStreamWriter.streamException(os, ("REST '/table/jsonobjects' thrown an error: " + e.getMessage()));
+                } catch (ClassNotFoundException e) {
+                    e.getMessage();
+                    WDSExceptionStreamWriter.streamException(os, ("REST '/table/jsonobjects' thrown an error: " + e.getMessage()));
+                } catch (Exception e) {
+                    e.getMessage();
+                    WDSExceptionStreamWriter.streamException(os, ("REST '/table/jsonobjects' thrown an error: " + e.getMessage()));
+                }
+
+                /* Write the result of the query. */
+                writer.write("[");
+                while (it.hasNext()) {
+                    List<String> s = it.next();
+                    try {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("{");
+                        for (int i = 0 ; i < s.size() ; i++) {
+                            sb.append("\"").append(headers.get(i)).append("\": ").append("\"").append(s.get(i)).append("\"");
+                            if (i < s.size() - 1)
+                                sb.append(",");
+                        }
+                        sb.append("}");
+                        writer.write(sb.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (it.hasNext())
+                        writer.write(",");
+                }
+                writer.write("]");
+
+                /* Flush the scream. */
+                writer.flush();
+
+            }
+
+        };
+
+        /* Stream result */
+        return Response.status(200).entity(stream).build();
+
+    }
+
+    private ArrayList<String> getHeadersFromSQL(String sql) {
+        ArrayList<String> l = new ArrayList<String>();
+        sql = sql.toLowerCase();
+        String selects = sql.substring("select ".length() + sql.indexOf("select "), sql.indexOf("from"));
+        StringTokenizer st = new StringTokenizer(selects, ",");
+        while (st.hasMoreTokens())
+            l.add(st.nextToken().trim());
+        return l;
+    }
+
     private void save(Date date, String rest, String payload) throws UnknownHostException {
-        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
-        DB db = mongo.getDB(SCHEMA);
-        DBCollection collection = db.getCollection("logs");
-        BasicDBObject document = new BasicDBObject();
-        document.put("date", date);
-        document.put("rest", rest);
-        DBObject dbObject = (DBObject) JSON.parse(payload);
-        document.put("payload", dbObject);
-        collection.insert(document);
+//        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
+//        Mongo mongo = mgr.getMongo();
+//        DB db = mongo.getDB(SCHEMA);
+//        DBCollection collection = db.getCollection("logs");
+//        BasicDBObject document = new BasicDBObject();
+//        document.put("date", date);
+//        document.put("rest", rest);
+//        DBObject dbObject = (DBObject) JSON.parse(payload);
+//        document.put("payload", dbObject);
+//        collection.insert(document);
     }
 
 }
