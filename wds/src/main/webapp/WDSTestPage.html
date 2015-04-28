@@ -26,7 +26,7 @@
                         $('#out').val(JSON.stringify(json));
                     },
                     error: function(a) {
-                        $('#out').append(a.responseText);
+                        $('#out').val(a.responseText);
                         swal({
                             title: 'Error',
                             type: 'error',
