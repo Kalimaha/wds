@@ -21,7 +21,6 @@ Information for Action Programme
  */
 package org.fao.fenix.wds.web.services;
 
-import org.apache.axiom.om.*;
 import org.fao.fenix.wds.core.bean.DBBean;
 import org.fao.fenix.wds.core.bean.SQLBean;
 import org.fao.fenix.wds.core.bean.WBBean;
@@ -37,86 +36,86 @@ import java.util.List;
 
 public class WDSWebService {
 
-	private static final String NAMESPACE = "http://services.web.wds.fenix.fao.org/xsd";
-	
-	public OMElement querySynch(OMElement request) {
-		
-		try {
-			
-			// timing
-			long t0 = System.currentTimeMillis();
-			
-			// extract payload
-			String payloadRequest  = extractPayload(request);
-//            System.out.println(payloadRequest);
-
-            // create the beans for connection and query
-			DBBean db = XML2Bean.convertDB(payloadRequest);
-			SQLBean sql = XML2Bean.convertSQL(payloadRequest);
-			
-			// query the database
-			List<List<String>> table = new ArrayList<List<String>>();
-			switch (db.getConnection()) {
-				case JDBC:
-					table = JDBCConnector.query(db, sql, false);
-				break;
-				case WS: 
-					String worldBankRest = XML2WorldBank.convertWorldBank(payloadRequest).toString();
-					WBBean selects = XML2WorldBank.convertWorldBankSelects(payloadRequest);
-					table = WSConnector.queryWorldBank(worldBankRest, selects); 
-				break;
-			}
-			
-			// wrap the result
-			String payloadResponse = Wrapper.wrapAsXML(table).toString();
-//            System.out.println(payloadResponse);
-
-            // prepare the response
-			OMFactory fac = OMAbstractFactory.getOMFactory();
-			OMNamespace omNs = fac.createOMNamespace(NAMESPACE, "ns");
-			OMElement response = fac.createOMElement("querySynchResponse", omNs);
-			OMElement value = fac.createOMElement("payload", omNs);
-			value.addChild(fac.createOMText(value, payloadResponse));
-			response.addChild(value);
-			
-			// timing
-			long t1 = System.currentTimeMillis();
-//			System.out.println("[WDS] - SERVICE - SOAP - " + (t1 - t0) + " - " + FieldParser.parseDate(new Date(), "FENIXAPPS"));
-			
-			// send the response
-			return response;
-			
-		} catch (IllegalAccessException e) {
-			return handleException(e.getMessage());
-		} catch (InstantiationException e) {
-			return handleException(e.getMessage());
-		} catch (SQLException e) {
-			return handleException(e.getMessage());
-		} catch (ClassNotFoundException e) {
-			return handleException(e.getMessage());
-		}
-		
-	}
-	
-	private OMElement handleException(String message) {
-		OMFactory fac = OMAbstractFactory.getOMFactory();
-		OMNamespace omNs = fac.createOMNamespace(NAMESPACE, "ns");
-		OMElement response = fac.createOMElement("querySynchResponse", omNs);
-		OMElement value = fac.createOMElement("payload", omNs);
-		List<List<String>> table = new ArrayList<List<String>>();
-		List<String> row = new ArrayList<String>();
-		row.add(message);
-		table.add(row);
-		String payloadResponse = Wrapper.wrapAsXML(table).toString();
-		value.addChild(fac.createOMText(value, payloadResponse));
-		return response;
-	}
-	
-	private String extractPayload(OMElement element) throws OMException {
-		element.build();
-		element.detach();
-		OMElement payloadElement = element.getFirstElement();
-		return payloadElement.getText();
-	}
+//	private static final String NAMESPACE = "http://services.web.wds.fenix.fao.org/xsd";
+//
+//	public OMElement querySynch(OMElement request) {
+//
+//		try {
+//
+//			// timing
+//			long t0 = System.currentTimeMillis();
+//
+//			// extract payload
+//			String payloadRequest  = extractPayload(request);
+////            System.out.println(payloadRequest);
+//
+//            // create the beans for connection and query
+//			DBBean db = XML2Bean.convertDB(payloadRequest);
+//			SQLBean sql = XML2Bean.convertSQL(payloadRequest);
+//
+//			// query the database
+//			List<List<String>> table = new ArrayList<List<String>>();
+//			switch (db.getConnection()) {
+//				case JDBC:
+//					table = JDBCConnector.query(db, sql, false);
+//				break;
+//				case WS:
+//					String worldBankRest = XML2WorldBank.convertWorldBank(payloadRequest).toString();
+//					WBBean selects = XML2WorldBank.convertWorldBankSelects(payloadRequest);
+//					table = WSConnector.queryWorldBank(worldBankRest, selects);
+//				break;
+//			}
+//
+//			// wrap the result
+//			String payloadResponse = Wrapper.wrapAsXML(table).toString();
+////            System.out.println(payloadResponse);
+//
+//            // prepare the response
+//			OMFactory fac = OMAbstractFactory.getOMFactory();
+//			OMNamespace omNs = fac.createOMNamespace(NAMESPACE, "ns");
+//			OMElement response = fac.createOMElement("querySynchResponse", omNs);
+//			OMElement value = fac.createOMElement("payload", omNs);
+//			value.addChild(fac.createOMText(value, payloadResponse));
+//			response.addChild(value);
+//
+//			// timing
+//			long t1 = System.currentTimeMillis();
+////			System.out.println("[WDS] - SERVICE - SOAP - " + (t1 - t0) + " - " + FieldParser.parseDate(new Date(), "FENIXAPPS"));
+//
+//			// send the response
+//			return response;
+//
+//		} catch (IllegalAccessException e) {
+//			return handleException(e.getMessage());
+//		} catch (InstantiationException e) {
+//			return handleException(e.getMessage());
+//		} catch (SQLException e) {
+//			return handleException(e.getMessage());
+//		} catch (ClassNotFoundException e) {
+//			return handleException(e.getMessage());
+//		}
+//
+//	}
+//
+//	private OMElement handleException(String message) {
+//		OMFactory fac = OMAbstractFactory.getOMFactory();
+//		OMNamespace omNs = fac.createOMNamespace(NAMESPACE, "ns");
+//		OMElement response = fac.createOMElement("querySynchResponse", omNs);
+//		OMElement value = fac.createOMElement("payload", omNs);
+//		List<List<String>> table = new ArrayList<List<String>>();
+//		List<String> row = new ArrayList<String>();
+//		row.add(message);
+//		table.add(row);
+//		String payloadResponse = Wrapper.wrapAsXML(table).toString();
+//		value.addChild(fac.createOMText(value, payloadResponse));
+//		return response;
+//	}
+//
+//	private String extractPayload(OMElement element) throws OMException {
+//		element.build();
+//		element.detach();
+//		OMElement payloadElement = element.getFirstElement();
+//		return payloadElement.getText();
+//	}
 	
 }
