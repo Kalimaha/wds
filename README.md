@@ -3,7 +3,7 @@ WDS: Web Data Server
 
 WDS acronym stands for Web Data Server. This project is used to fetch data from different source types with  standardized inputs and outputs. 
 
-## Datasource Management
+## Management of available datasources
 
 The datasources made available by WDS are configured through the JSON file stored in:
 
