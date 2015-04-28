@@ -3,7 +3,8 @@ WDS: Web Data Server
 
 WDS acronym stands for Web Data Server. This project is used to fetch data from different source types with  standardized inputs and outputs. 
 
-## Management of available datasources
+Management of available datasources
+-----------------------------------
 
 The datasources made available by WDS are configured through the JSON file stored in:
 
@@ -36,3 +37,39 @@ Each object has the following properties:
 |dbName|The name of the database as is in the DBMS.|my_db|
 |username|Username to access the DBMS.|my_username|
 |password|Password to access the DBMS.|my_password|
+
+Query a datasource
+------------------
+Once the datasources are configured it is possible to fetch data from them through REST service. The following example shows how to get data from a SQL datasource:
+
+```javascript
+$.ajax({
+
+    type: 'POST',
+    url: 'rest/fenix/query',
+    data: {
+        datasource  :   'MYDATASOURCE',
+        query       :   'SELECT FirstName, FamilyName FROM Employee',
+        collection  :   null
+    },
+
+    success: function (response) {
+
+        /* Fetch the response. */
+        var json = response;
+
+        /* Cast it to JSON, if needed. */
+        if (typeof json == 'string')
+            json = $.parseJSON(response);
+
+        /* Do something with the data. */
+        $('#out').val(JSON.stringify(json));
+
+    },
+
+    error: function(a) {
+        alert(a.responseText);
+    }
+    
+);
+```
