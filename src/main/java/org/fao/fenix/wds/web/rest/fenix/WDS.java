@@ -33,7 +33,8 @@ public class WDS {
     @Path("/query")
     public Response query(@FormParam("datasource") String datasource,
                           @FormParam("query") final String query,
-                          @FormParam("collection") final String collection) throws Exception {
+                          @FormParam("collection") final String collection,
+                          @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
 
         /* Utilities. */
         Gson g = new Gson();
@@ -59,7 +60,10 @@ public class WDS {
             default:
 
                 /* Stream the output. */
-                stream = WDSUtils.sqlStreamingOutput(ds, query);
+                if (outputType.equalsIgnoreCase("object"))
+                    stream = WDSUtils.sqlStreamingOutputObject(ds, query);
+                else if (outputType.equalsIgnoreCase("array"))
+                    stream = WDSUtils.sqlStreamingOutputArray(ds, query);
 
                 break;
 
