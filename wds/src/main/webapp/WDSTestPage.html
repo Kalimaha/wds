@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <title>WDS - FENIX Web Data Server</title>
+        <link rel='icon' type='image/jpeg' href='images/fx_logo.png'>
+        <link href='http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700|Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
+        <link href='css/homepage.css' rel='stylesheet' type='text/css'>
+        <link href='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.css' rel='stylesheet' type='text/css'>
+        <script type='application/javascript' src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
+        <script type='application/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.min.js'></script>
+        <script type='application/javascript'>
+            function query() {
+                var payload = {
+                    datasource: 'faostat'
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: 'rest/fenix/query',
+                    data: {
+                        datasource: 'faostat'
+                    },
+                    success: function (response) {
+                        var json = response;
+                        if (typeof json == 'string')
+                            json = $.parseJSON(response);
+                        $('#out').val(JSON.stringify(json));
+                    },
+                    error: function(a) {
+                        $('#out').append(a.responseText);
+                        swal({
+                            title: 'Error',
+                            type: 'error',
+                            text: a.responseText,
+                            html: true
+                        });
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body style='background-color: #9B2335;'>
+        <div class='box'>
+            <div class='title'>
+                FENIX Web Data Server
+                <img src='images/fx_logo.png' class='img'>
+                <img src='images/fao_logo.png' class='img'>
+            </div>
+            <br>
+            <div style='text-align: right;'>
+                Welcome to the FENIX Web Data Server. If you're reading these words your installation of WDS was successful: congratulations!
+            </div>
+            <hr>
+            <div>
+                <div class='subtitle'>
+                    Services
+                </div>
+                <br>
+                <div>
+                    <button class='button' onclick='query();'>
+                        <i class='fa fa-database'></i> Query
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div>
+                <div class='subtitle'>
+                    Results
+                </div>
+                <textarea id='out' style='width: 100%; height: 250px;'>
+
+                </textarea>
+            </div>
+            <hr>
+            <div style='text-align: center;'>
+                <span>
+                    <a target='_blank' href='https://github.com/FENIX-Platform/WDS'>
+                        <i class='fa fa-github'></i>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </body>
+</html>
