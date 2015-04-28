@@ -26,7 +26,7 @@ Each object in this file describes a datasource as per the example below:
 ]
 ```
 
-Each object in the array must contain the following elements:
+Each object has the following properties:
 
 |Name|Description|Example|
 |----|-----------|-------|
