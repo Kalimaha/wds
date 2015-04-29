@@ -40,7 +40,9 @@ Each object has the following properties:
 
 Query a datasource
 ------------------
-Once the datasources are configured it is possible to fetch data from them through REST service. The following example shows how to get data from a SQL datasource:
+Once the datasources are configured it is possible to fetch data from them through REST service. The following examples shows how to get data from different vendors.
+
+### SQL (SQLServer, PostgreSQL, MySQL, ...)
 
 ```javascript
 $.ajax({
@@ -74,7 +76,9 @@ $.ajax({
 });
 ```
 
-The code needed to query a NoSQL database is exactly the same: only the specified datasource code and the query change.
+### MongoDB
+
+The code needed to query a MongoDB database is very similar to the previous one. There is one additional parameter, ```collection```, to specify the name of the collection to query:
 
 ```javascript
 $.ajax({
@@ -106,4 +110,53 @@ $.ajax({
     }
     
 });
+```
+
+### OrientDB
+
+The following example shows how to query the default OrientDB schema, ```GratefulDeadConcerts```:
+
+```javascript
+$.ajax({
+
+    type: 'POST',
+    url: 'rest/fenix/query',
+    data: {
+        datasource  :   'ORIENTTEST',
+        query       :   'SELECT name FROM V',
+        collection  :   null
+    },
+
+    success: function (response) {
+
+        /* Fetch the response. */
+        var json = response;
+
+        /* Cast it to JSON, if needed. */
+        if (typeof json == 'string')
+            json = $.parseJSON(response);
+
+        /* Do something with the data. */
+        $('#out').val(JSON.stringify(json));
+
+    },
+
+    error: function(a) {
+        alert(a.responseText);
+    }
+    
+});
+```
+
+This datasource has been configured as follows:
+
+```json
+{
+    "id"        :  "ORIENTTEST",
+    "url"       :  "localhost",
+    "driver"    :  "OrientDB",
+    "dbName"    :  "GratefulDeadConcerts",
+    "username"  :  "admin",
+    "password"  :  "admin"
+}
 ```
