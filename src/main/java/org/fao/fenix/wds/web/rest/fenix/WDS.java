@@ -42,8 +42,7 @@ public class WDS {
                           @FormParam("collection") final String collection,
                           @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
 
-        /* Utilities. */
-        Gson g = new Gson();
+        /* Output stream. */
         StreamingOutput stream = null;
 
         /* Create datasource bean. */
@@ -53,27 +52,18 @@ public class WDS {
         switch (ds.getDriver()) {
 
             case MONGODB:
-
-                /* Stream the output. */
                 stream = WDSUtils.mongoStreamingOutput(ds, query, collection);
-
                 break;
 
             case ORIENTDB:
-
-                /* Stream the output. */
                 stream = WDSUtils.orientStreamingOutput(ds, query);
-
                 break;
 
             default:
-
-                /* Stream the output. */
                 if (outputType.equalsIgnoreCase("object"))
                     stream = WDSUtils.sqlStreamingOutputObject(ds, query);
                 else if (outputType.equalsIgnoreCase("array"))
                     stream = WDSUtils.sqlStreamingOutputArray(ds, query);
-
                 break;
 
         }
@@ -82,5 +72,11 @@ public class WDS {
         return Response.status(200).entity(stream).build();
 
     }
+
+//    @POST
+//    @Path("/query")
+//    public Response insert() {
+//
+//    }
 
 }
