@@ -142,5 +142,13 @@
       "dbName": "guido",
       "username": "fenix",
       "password": "Qwaszx"
+   },
+   {
+      "id"        :  "ORIENTTEST",
+      "url"       :  "localhost",
+      "driver"    :  "OrientDB",
+      "dbName"    :  "GratefulDeadConcerts",
+      "username"  :  "admin",
+      "password"  :  "admin"
    }
 ]

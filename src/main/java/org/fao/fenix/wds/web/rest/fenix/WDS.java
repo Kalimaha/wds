@@ -3,6 +3,10 @@ package org.fao.fenix.wds.web.rest.fenix;
 import com.google.gson.Gson;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
@@ -16,6 +20,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,6 +60,9 @@ public class WDS {
                 break;
 
             case ORIENTDB:
+
+                /* Stream the output. */
+                stream = WDSUtils.orientStreamingOutput(ds, query);
 
                 break;
 
