@@ -192,7 +192,8 @@ public class WDSUtils {
                     List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
                     for (int i = 0 ; i < rawData.size() ; i++) {
                         ODocument document = rawData.get(i);
-                        writer.write(document.toJSON());
+//                        writer.write(document.toJSON());
+                        writer.write(g.toJson(document.toMap()));
                         if (i < rawData.size() - 1)
                             writer.write(",");
                     }

@@ -73,10 +73,13 @@ public class WDS {
 
     }
 
-//    @POST
-//    @Path("/query")
-//    public Response insert() {
-//
-//    }
+    @POST
+    @Path("/insert")
+    public Response insert() {
+
+        /* Stream result */
+        return Response.status(200).entity("Insert complete.").build();
+
+    }
 
 }
