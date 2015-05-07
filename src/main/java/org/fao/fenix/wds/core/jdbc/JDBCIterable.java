@@ -8,9 +8,7 @@ import org.fao.fenix.wds.core.exception.WDSException;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -103,6 +101,41 @@ public class JDBCIterable implements Iterator<List<String>> {
                 for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
                     try {
                         l.add(this.getResultSet().getString(i).trim());
+                    } catch (NullPointerException e) {
+
+                    }
+                }
+                this.setHasNext(this.getResultSet().next());
+            } catch(SQLException ignored) {
+
+            }
+        }
+
+        if (!this.isHasNext()) {
+            try {
+                this.getResultSet().close();
+                this.getStatement().close();
+                this.getConnection().close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return l;
+    }
+
+    public List<Map<String, String>> nextMap() {
+
+        List<Map<String, String>> l = null;
+
+        if (this.isHasNext()) {
+            l = new ArrayList<Map<String, String>>();
+            try {
+                for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
+                    Map<String, String> m = new HashMap<String, String>();
+                    try {
+                        m.put(this.getResultSet().getMetaData().getColumnLabel(i), this.getResultSet().getString(i).trim());
+                        l.add(m);
                     } catch (NullPointerException e) {
 
                     }

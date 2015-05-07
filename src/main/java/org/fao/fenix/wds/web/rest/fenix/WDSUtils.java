@@ -14,10 +14,7 @@ import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -54,16 +51,13 @@ public class WDSUtils {
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
                 writer.write("[");
                 while (it.hasNext()) {
-                    List<String> s = it.next();
+                    List<Map<String, String>> l = it.nextMap();
                     try {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("{");
-                        for (int i = 0 ; i < s.size() ; i++) {
-                            sb.append("\"").append(headers.get(i)).append("\": ").append("\"").append(s.get(i)).append("\"");
-                            if (i < s.size() - 1)
-                                sb.append(",");
-                        }
-                        sb.append("}");
+                        StringBuilder sb = new StringBuilder("{");
+                        for (Map<String, String> m : l)
+                            for (String key : m.keySet())
+                                sb.append("\"").append(key).append("\": ").append("\"").append(m.get(key)).append("\",");
+                        sb.deleteCharAt(sb.length() - 1).append("}");
                         writer.write(sb.toString());
                     } catch (Exception e) {
                         e.printStackTrace();
