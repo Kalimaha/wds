@@ -129,21 +129,19 @@ public class JDBCIterable implements Iterator<List<String>> {
 
         String s = "{";
         String columnType;
+        String value;
 
         if (this.isHasNext()) {
             try {
                 for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
                     try {
                         columnType = this.getResultSet().getMetaData().getColumnClassName(i);
+                        value = this.getResultSet().getString(i).trim();
                         s += "\"" + this.getResultSet().getMetaData().getColumnLabel(i) + "\": ";
-                        if (columnType.endsWith("Double")) {
-                            s += Double.parseDouble(this.getResultSet().getString(i).trim());
-                        } else if (columnType.endsWith("Integer")) {
-                            s += Integer.parseInt(this.getResultSet().getString(i).trim());
-                        } else if (columnType.endsWith("Date")) {
-                            s += new Date(this.getResultSet().getString(i).trim()).toString();
+                        if (columnType.endsWith("String")) {
+                            s += "\"" + value + "\"";
                         } else {
-                            s += "\"" + this.getResultSet().getString(i).trim() + "\"";
+                            s += value;
                         }
                         if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
                             s += ",";
