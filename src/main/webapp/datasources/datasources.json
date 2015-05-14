@@ -158,5 +158,13 @@
       "dbName": "msd_2.0",
       "username": "admin",
       "password": "admin"
+   },
+   {
+      "id": "VOH",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://faostat3.fao.org:5432/voh",
+      "dbName": "voh",
+      "username": "fenix",
+      "password": "Qwaszx"
    }
 ]
