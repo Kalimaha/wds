@@ -51,17 +51,8 @@ public class WDSUtils {
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
                 writer.write("[");
                 while (it.hasNext()) {
-                    List<Map<String, String>> l = it.nextMap();
-                    try {
-                        StringBuilder sb = new StringBuilder("{");
-                        for (Map<String, String> m : l)
-                            for (String key : m.keySet())
-                                sb.append("\"").append(key).append("\": ").append("\"").append(m.get(key)).append("\",");
-                        sb.deleteCharAt(sb.length() - 1).append("}");
-                        writer.write(sb.toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    String s = it.nextJSON();
+                    writer.write(s);
                     if (it.hasNext())
                         writer.write(",");
                 }

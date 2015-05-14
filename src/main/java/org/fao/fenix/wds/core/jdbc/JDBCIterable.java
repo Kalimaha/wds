@@ -9,6 +9,7 @@ import org.fao.fenix.wds.core.exception.WDSException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -82,9 +83,9 @@ public class JDBCIterable implements Iterator<List<String>> {
         try {
             for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++)
                 l.add(this.getResultSet().getMetaData().getColumnLabel(i));
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
 
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
 
         }
         return l;
@@ -101,7 +102,7 @@ public class JDBCIterable implements Iterator<List<String>> {
                 for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
                     try {
                         l.add(this.getResultSet().getString(i).trim());
-                    } catch (NullPointerException e) {
+                    } catch (NullPointerException ignored) {
 
                     }
                 }
@@ -116,27 +117,37 @@ public class JDBCIterable implements Iterator<List<String>> {
                 this.getResultSet().close();
                 this.getStatement().close();
                 this.getConnection().close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (SQLException ignored) {
+
             }
         }
 
         return l;
     }
 
-    public List<Map<String, String>> nextMap() {
+    public String nextJSON() {
 
-        List<Map<String, String>> l = null;
+        String s = "{";
+        String columnType;
 
         if (this.isHasNext()) {
-            l = new ArrayList<Map<String, String>>();
             try {
                 for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
-                    Map<String, String> m = new HashMap<String, String>();
                     try {
-                        m.put(this.getResultSet().getMetaData().getColumnLabel(i), this.getResultSet().getString(i).trim());
-                        l.add(m);
-                    } catch (NullPointerException e) {
+                        columnType = this.getResultSet().getMetaData().getColumnClassName(i);
+                        s += "\"" + this.getResultSet().getMetaData().getColumnLabel(i) + "\": ";
+                        if (columnType.endsWith("Double")) {
+                            s += Double.parseDouble(this.getResultSet().getString(i).trim());
+                        } else if (columnType.endsWith("Integer")) {
+                            s += Integer.parseInt(this.getResultSet().getString(i).trim());
+                        } else if (columnType.endsWith("Date")) {
+                            s += new Date(this.getResultSet().getString(i).trim()).toString();
+                        } else {
+                            s += "\"" + this.getResultSet().getString(i).trim() + "\"";
+                        }
+                        if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
+                            s += ",";
+                    } catch (NullPointerException ignored) {
 
                     }
                 }
@@ -146,17 +157,19 @@ public class JDBCIterable implements Iterator<List<String>> {
             }
         }
 
+        s += "}";
+
         if (!this.isHasNext()) {
             try {
                 this.getResultSet().close();
                 this.getStatement().close();
                 this.getConnection().close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (SQLException ignored) {
+
             }
         }
 
-        return l;
+        return s;
     }
 
     @Override
@@ -185,10 +198,10 @@ public class JDBCIterable implements Iterator<List<String>> {
         this.resultSet = resultSet;
         try {
             this.setHasNext(this.getResultSet().next());
-        } catch (SQLServerException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLServerException ignored) {
+
+        } catch (SQLException ignored) {
+
         }
     }
 
@@ -214,10 +227,6 @@ public class JDBCIterable implements Iterator<List<String>> {
 
     public void setHasNext(boolean hasNext) {
         this.hasNext = hasNext;
-    }
-
-    public int getColumns() {
-        return columns;
     }
 
     public void setColumns(int columns) {
