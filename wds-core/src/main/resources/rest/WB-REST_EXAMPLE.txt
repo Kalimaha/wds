@@ -1,8 +1,0 @@
-# TODO: add frequency, default: Y
-http://fenixapps.fao.org/wds/wds?out=xml
-								   &db=worldbank
-								   &select=date[Year],indicator[Indicator],value[Value]
-								   &from=indicators
-								   &where=country(br:it),incomeLevel(LMC),indicator(AG.AGR.TRAC.NO),date(2001:2002)
-								   &orderby=date[DESC]
-								   &frequency=Q
