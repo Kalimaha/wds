@@ -1,4 +1,5 @@
-[![Stories in Ready](https://badge.waffle.io/FENIX-Platform/WDS.png?label=ready&title=Ready)](https://waffle.io/FENIX-Platform/WDS)
+[![Stories in Progress](https://badge.waffle.io/FENIX-Platform/WDS.png?label=in%20progress&title=In%20Progress)](https://waffle.io/FENIX-Platform/WDS)
+
 WDS: Web Data Server
 ====================
 
