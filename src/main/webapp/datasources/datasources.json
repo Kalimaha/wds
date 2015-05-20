@@ -149,7 +149,9 @@
       "url": "",
       "dbName": "guido",
       "username": "fenix",
-      "password": "Qwaszx"
+      "password": "Qwaszx",
+      "create": false,
+      "retrieve": true
    },
    {
       "id": "ORIENTTEST",

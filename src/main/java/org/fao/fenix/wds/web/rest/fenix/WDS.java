@@ -27,40 +27,52 @@ public class WDS {
                           @QueryParam("collection") final String collection,
                           @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
 
-        /* Output stream. */
-        StreamingOutput stream = null;
+
 
         /* Create datasource bean. */
         final DatasourceBean ds = datasourcePool.getDatasource(datasource);
 
-        /* Handle the request according to DB type. */
-        switch (ds.getDriver()) {
+        /* Check permissions. */
+        if (ds.isRetrieve()) {
 
-            case MONGODB:
-                stream = WDSUtils.mongoStreamingOutput(ds, query, collection);
-                break;
+            /* Output stream. */
+            StreamingOutput stream = null;
 
-            case ORIENTDB:
-                stream = WDSUtils.orientStreamingOutput(ds, query);
-                break;
+            /* Handle the request according to DB type. */
+            switch (ds.getDriver()) {
 
-            default:
-                if (outputType.equalsIgnoreCase("object"))
-                    stream = WDSUtils.sqlStreamingOutputObject(ds, query);
-                else if (outputType.equalsIgnoreCase("array"))
-                    stream = WDSUtils.sqlStreamingOutputArray(ds, query);
-                break;
+                case MONGODB:
+                    stream = WDSUtils.mongoStreamingOutput(ds, query, collection);
+                    break;
+
+                case ORIENTDB:
+                    stream = WDSUtils.orientStreamingOutput(ds, query);
+                    break;
+
+                default:
+                    if (outputType.equalsIgnoreCase("object"))
+                        stream = WDSUtils.sqlStreamingOutputObject(ds, query);
+                    else if (outputType.equalsIgnoreCase("array"))
+                        stream = WDSUtils.sqlStreamingOutputArray(ds, query);
+                    break;
+
+            }
+
+            /* Stream result */
+            return Response.status(200).entity(stream).build();
 
         }
 
-        /* Stream result */
-        return Response.status(200).entity(stream).build();
+        /* Return message error otherwise. */
+        else {
+            throw new Exception("This datasource has no RETRIEVE privilege.");
+        }
 
     }
 
     @POST
     @Path("/create")
-    public Response insert(@FormParam("datasource") String datasource,
+    public Response create(@FormParam("datasource") String datasource,
                            @FormParam("query") final String query,
                            @FormParam("collection") final String collection,
                            @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
@@ -68,20 +80,30 @@ public class WDS {
         /* Create datasource bean. */
         final DatasourceBean ds = datasourcePool.getDatasource(datasource);
 
-        /* ID of the new resource. */
-        String id = null;
+        /* Check permissions. */
+        if (ds.isCreate()) {
 
-        /* Handle the request according to DB type. */
-        switch (ds.getDriver()) {
+            /* ID of the new resource. */
+            String id = null;
 
-            case MONGODB:
-                id = WDSUtils.mongoInsert(ds, query, collection);
-                break;
+            /* Handle the request according to DB type. */
+            switch (ds.getDriver()) {
+
+                case MONGODB:
+                    id = WDSUtils.mongoInsert(ds, query, collection);
+                    break;
+
+            }
+
+            /* Stream result */
+            return Response.status(200).entity("{\"id\": \"" + id + "\"}").build();
 
         }
 
-        /* Stream result */
-        return Response.status(200).entity("{\"id\": \"" + id + "\"}").build();
+        /* Return message error otherwise. */
+        else {
+            throw new Exception("This datasource has no CREATE privilege.");
+        }
 
     }
 
