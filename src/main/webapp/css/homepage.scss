@@ -1,5 +1,10 @@
-body {
+* {
   font-family: 'Roboto', sans-serif;
+  color: #9B2335;
+}
+
+body {
+  background-color: #9B2335 !important;
 }
 
 .box {
@@ -10,13 +15,11 @@ body {
 }
 
 .title {
-  color: #9B2335;
   font-weight: bold;
   font-size: 28px;
 }
 
 .subtitle {
-  color: #9B2335;
   font-weight: bold;
   font-size: 16px;
 }
@@ -57,4 +60,12 @@ small {
   font-size: 16px;
   color: #9c9c9c;
   font-style: italic;
+}
+
+i {
+  color: #000 !important;
+}
+
+button {
+  color: #000 !important;
 }

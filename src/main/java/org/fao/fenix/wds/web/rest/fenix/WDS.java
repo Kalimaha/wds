@@ -20,12 +20,12 @@ public class WDS {
     @Autowired
     private DatasourcePool datasourcePool;
 
-    @POST
+    @GET
     @Path("/retrieve")
-    public Response query(@FormParam("datasource") String datasource,
-                          @FormParam("query") final String query,
-                          @FormParam("collection") final String collection,
-                          @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
+    public Response query(@QueryParam("datasource") String datasource,
+                          @QueryParam("query") final String query,
+                          @QueryParam("collection") final String collection,
+                          @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
 
         /* Output stream. */
         StreamingOutput stream = null;
@@ -59,11 +59,26 @@ public class WDS {
     }
 
     @POST
-    @Path("/insert")
-    public Response insert() {
+    @Path("/create")
+    public Response insert(@FormParam("datasource") String datasource,
+                           @FormParam("query") final String query,
+                           @FormParam("collection") final String collection,
+                           @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
+
+        /* Create datasource bean. */
+        final DatasourceBean ds = datasourcePool.getDatasource(datasource);
+
+        /* Handle the request according to DB type. */
+        switch (ds.getDriver()) {
+
+            case MONGODB:
+                WDSUtils.mongoInsert(ds, query, collection);
+                break;
+
+        }
 
         /* Stream result */
-        return Response.status(200).entity("Insert complete.").build();
+        return Response.status(200).entity("{\"message\": \"Insert complete.\"}").build();
 
     }
 

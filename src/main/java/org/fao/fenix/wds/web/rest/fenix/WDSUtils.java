@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
+import org.w3c.dom.Document;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -156,6 +157,15 @@ public class WDSUtils {
 
         };
 
+    }
+
+    public static void mongoInsert(final DatasourceBean ds, final String document, final String collection) throws Exception {
+        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
+        Mongo mongo = mgr.getMongo();
+        DB db = mongo.getDB(ds.getDbName());
+        DBCollection dbCollection = db.getCollection(collection);
+        DBObject dbobj = (DBObject) JSON.parse(document);
+        dbCollection.insert(dbobj);
     }
 
     public static StreamingOutput orientStreamingOutput(final DatasourceBean ds, final String query) {
