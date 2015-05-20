@@ -68,17 +68,20 @@ public class WDS {
         /* Create datasource bean. */
         final DatasourceBean ds = datasourcePool.getDatasource(datasource);
 
+        /* ID of the new resource. */
+        String id = null;
+
         /* Handle the request according to DB type. */
         switch (ds.getDriver()) {
 
             case MONGODB:
-                WDSUtils.mongoInsert(ds, query, collection);
+                id = WDSUtils.mongoInsert(ds, query, collection);
                 break;
 
         }
 
         /* Stream result */
-        return Response.status(200).entity("{\"message\": \"Insert complete.\"}").build();
+        return Response.status(200).entity("{\"id\": \"" + id + "\"}").build();
 
     }
 
