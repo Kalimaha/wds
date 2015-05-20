@@ -21,7 +21,7 @@ public class WDS {
     private DatasourcePool datasourcePool;
 
     @POST
-    @Path("/query")
+    @Path("/retrieve")
     public Response query(@FormParam("datasource") String datasource,
                           @FormParam("query") final String query,
                           @FormParam("collection") final String collection,

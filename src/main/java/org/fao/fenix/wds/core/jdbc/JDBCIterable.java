@@ -137,7 +137,6 @@ public class JDBCIterable implements Iterator<List<String>> {
                     try {
                         columnType = this.getResultSet().getMetaData().getColumnClassName(i);
                         value = this.getResultSet().getString(i).trim();
-                        System.out.println(value + "? " + columnType);
                         s += "\"" + this.getResultSet().getMetaData().getColumnLabel(i) + "\": ";
                         if (columnType.endsWith("Double")) {
                             s += Double.parseDouble(value);
