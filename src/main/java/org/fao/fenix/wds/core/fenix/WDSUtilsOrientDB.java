@@ -75,19 +75,46 @@ public class WDSUtilsOrientDB implements WDSUtils {
                 OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
                 ODatabaseDocumentTx connection = pool.acquire();
 
-                /* Compute result. */
-                try {
-                    writer.write("[");
-                    List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
-                    for (int i = 0 ; i < rawData.size() ; i++) {
-                        ODocument document = rawData.get(i);
-                        writer.write(document.toJSON());
-                        if (i < rawData.size() - 1)
-                            writer.write(",");
+                /* Compute result as an array of objects... */
+                if (outputType.equalsIgnoreCase("object")) {
+                    try {
+                        writer.write("[");
+                        List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
+                        for (int i = 0; i < rawData.size(); i++) {
+                            ODocument document = rawData.get(i);
+                            writer.write(document.toJSON());
+                            if (i < rawData.size() - 1)
+                                writer.write(",");
+                        }
+                    } finally {
+                        connection.close();
+                        writer.write("]");
                     }
-                } finally {
-                    connection.close();
-                    writer.write("]");
+                }
+
+                /* ...or as an array of arrays. */
+                if (outputType.equalsIgnoreCase("array")) {
+                    StringBuilder sb = new StringBuilder();
+                    try {
+                        sb.append("[");
+                        List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
+                        for (int i = 0; i < rawData.size(); i++) {
+                            ODocument document = rawData.get(i);
+                            sb.append("[");
+                            for (int j = 0 ; j < document.fieldNames().length ; j++) {
+                                sb.append("\"").append(document.field(document.fieldNames()[j])).append("\"");
+                                if (j < document.fieldNames().length - 1)
+                                    sb.append(",");
+                            }
+                            sb.append("]");
+                            if (i < rawData.size() - 1)
+                                sb.append(",");
+                        }
+                        sb.append("]");
+                    } finally {
+                        connection.close();
+                        writer.write(sb.toString());
+                    }
                 }
 
                 /* Convert and write the output on the stream. */
