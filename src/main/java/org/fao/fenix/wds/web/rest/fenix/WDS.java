@@ -35,6 +35,7 @@ public class WDS {
 
     @GET
     @Path("/retrieve")
+    @Produces("application/json")
     public Response retrieve(@QueryParam("datasource") String datasource,
                              @QueryParam("query") final String query,
                              @QueryParam("collection") final String collection,
@@ -82,6 +83,7 @@ public class WDS {
 
     @POST
     @Path("/create")
+    @Produces("application/json")
     public Response create(@FormParam("datasource") String datasource,
                            @FormParam("query") final String query,
                            @FormParam("collection") final String collection,

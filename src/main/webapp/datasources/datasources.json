@@ -169,5 +169,14 @@
       "dbName": "voh",
       "username": "fenix",
       "password": "Qwaszx"
+   },
+   {
+      "id": "LOCALPOSTGRES",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://127.0.0.1:5432/test",
+      "dbName": "test",
+      "username": "fenix",
+      "password": "Fenix2015",
+      "create": true
    }
 ]

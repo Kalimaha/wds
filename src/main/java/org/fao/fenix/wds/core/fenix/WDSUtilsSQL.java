@@ -1,16 +1,20 @@
 package org.fao.fenix.wds.core.fenix;
 
 import com.google.gson.Gson;
+import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -23,27 +27,63 @@ public class WDSUtilsSQL implements WDSUtils {
     public List<String> create(final DatasourceBean ds, final String documents, final String collection) throws Exception {
 
         /* Prepare the output. */
+        StringBuilder sb = new StringBuilder();
         List<String> ids = new ArrayList<String>();
 
-        /* connection.setAutoCommit(false)*/
+        /* Convert input. */
+        Map<String,Object>[] data = g.fromJson(documents, Map[].class);
+
+        /* Get connection. */
         Connection connection = null;
+        switch (ds.getDriver()) {
+            case POSTGRESQL:
+                Class.forName("org.postgresql.Driver");
+                break;
+            case SQLSERVER2000:
+                SQLServerDriver.class.newInstance();
+                break;
+        }
+        connection = DriverManager.getConnection(ds.getUrl(), ds.getUsername(), ds.getPassword());
         boolean autocommit = connection.getAutoCommit();
+
+        /* Insert data. */
         try {
+
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
-            //for
-            statement.addBatch("insert ...");
-            //end for
-
-            statement.executeBatch();
+            for (int i = 0 ; i < data.length ; i++) {
+                sb = new StringBuilder();
+                sb.append("INSERT INTO \"").append(collection).append("\"(");
+                int j = 0;
+                for (String key : data[i].keySet()) {
+                    sb.append(key);
+                    if (j++ < data[i].keySet().size() - 1)
+                        sb.append(",");
+                }
+                sb.append(") VALUES(");
+                j = 0;
+                for (String key : data[i].keySet()) {
+                    if (data[i].get(key).getClass().getSimpleName().equalsIgnoreCase(String.class.getSimpleName()))
+                        sb.append("'").append(data[i].get(key)).append("'");
+                    else
+                        sb.append(data[i].get(key));
+                    if (j++ < data[i].keySet().size() - 1)
+                        sb.append(",");
+                }
+                sb.append(")");
+                statement.addBatch(sb.toString());
+            }
+            int[] db_ids = statement.executeBatch();
+            for (int i : db_ids)
+                ids.add(Integer.toString(db_ids[i]) + " rows added.");
             connection.commit();
-        } catch (Exception ex) {
+
+        } catch (BatchUpdateException e) {
             connection.rollback();
         } finally {
             connection.setAutoCommit(autocommit);
             connection.close();
         }
-
 
         return ids;
 
