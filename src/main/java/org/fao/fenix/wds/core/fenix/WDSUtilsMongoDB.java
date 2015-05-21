@@ -1,8 +1,10 @@
 package org.fao.fenix.wds.core.fenix;
 
+import com.google.gson.Gson;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
 import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
 
 import javax.ws.rs.WebApplicationException;
@@ -16,6 +18,8 @@ import java.util.List;
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
 public class WDSUtilsMongoDB implements WDSUtils {
+
+    private Gson g = new Gson();
 
     public List<String> create(DatasourceBean ds, String documents, String collection) throws Exception {
 
@@ -47,16 +51,23 @@ public class WDSUtilsMongoDB implements WDSUtils {
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
+                /* Fetch parameters from user request. */
+                RetrieveMongoDBBean b = g.fromJson(query, RetrieveMongoDBBean.class);
+
                 /* Query MongoDB. */
                 MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
                 Mongo mongo = mgr.getMongo();
                 DB db = mongo.getDB(ds.getDbName());
                 DBCollection dbCollection = db.getCollection(collection);
-                DBObject dbobj;
+                DBObject dbobj_query;
+                DBObject dbobj_filters;
+                DBObject dbobj_sort;
                 DBCursor cursor;
                 try {
-                    dbobj = (DBObject) JSON.parse(query);
-                    cursor = dbCollection.find(dbobj);
+                    dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
+                    dbobj_filters = (DBObject) JSON.parse(g.toJson(b.getFilters()));
+                    dbobj_sort = (DBObject) JSON.parse(g.toJson(b.getSort()));
+                    cursor = dbCollection.find(dbobj_query, dbobj_filters).sort(dbobj_sort).limit(b.getLimit());
                 } catch (Exception e) {
                     cursor = dbCollection.find();
                 }
