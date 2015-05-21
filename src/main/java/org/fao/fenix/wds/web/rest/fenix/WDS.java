@@ -4,6 +4,7 @@ import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
 import org.fao.fenix.wds.core.fenix.WDSUtilsMongoDB;
 import org.fao.fenix.wds.core.fenix.WDSUtilsOrientDB;
+import org.fao.fenix.wds.core.fenix.WDSUtilsSQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,9 @@ public class WDS {
 
     @Autowired
     private DatasourcePool datasourcePool;
+
+    @Autowired
+    private WDSUtilsSQL wdsUtilsSQL;
 
     @Autowired
     private WDSUtilsOrientDB wdsUtilsOrientDB;
@@ -51,18 +55,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    stream = wdsUtilsMongoDB.retrieve(ds, query, collection);
+                    stream = wdsUtilsMongoDB.retrieve(ds, query, collection, outputType);
                     break;
 
                 case ORIENTDB:
-                    stream = wdsUtilsOrientDB.retrieve(ds, query, collection);
+                    stream = wdsUtilsOrientDB.retrieve(ds, query, collection, outputType);
                     break;
 
                 default:
-                    if (outputType.equalsIgnoreCase("object"))
-                        stream = WDSUtils.sqlStreamingOutputObject(ds, query);
-                    else if (outputType.equalsIgnoreCase("array"))
-                        stream = WDSUtils.sqlStreamingOutputArray(ds, query);
+                    stream = wdsUtilsSQL.retrieve(ds, query, collection, outputType);
                     break;
 
             }
@@ -107,7 +108,7 @@ public class WDS {
                     break;
 
                 default:
-                    ids = WDSUtils.sqlInsert(ds, query, collection);
+                    ids = wdsUtilsSQL.create(ds, query, collection);
                     break;
 
             }
