@@ -13,6 +13,6 @@ public interface WDSUtils {
 
     List<String> create(DatasourceBean ds, String documents, String collection) throws Exception;
 
-    StreamingOutput retrieve(final DatasourceBean ds, final String query);
+    StreamingOutput retrieve(final DatasourceBean ds, final String query, final String collection);
 
 }

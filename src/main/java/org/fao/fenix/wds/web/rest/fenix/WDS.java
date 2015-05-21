@@ -2,6 +2,7 @@ package org.fao.fenix.wds.web.rest.fenix;
 
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
+import org.fao.fenix.wds.core.fenix.WDSUtilsMongoDB;
 import org.fao.fenix.wds.core.fenix.WDSUtilsOrientDB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,12 +26,15 @@ public class WDS {
     @Autowired
     private WDSUtilsOrientDB wdsUtilsOrientDB;
 
+    @Autowired
+    private WDSUtilsMongoDB wdsUtilsMongoDB;
+
     @GET
     @Path("/retrieve")
-    public Response query(@QueryParam("datasource") String datasource,
-                          @QueryParam("query") final String query,
-                          @QueryParam("collection") final String collection,
-                          @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
+    public Response retrieve(@QueryParam("datasource") String datasource,
+                             @QueryParam("query") final String query,
+                             @QueryParam("collection") final String collection,
+                             @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
 
 
 
@@ -47,11 +51,11 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    stream = WDSUtils.mongoStreamingOutput(ds, query, collection);
+                    stream = wdsUtilsMongoDB.retrieve(ds, query, collection);
                     break;
 
                 case ORIENTDB:
-                    stream = wdsUtilsOrientDB.retrieve(ds, query);
+                    stream = wdsUtilsOrientDB.retrieve(ds, query, collection);
                     break;
 
                 default:
@@ -95,7 +99,7 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    ids = WDSUtils.mongoInsert(ds, query, collection);
+                    ids = wdsUtilsMongoDB.create(ds, query, collection);
                     break;
 
                 case ORIENTDB:

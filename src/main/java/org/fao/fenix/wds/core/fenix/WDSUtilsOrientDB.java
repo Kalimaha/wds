@@ -59,7 +59,7 @@ public class WDSUtilsOrientDB implements WDSUtils {
 
     }
 
-    public StreamingOutput retrieve(final DatasourceBean ds, final String query) {
+    public StreamingOutput retrieve(final DatasourceBean ds, final String query, final String collection) {
 
         return new StreamingOutput() {
 
