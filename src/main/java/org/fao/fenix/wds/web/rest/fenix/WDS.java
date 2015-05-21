@@ -2,6 +2,7 @@ package org.fao.fenix.wds.web.rest.fenix;
 
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
+import org.fao.fenix.wds.core.fenix.WDSUtilsOrientDB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,9 @@ public class WDS {
 
     @Autowired
     private DatasourcePool datasourcePool;
+
+    @Autowired
+    private WDSUtilsOrientDB wdsUtilsOrientDB;
 
     @GET
     @Path("/retrieve")
@@ -47,7 +51,7 @@ public class WDS {
                     break;
 
                 case ORIENTDB:
-                    stream = WDSUtils.orientStreamingOutput(ds, query);
+                    stream = wdsUtilsOrientDB.retrieve(ds, query);
                     break;
 
                 default:
@@ -92,6 +96,14 @@ public class WDS {
 
                 case MONGODB:
                     ids = WDSUtils.mongoInsert(ds, query, collection);
+                    break;
+
+                case ORIENTDB:
+                    ids = wdsUtilsOrientDB.create(ds, query, collection);
+                    break;
+
+                default:
+                    ids = WDSUtils.sqlInsert(ds, query, collection);
                     break;
 
             }

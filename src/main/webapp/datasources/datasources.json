@@ -155,11 +155,12 @@
    },
    {
       "id": "ORIENTTEST",
-      "url": "lprapp16.fao.org:2425",
+      "url": "localhost:2424",
       "driver": "OrientDB",
-      "dbName": "msd_2.0",
+      "dbName": "GratefulDeadConcerts",
       "username": "admin",
-      "password": "admin"
+      "password": "admin",
+      "create": true
    },
    {
       "id": "VOH",

@@ -15,6 +15,8 @@ import org.w3c.dom.Document;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -65,6 +67,35 @@ public class WDSUtils {
             }
 
         };
+    }
+
+    public static List<String> sqlInsert(final DatasourceBean ds, final String documents, final String collection) throws Exception {
+
+        /* Prepare the output. */
+        List<String> ids = new ArrayList<String>();
+
+        /* connection.setAutoCommit(false)*/
+        Connection connection = null;
+        boolean autocommit = connection.getAutoCommit();
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
+            //for
+            statement.addBatch("insert ...");
+            //end for
+
+            statement.executeBatch();
+            connection.commit();
+        } catch (Exception ex) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(autocommit);
+            connection.close();
+        }
+
+
+        return ids;
+
     }
 
     public static StreamingOutput sqlStreamingOutputArray(final DatasourceBean ds, final String query) {
@@ -198,8 +229,7 @@ public class WDSUtils {
                     List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
                     for (int i = 0 ; i < rawData.size() ; i++) {
                         ODocument document = rawData.get(i);
-//                        writer.write(document.toJSON());
-                        writer.write(g.toJson(document.toMap()));
+                        writer.write(document.toJSON());
                         if (i < rawData.size() - 1)
                             writer.write(",");
                     }
@@ -214,6 +244,50 @@ public class WDSUtils {
             }
 
         };
+
+    }
+
+    public static List<String> orientInsert(final DatasourceBean ds, final String documents, final String collection) throws Exception {
+
+        /* Prepare the output. */
+        List<String> ids = new ArrayList<String>();
+        List<ODocument> docs = new ArrayList<ODocument>();
+
+        /* Initiate variables. */
+        String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
+        OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
+        ODatabaseDocumentTx connection = pool.acquire();
+
+        Gson g = new Gson();
+        Map<String,Object>[] data = g.fromJson(documents, Map[].class);
+        try {
+            connection.begin();
+            for (int i = 0; i < data.length; i++) {
+                Map<String, Object> stringObjectMap = data[i];
+                for (String key : stringObjectMap.keySet())
+                    System.out.println(key + ": " + stringObjectMap.get(key) + ", " + stringObjectMap.get(key).getClass().getSimpleName());
+                ODocument odoc = new ODocument(collection);
+                odoc.fromMap(stringObjectMap);
+                System.out.println(odoc.getIdentity().toString());
+                odoc.save();
+                docs.add(odoc);
+                System.out.println(odoc);
+                System.out.println(odoc.getIdentity().toString());
+            }
+            connection.commit();
+
+            /* TODO ids */
+
+        } catch(Exception e) {
+            connection.rollback();
+        } finally {
+            connection.close();
+        }
+
+//        ODocument odoc = new ODocument();
+//        odoc.fromMap()
+
+        return ids;
 
     }
 
