@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -84,19 +85,36 @@ public class WDS {
         if (ds.isCreate()) {
 
             /* ID of the new resource. */
-            String id = null;
+            List<String> ids = null;
 
             /* Handle the request according to DB type. */
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    id = WDSUtils.mongoInsert(ds, query, collection);
+                    ids = WDSUtils.mongoInsert(ds, query, collection);
                     break;
 
             }
 
+            /* Create the output. */
+            String out = "[";
+            if (outputType.equalsIgnoreCase("object")) {
+                for (int i = 0 ; i < ids.size() ; i++) {
+                    out += "{\"id\": \"" + ids.get(i) + "\"}";
+                    if (i < ids.size() - 1)
+                        out += ",";
+                }
+            } else {
+                for (int i = 0 ; i < ids.size() ; i++) {
+                    out += "\"" + ids.get(i) + "\"";
+                    if (i < ids.size() - 1)
+                        out += ",";
+                }
+            }
+            out += "]";
+
             /* Stream result */
-            return Response.status(200).entity("{\"id\": \"" + id + "\"}").build();
+            return Response.status(200).entity(out).build();
 
         }
 

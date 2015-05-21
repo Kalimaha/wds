@@ -150,7 +150,7 @@
       "dbName": "guido",
       "username": "fenix",
       "password": "Qwaszx",
-      "create": false,
+      "create": true,
       "retrieve": true
    },
    {

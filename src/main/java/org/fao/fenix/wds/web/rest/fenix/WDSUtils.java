@@ -159,14 +159,24 @@ public class WDSUtils {
 
     }
 
-    public static String mongoInsert(final DatasourceBean ds, final String document, final String collection) throws Exception {
+    public static List<String> mongoInsert(final DatasourceBean ds, final String documents, final String collection) throws Exception {
+
+        /* Insert the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
         Mongo mongo = mgr.getMongo();
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
-        DBObject dbobj = (DBObject) JSON.parse(document);
-        dbCollection.insert(dbobj);
-        return dbobj.get("_id").toString();
+        List<DBObject> dbobjs = (List<DBObject>) JSON.parse(documents);
+        dbCollection.insert(dbobjs);
+
+        /* Prepare the output. */
+        List<String> ids = new ArrayList<String>();
+        for (DBObject dbobj : dbobjs)
+            ids.add(dbobj.get("_id").toString());
+
+        /* Return the output. */
+        return ids;
+
     }
 
     public static StreamingOutput orientStreamingOutput(final DatasourceBean ds, final String query) {
