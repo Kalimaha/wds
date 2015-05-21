@@ -65,18 +65,47 @@ public class WDSUtilsMongoDB implements WDSUtils {
                 /* Compute result. */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
-                try {
-                    writer.write("[");
-                    int count = 0;
-                    while(cursor.hasNext()) {
-                        writer.write(cursor.next().toString());
-                        if (count < cursor.size() - 1)
-                            writer.write(",");
-                        count++;
+                /* ...as an array of objects... */
+                if (outputType.equalsIgnoreCase("object")) {
+                    try {
+                        writer.write("[");
+                        int count = 0;
+                        while (cursor.hasNext()) {
+                            writer.write(cursor.next().toString());
+                            if (count < cursor.size() - 1)
+                                writer.write(",");
+                            count++;
+                        }
+                    } finally {
+                        cursor.close();
+                        writer.write("]");
                     }
-                } finally {
-                    cursor.close();
-                    writer.write("]");
+                }
+
+                /* ...or as an array of arrays. */
+                if (outputType.equalsIgnoreCase("array")) {
+                    StringBuilder sb = new StringBuilder();
+                    try {
+                        sb.append("[");
+                        int row = 0;
+                        while (cursor.hasNext()) {
+                            DBObject tmp = cursor.next();
+                            int col = 0;
+                            sb.append("[");
+                            for (String key : tmp.keySet()) {
+                                sb.append("\"").append(tmp.get(key).toString()).append("\"");
+                                if (col++ < tmp.keySet().size() - 1)
+                                    sb.append(",");
+                            }
+                            sb.append("]");
+                            if (row++ < cursor.size() - 1)
+                                sb.append(",");
+                        }
+                        sb.append("]");
+                    } finally {
+                        cursor.close();
+                        writer.write(sb.toString());
+                    }
                 }
 
                 /* Convert and write the output on the stream. */
