@@ -35,20 +35,28 @@
 
                 /* Load templates. */
                 $.get('html/templates.hbs', function(html) {
-                    var source = $(html + '#retrieve_mongodb').html();
-                    CodeMirror.fromTextArea(document.getElementById('retrieve_mongodb'), {
-                        mode: 'javascript',
-                        lineNumbers: true,
-                        tabSize: 3,
-                        lineWrapping: true,
-                        styleActiveLine: true,
-                        indentWithTabs: true,
-                        smartIndent: true,
-                        matchBrackets: true,
-                        autofocus: true
-                    }).setValue(source.trim());
+
+                    /* Render examples. */
+                    load_example(html, 'retrieve_sql');
+                    load_example(html, 'retrieve_mongodb');
+
                 });
 
+            }
+
+            function load_example(template, id) {
+                var source = $(template).filter('#' + id).html();
+                CodeMirror.fromTextArea(document.getElementById(id), {
+                    mode: 'javascript',
+                    lineNumbers: true,
+                    tabSize: 3,
+                    lineWrapping: true,
+                    styleActiveLine: true,
+                    indentWithTabs: true,
+                    smartIndent: true,
+                    matchBrackets: true,
+                    autofocus: true
+                }).setValue(source.trim());
             }
 
             function create() {
@@ -247,11 +255,9 @@
                     <div class='subtitle'>
                         Retrieve: SQL
                     </div>
-                    <pre class='prettyprint'>
-                        <code class='language-javascript'>
-
-                        </code>
-                    </pre>
+                    <hr>
+                    <textarea id='retrieve_sql'></textarea>
+                    <br>
                 </div>
                 <div class='col-xs-3'>
                     <div class='subtitle'>
