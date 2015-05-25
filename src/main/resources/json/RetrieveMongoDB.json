@@ -1,0 +1,13 @@
+{
+   "query": {
+      "state": "MA"
+   },
+   "limit": 0,
+   "filters": {
+      "city": 1,
+      "pop": 1
+   },
+   "sort": {
+      "pop": -1
+   }
+}
