@@ -37,6 +37,7 @@
                 $.get('html/templates.hbs', function(html) {
 
                     /* Render examples. */
+                    load_example(html, 'create_sql');
                     load_example(html, 'retrieve_sql');
                     load_example(html, 'retrieve_mongodb');
                     load_example(html, 'retrieve_orientdb');
@@ -251,6 +252,9 @@
                     <div class='subtitle'>
                         Create: SQL
                     </div>
+                    <hr>
+                    <textarea id='create_sql'></textarea>
+                    <br>
                 </div>
                 <div class='col-xs-3'>
                     <div class='subtitle'>

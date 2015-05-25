@@ -33,7 +33,7 @@ public class WDSUtilsSQL implements WDSUtils {
         List<String> ids = new ArrayList<String>();
 
         /* Convert input. */
-        Map<String,Object>[] data = g.fromJson(documents, Map[].class);
+        Map<String, Object>[] data = g.fromJson(documents, Map[].class);
 
         /* Get connection. */
         Connection connection = null;
@@ -53,7 +53,7 @@ public class WDSUtilsSQL implements WDSUtils {
 
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
-            for (int i = 0 ; i < data.length ; i++) {
+            for (int i = 0; i < data.length; i++) {
                 sb = new StringBuilder();
                 sb.append("INSERT INTO \"").append(collection).append("\"(");
                 int j = 0;
@@ -76,11 +76,12 @@ public class WDSUtilsSQL implements WDSUtils {
                 statement.addBatch(sb.toString());
             }
             int[] db_ids = statement.executeBatch();
-            for (int i : db_ids)
-                ids.add(Integer.toString(db_ids[i]) + " rows added.");
+            for (int q = 0; q < db_ids.length; q++)
+                ids.add(Integer.toString(db_ids[q]) + " rows added.");
             connection.commit();
 
         } catch (BatchUpdateException e) {
+            e.printStackTrace();
             connection.rollback();
         } finally {
             connection.setAutoCommit(autocommit);
