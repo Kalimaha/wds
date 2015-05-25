@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveOrientDBBean;
@@ -132,7 +133,29 @@ public class WDSUtilsOrientDB implements WDSUtils {
     }
 
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {
-        return new ArrayList<String>();
+
+        /* Prepare the output. */
+        List<String> deletedRows = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
+
+        /* Connect to the DB. */
+        String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
+        OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
+        ODatabaseDocumentTx connection = pool.acquire();
+        try {
+            List<ODocument> rawData = connection.query(new OSQLSynchQuery(b.getQuery()));
+            for (int i = 0; i < rawData.size(); i++) {
+                ODocument document = rawData.get(i);
+                document.delete();
+            }
+        } finally {
+            connection.close();
+        }
+
+
+        return deletedRows;
     }
 
 }
