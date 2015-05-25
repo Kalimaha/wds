@@ -74,7 +74,7 @@
                         type: 'POST',
                         url: 'rest/fenix/create',
                         data: {
-                            query: $('#query').val(),
+                            payload: $('#query').val(),
                             datasource: $('#datasource').val(),
                             collection: $('#collection').val(),
                             outputType: $('#outputType').val()
@@ -112,7 +112,7 @@
                         type: 'GET',
                         url: 'rest/fenix/retrieve',
                         data: {
-                            query: $('#query').val(),
+                            payload: $('#query').val(),
                             datasource: $('#datasource').val(),
                             collection: $('#collection').val(),
                             outputType: $('#outputType').val()

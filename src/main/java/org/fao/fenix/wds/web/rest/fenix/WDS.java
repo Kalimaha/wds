@@ -37,7 +37,7 @@ public class WDS {
     @Path("/retrieve")
     @Produces("application/json")
     public Response retrieve(@QueryParam("datasource") String datasource,
-                             @QueryParam("query") final String query,
+                             @QueryParam("payload") final String payload,
                              @QueryParam("collection") final String collection,
                              @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
 
@@ -56,15 +56,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    stream = wdsUtilsMongoDB.retrieve(ds, query, collection, outputType);
+                    stream = wdsUtilsMongoDB.retrieve(ds, payload, collection, outputType);
                     break;
 
                 case ORIENTDB:
-                    stream = wdsUtilsOrientDB.retrieve(ds, query, collection, outputType);
+                    stream = wdsUtilsOrientDB.retrieve(ds, payload, collection, outputType);
                     break;
 
                 default:
-                    stream = wdsUtilsSQL.retrieve(ds, query, collection, outputType);
+                    stream = wdsUtilsSQL.retrieve(ds, payload, collection, outputType);
                     break;
 
             }
@@ -85,7 +85,7 @@ public class WDS {
     @Path("/create")
     @Produces("application/json")
     public Response create(@FormParam("datasource") String datasource,
-                           @FormParam("query") final String query,
+                           @FormParam("payload") final String payload,
                            @FormParam("collection") final String collection,
                            @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
 
@@ -102,15 +102,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    ids = wdsUtilsMongoDB.create(ds, query, collection);
+                    ids = wdsUtilsMongoDB.create(ds, payload, collection);
                     break;
 
                 case ORIENTDB:
-                    ids = wdsUtilsOrientDB.create(ds, query, collection);
+                    ids = wdsUtilsOrientDB.create(ds, payload, collection);
                     break;
 
                 default:
-                    ids = wdsUtilsSQL.create(ds, query, collection);
+                    ids = wdsUtilsSQL.create(ds, payload, collection);
                     break;
 
             }
