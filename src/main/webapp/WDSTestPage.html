@@ -77,7 +77,7 @@
                 } else {
                     $.ajax({
                         type: 'POST',
-                        url: 'rest/fenix/create',
+                        url: 'rest/fenix',
                         data: {
                             payload: $('#query').val(),
                             datasource: $('#datasource').val(),
@@ -115,7 +115,7 @@
                 } else {
                     $.ajax({
                         type: 'GET',
-                        url: 'rest/fenix/retrieve',
+                        url: 'rest/fenix',
                         data: {
                             payload: $('#query').val(),
                             datasource: $('#datasource').val(),

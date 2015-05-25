@@ -34,7 +34,6 @@ public class WDS {
     private WDSUtilsMongoDB wdsUtilsMongoDB;
 
     @GET
-    @Path("/retrieve")
     @Produces("application/json")
     public Response retrieve(@QueryParam("datasource") String datasource,
                              @QueryParam("payload") final String payload,
@@ -82,7 +81,6 @@ public class WDS {
     }
 
     @POST
-    @Path("/create")
     @Produces("application/json")
     public Response create(@FormParam("datasource") String datasource,
                            @FormParam("payload") final String payload,
