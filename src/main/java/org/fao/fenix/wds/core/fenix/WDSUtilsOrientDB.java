@@ -6,6 +6,8 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.RetrieveOrientDBBean;
+import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -69,6 +71,9 @@ public class WDSUtilsOrientDB implements WDSUtils {
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
+                /* Fetch parameters from user request. */
+                RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
+
                 /* Initiate variables. */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
                 String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
@@ -79,7 +84,7 @@ public class WDSUtilsOrientDB implements WDSUtils {
                 if (outputType.equalsIgnoreCase("object")) {
                     try {
                         writer.write("[");
-                        List<ODocument> rawData = connection.query(new OSQLSynchQuery(query));
+                        List<ODocument> rawData = connection.query(new OSQLSynchQuery(b.getQuery()));
                         for (int i = 0; i < rawData.size(); i++) {
                             ODocument document = rawData.get(i);
                             writer.write(document.toJSON());
