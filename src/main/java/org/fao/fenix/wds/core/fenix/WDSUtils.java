@@ -15,4 +15,6 @@ public interface WDSUtils {
 
     StreamingOutput retrieve(final DatasourceBean ds, final String query, final String collection, final String outputType);
 
+    List<String> delete(DatasourceBean ds, String query, String collection) throws Exception;
+
 }

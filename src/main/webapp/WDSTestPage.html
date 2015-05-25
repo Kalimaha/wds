@@ -39,8 +39,10 @@
                     /* Render examples. */
                     load_example(html, 'create_sql');
                     load_example(html, 'retrieve_sql');
+                    load_example(html, 'delete_sql');
                     load_example(html, 'create_mongodb');
                     load_example(html, 'retrieve_mongodb');
+                    load_example(html, 'create_orientdb');
                     load_example(html, 'retrieve_orientdb');
 
                 });
@@ -138,6 +140,44 @@
                 }
             }
 
+            function wds_delete() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
         </script>
 
     </head>
@@ -201,11 +241,11 @@
             <div class='row'>
                 <div class='col-xs-12'>
                     <div class='subtitle'>
-                        Query <small>SQL: SELECT AreaCode, AreaNameE FROM Area; MongoDB: {"buongiorno": "mondo"}</small>
+                        Query
                     </div>
                 </div>
                 <div class='col-xs-12'>
-                    <textarea id='query' style='width: 100%; height: 50px; text-align: left;'></textarea>
+                    <textarea id='query' style='width: 100%; height: 100px; text-align: left;'></textarea>
                 </div>
             </div>
             <hr>
@@ -274,6 +314,9 @@
                     <div class='subtitle'>
                         Delete: SQL
                     </div>
+                    <hr>
+                    <textarea id='delete_sql'></textarea>
+                    <br>
                 </div>
             </div>
             <div class='row'>
@@ -309,6 +352,9 @@
                     <div class='subtitle'>
                         Create: OrientDB
                     </div>
+                    <hr>
+                    <textarea id='create_orientdb'></textarea>
+                    <br>
                 </div>
                 <div class='col-xs-3'>
                     <div class='subtitle'>
