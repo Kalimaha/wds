@@ -145,17 +145,13 @@ public class WDSUtilsOrientDB implements WDSUtils {
         OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
         ODatabaseDocumentTx connection = pool.acquire();
         try {
-            List<ODocument> rawData = connection.query(new OSQLSynchQuery(b.getQuery()));
-            for (int i = 0; i < rawData.size(); i++) {
-                ODocument document = rawData.get(i);
-                document.delete();
-            }
+            deletedRows.add(connection.command(new OCommandSQL(b.getQuery())).execute().toString());
         } finally {
             connection.close();
         }
 
-
         return deletedRows;
+
     }
 
 }

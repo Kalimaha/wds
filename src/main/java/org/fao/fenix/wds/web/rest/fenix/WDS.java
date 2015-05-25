@@ -181,7 +181,7 @@ public class WDS {
             String out = "[";
             if (outputType.equalsIgnoreCase("object")) {
                 for (int i = 0 ; i < deletedRows.size() ; i++) {
-                    out += "{\"id\": \"" + deletedRows.get(i) + "\"}";
+                    out += "{\"deleted_rows\": \"" + deletedRows.get(i) + "\"}";
                     if (i < deletedRows.size() - 1)
                         out += ",";
                 }
