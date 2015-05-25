@@ -3,6 +3,8 @@ package org.fao.fenix.wds.core.fenix;
 import com.google.gson.Gson;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
+import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 
 import javax.ws.rs.WebApplicationException;
@@ -99,6 +101,9 @@ public class WDSUtilsSQL implements WDSUtils {
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
+                /* Fetch parameters from user request. */
+                RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
+
                 /* Initiate the JDBC iterable. */
                 JDBCIterable it = new JDBCIterable();
                 List<String> headers = new ArrayList<String>();
@@ -106,7 +111,7 @@ public class WDSUtilsSQL implements WDSUtils {
                 try {
 
                     /* Query DB. */
-                    it.query(ds, query);
+                    it.query(ds, b.getQuery());
 
                     /* Get column names. */
                     headers = it.getColumnNames();
