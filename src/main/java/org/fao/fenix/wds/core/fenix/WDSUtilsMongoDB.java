@@ -7,6 +7,7 @@ import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.fenix.bean.CreateMongoDBBean;
 import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
+import org.fao.fenix.wds.core.fenix.bean.UpdateMongoDBBean;
 import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
 
 import javax.ws.rs.WebApplicationException;
@@ -133,8 +134,26 @@ public class WDSUtilsMongoDB implements WDSUtils {
 
     }
 
-    public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
-        return new ArrayList<String>();
+    public List<String> update(DatasourceBean ds, String payload, String collection) throws Exception {
+
+        /* Prepare the output. */
+        List<String> updatedDocuments = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        UpdateMongoDBBean b = g.fromJson(payload, UpdateMongoDBBean.class);
+
+        /* Update the documents. */
+        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
+        Mongo mongo = mgr.getMongo();
+        DB db = mongo.getDB(ds.getDbName());
+        DBCollection dbCollection = db.getCollection(collection);
+        DBObject dbobj_query = dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
+        DBObject dbobj_update = dbobj_update = (DBObject) JSON.parse(g.toJson(b.getUpdate()));
+        updatedDocuments.add(Integer.toString(dbCollection.update(dbobj_query, dbobj_update, b.isUpsert(), b.isMulti()).getN()));
+
+        /* Return the output. */
+        return updatedDocuments;
+
     }
 
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {

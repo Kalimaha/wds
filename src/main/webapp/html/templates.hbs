@@ -55,13 +55,28 @@
     "query": {
         "state": "MA"
     },
-    "limit": 0,
     "filters": {
         "city": 1,
         "pop": 1
     },
     "sort": {
         "pop": -1
+    },
+    "limit": 0
+}
+</script>
+
+<script type='text/x-handlebars-template' id='update_mongodb'>
+{
+    "query": {
+        "state": "MA"
+    },
+    "update": {
+        "state": "CA",
+        "cities": [
+            "San Diego",
+            "San Francisco"
+        ]
     }
 }
 </script>
