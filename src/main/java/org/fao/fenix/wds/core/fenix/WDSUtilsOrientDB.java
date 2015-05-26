@@ -138,7 +138,25 @@ public class WDSUtilsOrientDB implements WDSUtils {
     }
 
     public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
-        return new ArrayList<String>();
+
+        /* Prepare the output. */
+        List<String> updatedRows = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
+
+        /* Connect to the DB. */
+        String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
+        OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
+        ODatabaseDocumentTx connection = pool.acquire();
+        try {
+            updatedRows.add(connection.command(new OCommandSQL(b.getQuery())).execute().toString());
+        } finally {
+            connection.close();
+        }
+
+        return updatedRows;
+
     }
 
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {
