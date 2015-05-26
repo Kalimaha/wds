@@ -41,6 +41,14 @@ public class DatasourceBean {
 
     private String password;
 
+    private boolean create;
+
+    private boolean retrieve = true;
+
+    private boolean update;
+
+    private boolean delete;
+
     public DRIVER getDriver() {
         return driver;
     }
@@ -89,6 +97,38 @@ public class DatasourceBean {
         this.id = id;
     }
 
+    public boolean isCreate() {
+        return create;
+    }
+
+    public void setCreate(boolean create) {
+        this.create = create;
+    }
+
+    public boolean isRetrieve() {
+        return retrieve;
+    }
+
+    public void setRetrieve(boolean retrieve) {
+        this.retrieve = retrieve;
+    }
+
+    public boolean isUpdate() {
+        return update;
+    }
+
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
+
+    public boolean isDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
+    }
+
     @Override
     public String toString() {
         return "DatasourceBean{" +
@@ -98,6 +138,10 @@ public class DatasourceBean {
                 ", dbName='" + dbName + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", create=" + create +
+                ", retrieve=" + retrieve +
+                ", update=" + update +
+                ", delete=" + delete +
                 '}';
     }
 

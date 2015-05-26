@@ -116,6 +116,14 @@ public class DatasourcePool {
                 b.setUsername(reader.nextString());
             } else if (name.equalsIgnoreCase("password")) {
                 b.setPassword(reader.nextString());
+            } else if (name.equalsIgnoreCase("create")) {
+                b.setCreate(reader.nextBoolean());
+            } else if (name.equalsIgnoreCase("retrieve")) {
+                b.setRetrieve(reader.nextBoolean());
+            } else if (name.equalsIgnoreCase("update")) {
+                b.setUpdate(reader.nextBoolean());
+            } else if (name.equalsIgnoreCase("delete")) {
+                b.setDelete(reader.nextBoolean());
             } else {
                 reader.skipValue();
             }

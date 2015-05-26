@@ -149,14 +149,34 @@
       "url": "",
       "dbName": "guido",
       "username": "fenix",
-      "password": "Qwaszx"
+      "password": "Qwaszx",
+      "create": true,
+      "retrieve": true
    },
    {
       "id": "ORIENTTEST",
-      "url": "lprapp16.fao.org:2425",
+      "url": "localhost:2424",
       "driver": "OrientDB",
-      "dbName": "msd_2.0",
+      "dbName": "GratefulDeadConcerts",
       "username": "admin",
-      "password": "admin"
+      "password": "admin",
+      "create": true
+   },
+   {
+      "id": "VOH",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://faostat3.fao.org:5432/voh",
+      "dbName": "voh",
+      "username": "fenix",
+      "password": "Qwaszx"
+   },
+   {
+      "id": "LOCALPOSTGRES",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://127.0.0.1:5432/test",
+      "dbName": "test",
+      "username": "fenix",
+      "password": "Fenix2015",
+      "create": true
    }
 ]

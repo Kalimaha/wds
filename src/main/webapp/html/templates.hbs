@@ -1,0 +1,132 @@
+<script type='text/x-handlebars-template' id='create_sql'>
+{
+    "query": [
+        {
+            "name": "Guido",
+            "price": 9.99,
+            "items": 3
+        },
+        {
+            "name": "Simone",
+            "price": 19.99,
+            "items": 5
+        }
+    ]
+}
+</script>
+
+<script type='text/x-handlebars-template' id='retrieve_sql'>
+{
+    "query": "SELECT AreaCode, AreaNameE FROM Area"
+}
+</script>
+
+<script type='text/x-handlebars-template' id='update_sql'>
+{
+    "query": "UPDATE \"TestTable\" SET name='Gwydoh' WHERE name='Guido';"
+}
+</script>
+
+<script type='text/x-handlebars-template' id='delete_sql'>
+{
+    'query': 'DELETE FROM "TestTable" WHERE name = \'Guido\''
+}
+</script>
+
+<script type='text/x-handlebars-template' id='create_mongodb'>
+{
+    "query": [
+        {
+            "name": "Guido",
+            "price": 9.99,
+            "items": 3
+        },
+        {
+            "name": "Simone",
+            "price": 19.99,
+            "items": 7
+        }
+    ]
+}
+</script>
+
+<script type='text/x-handlebars-template' id='retrieve_mongodb'>
+{
+    "query": {
+        "state": "MA"
+    },
+    "filters": {
+        "city": 1,
+        "pop": 1
+    },
+    "sort": {
+        "pop": -1
+    },
+    "limit": 0
+}
+</script>
+
+<script type='text/x-handlebars-template' id='update_mongodb'>
+{
+    "query": {
+        "state": "MA"
+    },
+    "update": {
+        "state": "CA",
+        "cities": [
+            "San Diego",
+            "San Francisco"
+        ]
+    }
+}
+</script>
+
+<script type='text/x-handlebars-template' id='delete_mongodb'>
+{
+    "query": {
+        "buongiorno": "mondo"
+    }
+}
+</script>
+
+<script type='text/x-handlebars-template' id='create_orientdb'>
+    {
+    "query": [
+        {
+            "name": "Guido",
+            "price": 9.99,
+            "items": 3
+        },
+        {
+            "name": "Simone",
+            "price": 19.99,
+            "items": 7
+        }
+    ]
+}
+</script>
+
+<script type='text/x-handlebars-template' id='retrieve_orientdb'>
+{
+    "query": "SELECT name FROM V"
+}
+</script>
+
+<script type='text/x-handlebars-template' id='update_orientdb'>
+{
+    "query": "SELECT FROM cortesini WHERE name = 'Guido'",
+    "update": {
+        "state": "CA",
+        "cities": [
+            "San Diego",
+            "San Francisco"
+        ]
+    }
+}
+</script>
+
+<script type='text/x-handlebars-template' id='delete_orientdb'>
+{
+    'query': 'DELETE FROM cortesini WHERE saravero = false'
+}
+</script>

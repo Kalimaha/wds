@@ -1,129 +1,451 @@
 <html>
+
     <head>
+
         <title>WDS - FENIX Web Data Server</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
         <link rel='icon' type='image/jpeg' href='images/fx_logo.png'>
         <link href='http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,900,700|Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
         <link href='css/homepage.css' rel='stylesheet' type='text/css'>
         <link href='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.css' rel='stylesheet' type='text/css'>
-        <link href='http://fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.min.css' rel='stylesheet'>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+        <link href="http://fenixapps.fao.org/repository/css/codemirror/3.11/codemirror.css" rel="stylesheet" />
+        <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' rel='stylesheet'>
+
+        <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+        <script src="http://fenixapps.fao.org/repository/js/codemirror/3.11/codemirror.js"></script>
+        <script src="http://fenixapps.fao.org/repository/js/codemirror/3.11/javascript/javascript.js"></script>
+        <script src="http://fenixapps.fao.org/repository/js/handlebars/2.0.0/handlebars.js"></script>
         <script type='application/javascript' src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
         <script type='application/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.min.js'></script>
-        <script type='application/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.min.js'></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+        <script type='application/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js'></script>
+
         <script type='application/javascript'>
+
             function setup() {
-                $('.chosen-select').chosen();
-            }
-            function query() {
-                $.ajax({
-                    type: 'POST',
-                    url: 'rest/fenix/query',
-                    data: {
-                        datasource: $('#datasource').val(),
-                        query: $('#query').val(),
-                        collection: $('#collection').val(),
-                        outputType: $('#outputType').val()
-                    },
-                    success: function (response) {
-                        var json = response;
-                        if (typeof json == 'string')
-                            json = $.parseJSON(response);
-                        $('#out').val(JSON.stringify(json));
-                    },
-                    error: function(a) {
-                        $('#out').val(a.responseText);
-                        swal({
-                            title: 'Error',
-                            type: 'error',
-                            text: a.responseText,
-                            html: true
-                        });
-                    }
+
+                /* Initiate drop-downs. */
+                $('.chosen-select').select2({
+                    placeholder: 'Please select...',
+                    allowClear: true
                 });
+
+                /* Load templates. */
+                $.get('html/templates.hbs', function(html) {
+
+                    /* Render examples. */
+                    load_example(html, 'create_sql');
+                    load_example(html, 'retrieve_sql');
+                    load_example(html, 'update_sql');
+                    load_example(html, 'delete_sql');
+
+                    load_example(html, 'create_mongodb');
+                    load_example(html, 'retrieve_mongodb');
+                    load_example(html, 'update_mongodb');
+                    load_example(html, 'delete_mongodb');
+
+                    load_example(html, 'create_orientdb');
+                    load_example(html, 'retrieve_orientdb');
+                    load_example(html, 'update_orientdb');
+                    load_example(html, 'delete_orientdb');
+
+                });
+
             }
+
+            function load_example(template, id) {
+                var source = $(template).filter('#' + id).html();
+                CodeMirror.fromTextArea(document.getElementById(id), {
+                    mode: 'javascript',
+                    lineNumbers: true,
+                    tabSize: 3,
+                    lineWrapping: true,
+                    styleActiveLine: true,
+                    indentWithTabs: true,
+                    smartIndent: true,
+                    matchBrackets: true,
+                    autofocus: true
+                }).setValue(source.trim());
+            }
+
+            function create() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
+            function retrieve() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
+            function update() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'PUT',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
+            function wds_delete() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
         </script>
+
     </head>
-    <body style='background-color: #9B2335;' onload='setup();'>
-        <div class='box'>
-            <div class='title'>
-                FENIX Web Data Server
-                <img src='images/fx_logo.png' class='img'>
-                <img src='images/fao_logo.png' class='img'>
-            </div>
-            <br>
-            <div style='text-align: right;'>
-                Welcome to the FENIX Web Data Server. If you're reading these words your installation of WDS was successful: congratulations!
+
+    <body onload='setup();'>
+        <div class='container box'>
+            <div class='row'>
+                <div class='col-xs-10'>
+                    <div class='title'>
+                        FENIX Web Data Server 5.0
+                    </div>
+                </div>
+                <div class='col-xs-2'>
+                    <img src='images/fx_logo.png' class='img pull-right'>
+                    <img src='images/fao_logo.png' class='img pull-right'>
+                </div>
             </div>
             <hr>
-            <div>
-                <div class='subtitle'>
-                    Datasource
+            <div class='row'>
+                <div class='col-xs-4'>
+                    <div class='subtitle'>
+                        Datasource
+                    </div>
                 </div>
-                <br>
-                <select id='datasource' style='width: 100%;' class='chosen-select' data-placeholder='Please select a datasource...'>
-                    <option value='faostat'>FAOSTAT (SQL)</option>
-                    <option value='guidotest'>Guido Test (NoSQL)</option>
-                    <option value='orienttest'>OrientDB Test (NoSQL)</option>
-                </select>
+                <div class='col-xs-4'>
+                    <div class='subtitle'>
+                        Collection <small>MongoDB only</small>
+                    </div>
+                </div>
+                <div class='col-xs-4'>
+                    <div class='subtitle'>
+                        Output Type
+                    </div>
+                </div>
             </div>
-            <br>
-            <div>
-                <div class='subtitle'>
-                    Collection <i>(MongoDB only)</i>
+            <div class='row'>
+                <div class='col-xs-4'>
+                    <select id='datasource' style='width: 100%;' class='chosen-select' data-placeholder='Please select a datasource...'>
+                        <option></option>
+                        <option value='faostat'>FAOSTAT</option>
+                        <option value='LOCALPOSTGRES'>Local PostgreSQL</option>
+                        <option value='guidotest'>MongoDB</option>
+                        <option value='orienttest'>OrientDB</option>
+                    </select>
                 </div>
-                <br>
-                <select id='collection' style='width: 100%;' class='chosen-select' data-placeholder='Please select a collection...'>
-                    <option value='barbaglia'>Default</option>
-                </select>
-            </div>
-            <br>
-            <div>
-                <div class='subtitle'>
-                    Output Type
+                <div class='col-xs-4'>
+                    <select id='collection' style='width: 100%;' class='chosen-select' data-placeholder='Please select a collection...'>
+                        <option value='TestTable'>SQL</option>
+                        <option value='barbaglia'>MongoDB</option>
+                        <option value='cortesini'>OrientDB</option>
+                    </select>
                 </div>
-                <br>
-                <select id='outputType' style='width: 100%;' class='chosen-select' data-placeholder='Please select a collection...'>
-                    <option value='object'>Object</option>
-                    <option value='array'>Array</option>
-                </select>
-            </div>
-            <br>
-            <div>
-                <div class='subtitle'>
-                    Query
+                <div class='col-xs-4'>
+                    <select id='outputType' style='width: 100%;' class='chosen-select' data-placeholder='Please select a collection...'>
+                        <option value='object'>Object</option>
+                        <option value='array'>Array</option>
+                    </select>
                 </div>
-                <br>
-                <textarea id='query' style='width: 100%; height: 75px; text-align: left;'>SELECT AreaCode, AreaNameE FROM Area</textarea>
             </div>
             <hr>
-            <div>
-                <div class='subtitle'>
-                    Test Services
+            <div class='row'>
+                <div class='col-xs-12'>
+                    <div class='subtitle'>
+                        Payload <small>GENERAL: query; MongoDB: filters, sort, limit</small>
+                    </div>
                 </div>
-                <br>
-                <div>
-                    <button class='button' onclick='query();'>
-                        <i class='fa fa-database'></i> Query DB
+                <div class='col-xs-12'>
+                    <textarea id='query' style='width: 100%; height: 100px; text-align: left;'></textarea>
+                </div>
+            </div>
+            <hr>
+            <div class='row'>
+                <div class='col-xs-12'>
+                    <div class='subtitle'>
+                        CRUD Services
+                    </div>
+                </div>
+                <div class='col-xs-3'>
+                    <button class='button' style='width: 100%;' onclick='create();'>
+                        <i class='fa fa-arrow-down'></i> Create
+                    </button>
+                </div>
+                <div class='col-xs-3'>
+                    <button class='button' style='width: 100%;' onclick='retrieve();'>
+                        <i class='fa fa-arrow-up'></i> Retrieve
+                    </button>
+                </div>
+                <div class='col-xs-3'>
+                    <button class='button' style='width: 100%;' onclick='update();'>
+                        <i class='fa fa-pencil'></i> Update
+                    </button>
+                </div>
+                <div class='col-xs-3'>
+                    <button class='button' style='width: 100%;' onclick='wds_delete();'>
+                        <i class='fa fa-trash-o'></i> Delete
                     </button>
                 </div>
             </div>
             <hr>
-            <div>
-                <div class='subtitle'>
-                    Results
+            <div class='row'>
+                <div class='col-xs-12'>
+                    <div class='subtitle'>
+                        Results
+                    </div>
                 </div>
-                <textarea id='out' style='width: 100%; height: 150px;'>
-
-                </textarea>
+                <div class='col-xs-12'>
+                    <textarea id='out' style='width: 100%; height: 75px;'></textarea>
+                </div>
             </div>
             <hr>
-            <div style='text-align: center;'>
-                <span>
-                    <a target='_blank' href='https://github.com/FENIX-Platform/WDS'>
-                        <i class='fa fa-github'></i>
-                    </a>
-                </span>
+            <div class='row'>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Create: SQL
+                    </div>
+                    <hr>
+                    <textarea id='create_sql'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Retrieve: SQL
+                    </div>
+                    <hr>
+                    <textarea id='retrieve_sql'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Update: SQL
+                    </div>
+                    <hr>
+                    <textarea id='update_sql'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Delete: SQL
+                    </div>
+                    <hr>
+                    <textarea id='delete_sql'></textarea>
+                    <br>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Create: MongoDB
+                    </div>
+                    <hr>
+                    <textarea id='create_mongodb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Retrieve: MongoDB
+                    </div>
+                    <hr>
+                    <textarea id='retrieve_mongodb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Update: MongoDB
+                    </div>
+                    <hr>
+                    <textarea id='update_mongodb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Delete: MongoDB
+                    </div>
+                    <hr>
+                    <textarea id='delete_mongodb'></textarea>
+                    <br>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Create: OrientDB
+                    </div>
+                    <hr>
+                    <textarea id='create_orientdb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Retrieve: OrientDB
+                    </div>
+                    <hr>
+                    <textarea id='retrieve_orientdb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Update: OrientDB
+                    </div>
+                    <hr>
+                    <textarea id='update_orientdb'></textarea>
+                    <br>
+                </div>
+                <div class='col-xs-3'>
+                    <div class='subtitle'>
+                        Delete: OrientDB
+                    </div>
+                    <hr>
+                    <textarea id='delete_orientdb'></textarea>
+                    <br>
+                </div>
+            </div>
+            <hr>
+            <div class='row'>
+                <div class='col-xs-12'>
+                    <div class='text-center'>
+                        <a target='_blank' href='https://github.com/FENIX-Platform/WDS'>
+                            <i class='fa fa-github fa-2x'></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
+
 </html>
