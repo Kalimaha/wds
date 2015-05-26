@@ -129,7 +129,25 @@ public class WDSUtilsMongoDB implements WDSUtils {
     }
 
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {
-        return new ArrayList<String>();
+
+        /* Initiate output. */
+        List<String> deletedRows = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        RetrieveMongoDBBean b = g.fromJson(query, RetrieveMongoDBBean.class);
+
+        /* Query MongoDB. */
+        MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
+        Mongo mongo = mgr.getMongo();
+        DB db = mongo.getDB(ds.getDbName());
+        DBCollection dbCollection = db.getCollection(collection);
+        DBObject dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
+        WriteResult result = dbCollection.remove(dbobj_query);
+        deletedRows.add(Integer.toString(result.getN()));
+
+        /* Return output. */
+        return deletedRows;
+
     }
 
 }
