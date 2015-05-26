@@ -114,7 +114,14 @@
 
 <script type='text/x-handlebars-template' id='update_orientdb'>
 {
-    'query': 'UPDATE cortesini SET num = 17 WHERE name = \'Guido\''
+    "query": "SELECT FROM cortesini WHERE name = 'Guido'",
+    "update": {
+        "state": "CA",
+        "cities": [
+            "San Diego",
+            "San Francisco"
+        ]
+    }
 }
 </script>
 

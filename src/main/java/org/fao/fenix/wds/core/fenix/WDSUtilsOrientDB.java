@@ -7,10 +7,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateMongoDBBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateOrientDBBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveOrientDBBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
+import org.fao.fenix.wds.core.fenix.bean.*;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -137,25 +134,40 @@ public class WDSUtilsOrientDB implements WDSUtils {
 
     }
 
-    public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
+    public List<String> update(DatasourceBean ds, String payload, String collection) throws Exception {
 
         /* Prepare the output. */
-        List<String> updatedRows = new ArrayList<String>();
+        List<String> updatedDocuments = new ArrayList<String>();
+        List<ODocument> docs = new ArrayList<ODocument>();
 
         /* Fetch parameters from user request. */
-        RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
+        UpdateOrientDBBean b = g.fromJson(payload, UpdateOrientDBBean.class);
 
-        /* Connect to the DB. */
         String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
         OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
         ODatabaseDocumentTx connection = pool.acquire();
         try {
-            updatedRows.add(connection.command(new OCommandSQL(b.getQuery())).execute().toString());
+            connection.begin();
+            List<ODocument> rawData = connection.query(new OSQLSynchQuery(b.getQuery()));
+            for (int i = 0; i < rawData.size(); i++) {
+                ODocument document = rawData.get(i);
+                document.fromMap(b.getUpdate());
+                document.save();
+                docs.add(document);
+            }
+            connection.commit();
+
+            for (ODocument odoc : docs)
+                updatedDocuments.add(odoc.getIdentity().toString());
+
+        } catch(Exception e) {
+            connection.rollback();
         } finally {
             connection.close();
         }
 
-        return updatedRows;
+        /* Return ID's. */
+        return updatedDocuments;
 
     }
 
