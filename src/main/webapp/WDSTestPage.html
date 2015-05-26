@@ -142,6 +142,44 @@
                 }
             }
 
+            function update() {
+                $('#out').val();
+                if ($('#datasource').val() == '') {
+                    swal({
+                        title: 'Error',
+                        type: 'error',
+                        text: 'Please select a datasource.',
+                        html: true
+                    });
+                } else {
+                    $.ajax({
+                        type: 'PUT',
+                        url: 'rest/fenix',
+                        data: {
+                            payload: $('#query').val(),
+                            datasource: $('#datasource').val(),
+                            collection: $('#collection').val(),
+                            outputType: $('#outputType').val()
+                        },
+                        success: function (response) {
+                            var json = response;
+                            if (typeof json == 'string')
+                                json = $.parseJSON(response);
+                            $('#out').val(JSON.stringify(json));
+                        },
+                        error: function (a) {
+                            $('#out').val(a.responseText);
+                            swal({
+                                title: 'Error',
+                                type: 'error',
+                                text: a.responseText,
+                                html: true
+                            });
+                        }
+                    });
+                }
+            }
+
             function wds_delete() {
                 $('#out').val();
                 if ($('#datasource').val() == '') {

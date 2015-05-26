@@ -3,6 +3,7 @@ package org.fao.fenix.wds.core.fenix;
 import com.google.gson.Gson;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
@@ -26,14 +27,17 @@ public class WDSUtilsSQL implements WDSUtils {
 
     private Gson g = new Gson();
 
-    public List<String> create(final DatasourceBean ds, final String documents, final String collection) throws Exception {
+    public List<String> create(final DatasourceBean ds, final String payload, final String collection) throws Exception {
 
         /* Prepare the output. */
         StringBuilder sb;
-        List<String> ids = new ArrayList<String>();
+        List<String> addedRows = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        CreateSQLBean b = g.fromJson(payload, CreateSQLBean.class);
 
         /* Convert input. */
-        Map<String, Object>[] data = g.fromJson(documents, Map[].class);
+        Map<String, Object>[] data = b.getQuery();
 
         /* Get connection. */
         Connection connection = null;
@@ -77,7 +81,7 @@ public class WDSUtilsSQL implements WDSUtils {
             }
             int[] db_ids = statement.executeBatch();
             for (int q = 0; q < db_ids.length; q++)
-                ids.add(Integer.toString(db_ids[q]) + " rows added.");
+                addedRows.add(Integer.toString(db_ids[q]) + " rows have been added.");
             connection.commit();
 
         } catch (BatchUpdateException e) {
@@ -88,7 +92,7 @@ public class WDSUtilsSQL implements WDSUtils {
             connection.close();
         }
 
-        return ids;
+        return addedRows;
 
     }
 

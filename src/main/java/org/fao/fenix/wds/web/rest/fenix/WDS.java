@@ -33,53 +33,6 @@ public class WDS {
     @Autowired
     private WDSUtilsMongoDB wdsUtilsMongoDB;
 
-    @GET
-    @Produces("application/json")
-    public Response retrieve(@QueryParam("datasource") String datasource,
-                             @QueryParam("payload") final String payload,
-                             @QueryParam("collection") final String collection,
-                             @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
-
-
-
-        /* Create datasource bean. */
-        final DatasourceBean ds = datasourcePool.getDatasource(datasource);
-
-        /* Check permissions. */
-        if (ds.isRetrieve()) {
-
-            /* Output stream. */
-            StreamingOutput stream = null;
-
-            /* Handle the request according to DB type. */
-            switch (ds.getDriver()) {
-
-                case MONGODB:
-                    stream = wdsUtilsMongoDB.retrieve(ds, payload, collection, outputType);
-                    break;
-
-                case ORIENTDB:
-                    stream = wdsUtilsOrientDB.retrieve(ds, payload, collection, outputType);
-                    break;
-
-                default:
-                    stream = wdsUtilsSQL.retrieve(ds, payload, collection, outputType);
-                    break;
-
-            }
-
-            /* Stream result */
-            return Response.status(200).entity(stream).build();
-
-        }
-
-        /* Return message error otherwise. */
-        else {
-            throw new Exception("This datasource has no RETRIEVE privilege.");
-        }
-
-    }
-
     @POST
     @Produces("application/json")
     public Response create(@FormParam("datasource") String datasource,
@@ -138,6 +91,53 @@ public class WDS {
         /* Return message error otherwise. */
         else {
             throw new Exception("This datasource has no CREATE privilege.");
+        }
+
+    }
+
+    @GET
+    @Produces("application/json")
+    public Response retrieve(@QueryParam("datasource") String datasource,
+                             @QueryParam("payload") final String payload,
+                             @QueryParam("collection") final String collection,
+                             @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
+
+
+
+        /* Create datasource bean. */
+        final DatasourceBean ds = datasourcePool.getDatasource(datasource);
+
+        /* Check permissions. */
+        if (ds.isRetrieve()) {
+
+            /* Output stream. */
+            StreamingOutput stream = null;
+
+            /* Handle the request according to DB type. */
+            switch (ds.getDriver()) {
+
+                case MONGODB:
+                    stream = wdsUtilsMongoDB.retrieve(ds, payload, collection, outputType);
+                    break;
+
+                case ORIENTDB:
+                    stream = wdsUtilsOrientDB.retrieve(ds, payload, collection, outputType);
+                    break;
+
+                default:
+                    stream = wdsUtilsSQL.retrieve(ds, payload, collection, outputType);
+                    break;
+
+            }
+
+            /* Stream result */
+            return Response.status(200).entity(stream).build();
+
+        }
+
+        /* Return message error otherwise. */
+        else {
+            throw new Exception("This datasource has no RETRIEVE privilege.");
         }
 
     }
