@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.CreateMongoDBBean;
+import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
 import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
 
@@ -21,14 +23,17 @@ public class WDSUtilsMongoDB implements WDSUtils {
 
     private Gson g = new Gson();
 
-    public List<String> create(DatasourceBean ds, String documents, String collection) throws Exception {
+    public List<String> create(DatasourceBean ds, String payload, String collection) throws Exception {
+
+        /* Fetch parameters from user request. */
+        CreateMongoDBBean b = g.fromJson(payload, CreateMongoDBBean.class);
 
         /* Insert the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
         Mongo mongo = mgr.getMongo();
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
-        List<DBObject> dbobjs = (List<DBObject>) JSON.parse(documents);
+        List<DBObject> dbobjs = (List<DBObject>) JSON.parse(g.toJson(b.getQuery()));
         dbCollection.insert(dbobjs);
 
         /* Prepare the output. */
