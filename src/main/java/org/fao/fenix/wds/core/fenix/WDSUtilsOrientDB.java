@@ -7,6 +7,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
+import org.fao.fenix.wds.core.fenix.bean.CreateMongoDBBean;
+import org.fao.fenix.wds.core.fenix.bean.CreateOrientDBBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveOrientDBBean;
 import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
 
@@ -25,11 +27,14 @@ public class WDSUtilsOrientDB implements WDSUtils {
 
     private Gson g = new Gson();
 
-    public List<String> create(DatasourceBean ds, String documents, String collection) throws Exception {
+    public List<String> create(DatasourceBean ds, String payload, String collection) throws Exception {
 
         /* Prepare the output. */
         List<String> ids = new ArrayList<String>();
         List<ODocument> docs = new ArrayList<ODocument>();
+
+        /* Fetch parameters from user request. */
+        CreateOrientDBBean b = g.fromJson(payload, CreateOrientDBBean.class);
 
         /* Initiate variables. */
         String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
@@ -37,7 +42,7 @@ public class WDSUtilsOrientDB implements WDSUtils {
         ODatabaseDocumentTx connection = pool.acquire();
 
         /* Insert documents. */
-        Map<String,Object>[] data = g.fromJson(documents, Map[].class);
+        Map<String,Object>[] data = b.getQuery();
         try {
             connection.begin();
             for (Map<String, Object> stringObjectMap : data) {
