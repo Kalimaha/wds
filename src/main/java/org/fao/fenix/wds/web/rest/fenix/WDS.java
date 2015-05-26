@@ -142,6 +142,68 @@ public class WDS {
 
     }
 
+    @PUT
+    @Produces("application/json")
+    public Response update(@FormParam("datasource") String datasource,
+                           @FormParam("payload") final String payload,
+                           @FormParam("collection") final String collection,
+                           @DefaultValue("object") @FormParam("outputType") final String outputType) throws Exception {
+
+        /* Create datasource bean. */
+        final DatasourceBean ds = datasourcePool.getDatasource(datasource);
+
+        /* Check permissions. */
+        if (ds.isCreate()) {
+
+            /* Number of deleted rows. */
+            List<String> deletedRows = null;
+
+            /* Handle the request according to DB type. */
+            switch (ds.getDriver()) {
+
+                case MONGODB:
+                    deletedRows = wdsUtilsMongoDB.update(ds, payload, collection);
+                    break;
+
+                case ORIENTDB:
+                    deletedRows = wdsUtilsOrientDB.update(ds, payload, collection);
+                    break;
+
+                default:
+                    deletedRows = wdsUtilsSQL.update(ds, payload, collection);
+                    break;
+
+            }
+
+            /* Create the output. */
+            String out = "[";
+            if (outputType.equalsIgnoreCase("object")) {
+                for (int i = 0 ; i < deletedRows.size() ; i++) {
+                    out += "{\"updated_rows\": \"" + deletedRows.get(i) + "\"}";
+                    if (i < deletedRows.size() - 1)
+                        out += ",";
+                }
+            } else {
+                for (int i = 0 ; i < deletedRows.size() ; i++) {
+                    out += "\"" + deletedRows.get(i) + "\"";
+                    if (i < deletedRows.size() - 1)
+                        out += ",";
+                }
+            }
+            out += "]";
+
+            /* Stream result */
+            return Response.status(200).entity(out).build();
+
+        }
+
+        /* Return message error otherwise. */
+        else {
+            throw new Exception("This datasource has no UPDATE privilege.");
+        }
+
+    }
+
     @DELETE
     @Produces("application/json")
     public Response delete(@FormParam("datasource") String datasource,
@@ -199,7 +261,7 @@ public class WDS {
 
         /* Return message error otherwise. */
         else {
-            throw new Exception("This datasource has no CREATE privilege.");
+            throw new Exception("This datasource has no DELETE privilege.");
         }
 
     }

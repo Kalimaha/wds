@@ -162,6 +162,33 @@ public class WDSUtilsSQL implements WDSUtils {
 
     }
 
+    public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
+
+        /* Prepare the output. */
+        List<String> ids = new ArrayList<String>();
+
+        /* Fetch parameters from user request. */
+        RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
+
+        /* Get connection. */
+        Connection connection = null;
+        switch (ds.getDriver()) {
+            case POSTGRESQL:
+                Class.forName("org.postgresql.Driver");
+                break;
+            case SQLSERVER2000:
+                SQLServerDriver.class.newInstance();
+                break;
+        }
+        connection = DriverManager.getConnection(ds.getUrl(), ds.getUsername(), ds.getPassword());
+        Statement statement = connection.createStatement();
+        ids.add(Integer.toString(statement.executeUpdate(b.getQuery())));
+
+        /* Return the number of deleted rows. */
+        return ids;
+
+    }
+
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {
 
         /* Prepare the output. */

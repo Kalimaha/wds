@@ -133,6 +133,10 @@ public class WDSUtilsMongoDB implements WDSUtils {
 
     }
 
+    public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
+        return new ArrayList<String>();
+    }
+
     public List<String> delete(DatasourceBean ds, String query, String collection) throws Exception {
 
         /* Initiate output. */
