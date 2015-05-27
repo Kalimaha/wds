@@ -91,6 +91,19 @@ public class JDBCIterable implements Iterator<List<String>> {
         return l;
     }
 
+    public List<String> getColumnTypes() {
+        List<String> l = new ArrayList<String>();
+        try {
+            for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++)
+                l.add(this.getResultSet().getMetaData().getColumnClassName(i));
+        } catch (NullPointerException ignored) {
+
+        } catch (SQLException ignored) {
+
+        }
+        return l;
+    }
+
     @Override
     public List<String> next() {
 
