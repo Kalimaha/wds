@@ -1,12 +1,11 @@
-package org.fao.fenix.wds.core.fenix;
+package org.fao.fenix.wds.core.crud;
 
 import com.google.gson.Gson;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
-import org.fao.fenix.wds.core.fenix.bean.UpdateSQLBean;
+import org.fao.fenix.wds.core.bean.crud.CreateSQLBean;
+import org.fao.fenix.wds.core.bean.crud.RetrieveSQLBean;
+import org.fao.fenix.wds.core.bean.crud.UpdateSQLBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 
 import javax.ws.rs.WebApplicationException;
@@ -24,7 +23,7 @@ import java.util.Map;
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
-public class WDSUtilsSQL implements WDSUtils {
+public class CRUDSQL implements CRUD {
 
     private Gson g = new Gson();
 

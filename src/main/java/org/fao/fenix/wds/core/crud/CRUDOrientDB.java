@@ -1,4 +1,4 @@
-package org.fao.fenix.wds.core.fenix;
+package org.fao.fenix.wds.core.crud;
 
 import com.google.gson.Gson;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
@@ -7,7 +7,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
-import org.fao.fenix.wds.core.fenix.bean.*;
+import org.fao.fenix.wds.core.bean.crud.CreateOrientDBBean;
+import org.fao.fenix.wds.core.bean.crud.RetrieveOrientDBBean;
+import org.fao.fenix.wds.core.bean.crud.UpdateOrientDBBean;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -20,7 +22,7 @@ import java.util.Map;
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
-public class WDSUtilsOrientDB implements WDSUtils {
+public class CRUDOrientDB implements CRUD {
 
     private Gson g = new Gson();
 
