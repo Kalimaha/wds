@@ -1,4 +1,4 @@
-package org.fao.fenix.wds.core.fenix.bean;
+package org.fao.fenix.wds.core.bean.crud;
 
 import java.util.Map;
 

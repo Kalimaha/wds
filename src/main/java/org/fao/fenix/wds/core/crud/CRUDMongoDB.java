@@ -1,13 +1,12 @@
-package org.fao.fenix.wds.core.fenix;
+package org.fao.fenix.wds.core.crud;
 
 import com.google.gson.Gson;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateMongoDBBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
-import org.fao.fenix.wds.core.fenix.bean.UpdateMongoDBBean;
+import org.fao.fenix.wds.core.bean.crud.CreateMongoDBBean;
+import org.fao.fenix.wds.core.bean.crud.RetrieveMongoDBBean;
+import org.fao.fenix.wds.core.bean.crud.UpdateMongoDBBean;
 import org.fao.fenix.wds.core.jdbc.MongoDBConnectionManager;
 
 import javax.ws.rs.WebApplicationException;
@@ -20,7 +19,7 @@ import java.util.List;
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
-public class WDSUtilsMongoDB implements WDSUtils {
+public class CRUDMongoDB implements CRUD {
 
     private Gson g = new Gson();
 

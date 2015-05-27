@@ -23,7 +23,11 @@
 
 <script type='text/x-handlebars-template' id='update_sql'>
 {
-    "query": "UPDATE \"TestTable\" SET name='Gwydoh' WHERE name='Guido';"
+    "query": 'SELECT name, price, items FROM "TestTable" WHERE name = \'Guido\'',
+    "update": {
+        "price": 99.99,
+        "name": "Update This!"
+    }
 }
 </script>
 
@@ -90,7 +94,7 @@
 </script>
 
 <script type='text/x-handlebars-template' id='create_orientdb'>
-    {
+{
     "query": [
         {
             "name": "Guido",

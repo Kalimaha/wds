@@ -1,4 +1,4 @@
-package org.fao.fenix.wds.core.fenix;
+package org.fao.fenix.wds.core.crud;
 
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
-public interface WDSUtils {
+public interface CRUD {
 
     List<String> create(DatasourceBean ds, String documents, String collection) throws Exception;
 

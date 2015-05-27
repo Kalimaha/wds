@@ -1,10 +1,10 @@
-package org.fao.fenix.wds.web.rest.fenix;
+package org.fao.fenix.wds.web.rest.crud;
 
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.datasource.DatasourcePool;
-import org.fao.fenix.wds.core.fenix.WDSUtilsMongoDB;
-import org.fao.fenix.wds.core.fenix.WDSUtilsOrientDB;
-import org.fao.fenix.wds.core.fenix.WDSUtilsSQL;
+import org.fao.fenix.wds.core.crud.CRUDMongoDB;
+import org.fao.fenix.wds.core.crud.CRUDOrientDB;
+import org.fao.fenix.wds.core.crud.CRUDSQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,20 +18,20 @@ import java.util.List;
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  */
 @Component
-@Path("/fenix")
-public class WDS {
+@Path("/crud")
+public class CRUD {
 
     @Autowired
     private DatasourcePool datasourcePool;
 
     @Autowired
-    private WDSUtilsSQL wdsUtilsSQL;
+    private CRUDSQL crudSQL;
 
     @Autowired
-    private WDSUtilsOrientDB wdsUtilsOrientDB;
+    private CRUDOrientDB crudOrientDB;
 
     @Autowired
-    private WDSUtilsMongoDB wdsUtilsMongoDB;
+    private CRUDMongoDB crudMongoDB;
 
     @POST
     @Produces("application/json")
@@ -53,15 +53,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    ids = wdsUtilsMongoDB.create(ds, payload, collection);
+                    ids = crudMongoDB.create(ds, payload, collection);
                     break;
 
                 case ORIENTDB:
-                    ids = wdsUtilsOrientDB.create(ds, payload, collection);
+                    ids = crudOrientDB.create(ds, payload, collection);
                     break;
 
                 default:
-                    ids = wdsUtilsSQL.create(ds, payload, collection);
+                    ids = crudSQL.create(ds, payload, collection);
                     break;
 
             }
@@ -117,15 +117,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    stream = wdsUtilsMongoDB.retrieve(ds, payload, collection, outputType);
+                    stream = crudMongoDB.retrieve(ds, payload, collection, outputType);
                     break;
 
                 case ORIENTDB:
-                    stream = wdsUtilsOrientDB.retrieve(ds, payload, collection, outputType);
+                    stream = crudOrientDB.retrieve(ds, payload, collection, outputType);
                     break;
 
                 default:
-                    stream = wdsUtilsSQL.retrieve(ds, payload, collection, outputType);
+                    stream = crudSQL.retrieve(ds, payload, collection, outputType);
                     break;
 
             }
@@ -162,15 +162,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    deletedRows = wdsUtilsMongoDB.update(ds, payload, collection);
+                    deletedRows = crudMongoDB.update(ds, payload, collection);
                     break;
 
                 case ORIENTDB:
-                    deletedRows = wdsUtilsOrientDB.update(ds, payload, collection);
+                    deletedRows = crudOrientDB.update(ds, payload, collection);
                     break;
 
                 default:
-                    deletedRows = wdsUtilsSQL.update(ds, payload, collection);
+                    deletedRows = crudSQL.update(ds, payload, collection);
                     break;
 
             }
@@ -224,15 +224,15 @@ public class WDS {
             switch (ds.getDriver()) {
 
                 case MONGODB:
-                    deletedRows = wdsUtilsMongoDB.delete(ds, payload, collection);
+                    deletedRows = crudMongoDB.delete(ds, payload, collection);
                     break;
 
                 case ORIENTDB:
-                    deletedRows = wdsUtilsOrientDB.delete(ds, payload, collection);
+                    deletedRows = crudOrientDB.delete(ds, payload, collection);
                     break;
 
                 default:
-                    deletedRows = wdsUtilsSQL.delete(ds, payload, collection);
+                    deletedRows = crudSQL.delete(ds, payload, collection);
                     break;
 
             }

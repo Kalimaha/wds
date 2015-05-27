@@ -32,13 +32,13 @@
         <constructor-arg value="/datasources" />
     </bean>
 
-    <bean id="wdsUtilsSQL" class="org.fao.fenix.wds.core.fenix.WDSUtilsSQL">
+    <bean id="crudSQL" class="org.fao.fenix.wds.core.crud.CRUDSQL">
     </bean>
 
-    <bean id="wdsUtilsOrientDB" class="org.fao.fenix.wds.core.fenix.WDSUtilsOrientDB">
+    <bean id="crudOrientDB" class="org.fao.fenix.wds.core.crud.CRUDOrientDB">
     </bean>
 
-    <bean id="wdsUtilsMongoDB" class="org.fao.fenix.wds.core.fenix.WDSUtilsMongoDB">
+    <bean id="crudMongoDB" class="org.fao.fenix.wds.core.crud.CRUDMongoDB">
     </bean>
 
     <bean id="mdsdGenerator" class="org.fao.fenix.d3s.mdsd.MDSDGenerator">

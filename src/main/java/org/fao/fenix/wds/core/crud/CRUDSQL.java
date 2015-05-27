@@ -1,11 +1,11 @@
-package org.fao.fenix.wds.core.fenix;
+package org.fao.fenix.wds.core.crud;
 
 import com.google.gson.Gson;
 import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
-import org.fao.fenix.wds.core.fenix.bean.CreateSQLBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveMongoDBBean;
-import org.fao.fenix.wds.core.fenix.bean.RetrieveSQLBean;
+import org.fao.fenix.wds.core.bean.crud.CreateSQLBean;
+import org.fao.fenix.wds.core.bean.crud.RetrieveSQLBean;
+import org.fao.fenix.wds.core.bean.crud.UpdateSQLBean;
 import org.fao.fenix.wds.core.jdbc.JDBCIterable;
 
 import javax.ws.rs.WebApplicationException;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
  * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
  * */
-public class WDSUtilsSQL implements WDSUtils {
+public class CRUDSQL implements CRUD {
 
     private Gson g = new Gson();
 
@@ -111,15 +111,11 @@ public class WDSUtilsSQL implements WDSUtils {
 
                 /* Initiate the JDBC iterable. */
                 JDBCIterable it = new JDBCIterable();
-                List<String> headers = new ArrayList<String>();
 
                 try {
 
                     /* Query DB. */
                     it.query(ds, b.getQuery());
-
-                    /* Get column names. */
-                    headers = it.getColumnNames();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -162,13 +158,30 @@ public class WDSUtilsSQL implements WDSUtils {
 
     }
 
-    public List<String> update(DatasourceBean ds, String query, String collection) throws Exception {
+    public List<String> update(DatasourceBean ds, String payload, String collection) throws Exception {
 
         /* Prepare the output. */
-        List<String> ids = new ArrayList<String>();
+        List<String> out = new ArrayList<String>();
+        int counter = 0;
+
+        /* Fix collection name, if needed. */
+        if (!collection.startsWith("\"") || !collection.endsWith("\""))
+            collection = "\"" + collection + "\"";
 
         /* Fetch parameters from user request. */
-        RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
+        UpdateSQLBean b = g.fromJson(payload, UpdateSQLBean.class);
+
+       /* Initiate the JDBC iterable. */
+        JDBCIterable it = new JDBCIterable();
+
+        /* Query DB. */
+        it.query(ds, b.getQuery());
+
+        /* Get column names. */
+        List<String> headers = it.getColumnNames();
+
+        /* Get column types. */
+        List<String> types = it.getColumnTypes();
 
         /* Get connection. */
         Connection connection = null;
@@ -182,10 +195,53 @@ public class WDSUtilsSQL implements WDSUtils {
         }
         connection = DriverManager.getConnection(ds.getUrl(), ds.getUsername(), ds.getPassword());
         Statement statement = connection.createStatement();
-        ids.add(Integer.toString(statement.executeUpdate(b.getQuery())));
+
+        try {
+
+            while (it.hasNext()) {
+
+                /* Row to be updated. */
+                List<String> l = it.next();
+
+                /* UPDATE statement. */
+                StringBuilder sb = new StringBuilder("UPDATE ").append(collection).append(" SET ");
+                for (String key : b.getUpdate().keySet()) {
+                    sb.append(key).append(" = ");
+                    if (b.getUpdate().get(key).getClass().getSimpleName().equalsIgnoreCase(String.class.getSimpleName()))
+                        sb.append("'");
+                    sb.append(b.getUpdate().get(key));
+                    if (b.getUpdate().get(key).getClass().getSimpleName().equalsIgnoreCase(String.class.getSimpleName()))
+                        sb.append("'");
+                    sb.append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+
+                /* WHERE condition. */
+                sb.append(" WHERE ");
+                for (int i = 0; i < l.size(); i++) {
+                    sb.append(headers.get(i)).append(" = ");
+                    if (types.get(i).endsWith("String"))
+                        sb.append("'");
+                    sb.append(l.get(i));
+                    if (types.get(i).endsWith("String"))
+                        sb.append("'");
+                    if (i < l.size() - 1)
+                        sb.append(" AND ");
+                }
+
+                /* Update DB. */
+                counter += statement.executeUpdate(sb.toString());
+
+            }
+
+        } finally {
+            statement.close();
+            connection.close();
+        }
 
         /* Return the number of deleted rows. */
-        return ids;
+        out.add(Integer.toString(counter));
+        return out;
 
     }
 
@@ -209,7 +265,15 @@ public class WDSUtilsSQL implements WDSUtils {
         }
         connection = DriverManager.getConnection(ds.getUrl(), ds.getUsername(), ds.getPassword());
         Statement statement = connection.createStatement();
-        ids.add(Integer.toString(statement.executeUpdate(b.getQuery())));
+
+        /* Delete record(s). */
+        try {
+            ids.add(Integer.toString(statement.executeUpdate(b.getQuery())));
+        } finally {
+            statement.close();
+            connection.close();
+        }
+
 
         /* Return the number of deleted rows. */
         return ids;
