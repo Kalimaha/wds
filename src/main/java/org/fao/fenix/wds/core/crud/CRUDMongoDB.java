@@ -30,7 +30,7 @@ public class CRUDMongoDB implements CRUD {
 
         /* Insert the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         List<DBObject> dbobjs = (List<DBObject>) JSON.parse(g.toJson(b.getQuery()));
@@ -61,7 +61,7 @@ public class CRUDMongoDB implements CRUD {
 
                 /* Query MongoDB. */
                 MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-                Mongo mongo = mgr.getMongo();
+                Mongo mongo = mgr.getMongo(ds.getUrl());
                 DB db = mongo.getDB(ds.getDbName());
                 DBCollection dbCollection = db.getCollection(collection);
                 DBObject dbobj_query;
@@ -143,7 +143,7 @@ public class CRUDMongoDB implements CRUD {
 
         /* Update the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         DBObject dbobj_query = dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
@@ -165,7 +165,7 @@ public class CRUDMongoDB implements CRUD {
 
         /* Query MongoDB. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         DBObject dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));

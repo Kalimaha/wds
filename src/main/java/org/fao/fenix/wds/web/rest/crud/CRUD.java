@@ -102,8 +102,6 @@ public class CRUD {
                              @QueryParam("collection") final String collection,
                              @DefaultValue("object") @QueryParam("outputType") final String outputType) throws Exception {
 
-
-
         /* Create datasource bean. */
         final DatasourceBean ds = datasourcePool.getDatasource(datasource);
 

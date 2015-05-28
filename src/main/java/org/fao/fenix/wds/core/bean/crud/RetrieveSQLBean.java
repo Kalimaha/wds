@@ -18,4 +18,11 @@ public class RetrieveSQLBean {
         this.query = query;
     }
 
+    @Override
+    public String toString() {
+        return "RetrieveSQLBean{" +
+                "query='" + query + '\'' +
+                '}';
+    }
+
 }

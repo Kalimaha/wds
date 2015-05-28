@@ -31,9 +31,7 @@ import java.net.UnknownHostException;
  */
 public class MongoDBConnectionManager {
 
-    private final static String HOST = "localhost";
-
-    private final static int PORT = 27017;
+    private final static String URL = "localhost:27017";
 
     private static MongoDBConnectionManager instance = null;
 
@@ -49,9 +47,9 @@ public class MongoDBConnectionManager {
         return instance;
     }
 
-    public static Mongo getMongo() throws UnknownHostException {
+    public static Mongo getMongo(String url) throws UnknownHostException {
         if(mongo == null)
-            mongo = new Mongo(HOST, PORT);
+            mongo = new Mongo(url != null ? url : URL);
         return mongo;
     }
 
