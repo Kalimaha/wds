@@ -34,7 +34,12 @@ public class CRUDSQL implements CRUD {
         List<String> addedRows = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        CreateSQLBean b = g.fromJson(payload, CreateSQLBean.class);
+        CreateSQLBean b;
+        try {
+            b = g.fromJson(payload, CreateSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Convert input. */
         Map<String, Object>[] data = b.getQuery();
@@ -99,15 +104,20 @@ public class CRUDSQL implements CRUD {
     public StreamingOutput retrieve(final DatasourceBean ds,
                                     final String query,
                                     final String collection,
-                                    final String outputType) {
+                                    final String outputType) throws Exception {
+
+        /* Fetch parameters from user request. */
+        final RetrieveSQLBean b;
+        try {
+            b = g.fromJson(query, RetrieveSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         return new StreamingOutput() {
 
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
-
-                /* Fetch parameters from user request. */
-                RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
 
                 /* Initiate the JDBC iterable. */
                 JDBCIterable it = new JDBCIterable();
@@ -169,7 +179,12 @@ public class CRUDSQL implements CRUD {
             collection = "\"" + collection + "\"";
 
         /* Fetch parameters from user request. */
-        UpdateSQLBean b = g.fromJson(payload, UpdateSQLBean.class);
+        UpdateSQLBean b;
+        try {
+            b = g.fromJson(payload, UpdateSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
        /* Initiate the JDBC iterable. */
         JDBCIterable it = new JDBCIterable();
@@ -251,7 +266,12 @@ public class CRUDSQL implements CRUD {
         List<String> ids = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
+        RetrieveSQLBean b;
+        try {
+            b = g.fromJson(query, RetrieveSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Get connection. */
         Connection connection = null;
