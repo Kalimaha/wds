@@ -34,7 +34,12 @@ public class CRUDSQL implements CRUD {
         List<String> addedRows = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        CreateSQLBean b = g.fromJson(payload, CreateSQLBean.class);
+        CreateSQLBean b;
+        try {
+            b = g.fromJson(payload, CreateSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Convert input. */
         Map<String, Object>[] data = b.getQuery();
@@ -99,15 +104,20 @@ public class CRUDSQL implements CRUD {
     public StreamingOutput retrieve(final DatasourceBean ds,
                                     final String query,
                                     final String collection,
-                                    final String outputType) {
+                                    final String outputType) throws Exception {
+
+        /* Fetch parameters from user request. */
+        final RetrieveSQLBean b;
+        try {
+            b = g.fromJson(query, RetrieveSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         return new StreamingOutput() {
 
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
-
-                /* Fetch parameters from user request. */
-                RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
 
                 /* Initiate the JDBC iterable. */
                 JDBCIterable it = new JDBCIterable();
@@ -121,32 +131,66 @@ public class CRUDSQL implements CRUD {
                     e.printStackTrace();
                 }
 
+                /* Get column names. */
+                List<String> headers = it.getColumnNames();
+
                 /* Write the result of the query... */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
                 /* ...as an array of objects... */
                 if (outputType.equalsIgnoreCase("object")) {
 
+                    /* Initiate the writer. */
                     writer.write("[");
+
+                    /* Write the headers. */
+                    writer.write("{");
+                    for (int z = 0 ; z < headers.size() ; z++) {
+                        writer.write("\"header" + z + "\": \"" + headers.get(z) + "\"");
+                        if (z < headers.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("},");
+
+                    /* Write contents. */
                     while (it.hasNext()) {
                         String s = it.nextJSON();
                         writer.write(s);
                         if (it.hasNext())
                             writer.write(",");
                     }
+
+                    /* Close the writer. */
                     writer.write("]");
 
                 }
 
                 /* ...or as an array of arrays. */
                 if (outputType.equalsIgnoreCase("array")) {
+
+                    /* Initiate the writer. */
                     writer.write("[");
-                    while(it.hasNext()) {
-                        writer.write(g.toJson(it.next()));
+
+                    /* Write the headers. */
+                    writer.write("[");
+                    for (int z = 0 ; z < headers.size() ; z++) {
+                        writer.write("\"" + headers.get(z) + "\"");
+                        if (z < headers.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("],");
+
+                    /* Write contents. */
+                    while (it.hasNext()) {
+                        String s = it.nextArray();
+                        writer.write(s);
                         if (it.hasNext())
                             writer.write(",");
                     }
+
+                    /* Close the writer. */
                     writer.write("]");
+
                 }
 
                 /* Convert and write the output on the stream. */
@@ -169,7 +213,12 @@ public class CRUDSQL implements CRUD {
             collection = "\"" + collection + "\"";
 
         /* Fetch parameters from user request. */
-        UpdateSQLBean b = g.fromJson(payload, UpdateSQLBean.class);
+        UpdateSQLBean b;
+        try {
+            b = g.fromJson(payload, UpdateSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
        /* Initiate the JDBC iterable. */
         JDBCIterable it = new JDBCIterable();
@@ -251,7 +300,12 @@ public class CRUDSQL implements CRUD {
         List<String> ids = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        RetrieveSQLBean b = g.fromJson(query, RetrieveSQLBean.class);
+        RetrieveSQLBean b;
+        try {
+            b = g.fromJson(query, RetrieveSQLBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Get connection. */
         Connection connection = null;

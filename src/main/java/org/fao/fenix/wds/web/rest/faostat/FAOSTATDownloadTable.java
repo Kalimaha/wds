@@ -636,7 +636,7 @@ public class FAOSTATDownloadTable {
 
     private void save(Date date, String rest, String payload) throws UnknownHostException {
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(null);
         DB db = mongo.getDB(SCHEMA);
         DBCollection collection = db.getCollection("logs");
         BasicDBObject document = new BasicDBObject();

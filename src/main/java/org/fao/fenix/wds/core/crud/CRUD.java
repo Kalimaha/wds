@@ -11,9 +11,11 @@ import java.util.List;
  * */
 public interface CRUD {
 
+    String ERROR_MESSAGE = "\"The submitted payload is wrong. Please refer to the project's <a target='_blank' href='https://github.com/FENIX-Platform/wds/wiki'>Wiki</a> for further details.\"";
+
     List<String> create(DatasourceBean ds, String documents, String collection) throws Exception;
 
-    StreamingOutput retrieve(final DatasourceBean ds, final String query, final String collection, final String outputType);
+    StreamingOutput retrieve(DatasourceBean ds, String query, String collection, String outputType) throws Exception;
 
     List<String> update(DatasourceBean ds, String query, String collection) throws Exception;
 

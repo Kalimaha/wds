@@ -21,6 +21,7 @@
  */
 package org.fao.fenix.wds.core.datasource;
 
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.DRIVER;
@@ -75,6 +76,7 @@ public class DatasourcePool {
      * and the value is the <code>DatasourceBean</code>.
      */
     public void init() throws FileNotFoundException, IOException {
+        Gson g = new Gson();
         File root = new File(this.datasourcePath);
         File[] files = root.listFiles();
         for (int i = 0; i < files.length; i++) {

@@ -33,7 +33,12 @@ public class CRUDOrientDB implements CRUD {
         List<ODocument> docs = new ArrayList<ODocument>();
 
         /* Fetch parameters from user request. */
-        CreateOrientDBBean b = g.fromJson(payload, CreateOrientDBBean.class);
+        CreateOrientDBBean b;
+        try {
+            b = g.fromJson(payload, CreateOrientDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Initiate variables. */
         String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
@@ -69,15 +74,20 @@ public class CRUDOrientDB implements CRUD {
     public StreamingOutput retrieve(final DatasourceBean ds,
                                     final String query,
                                     final String collection,
-                                    final String outputType) {
+                                    final String outputType) throws Exception {
+
+        /* Fetch parameters from user request. */
+        final RetrieveOrientDBBean b;
+        try {
+            b = g.fromJson(query, RetrieveOrientDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         return new StreamingOutput() {
 
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
-
-                /* Fetch parameters from user request. */
-                RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
 
                 /* Initiate variables. */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
@@ -143,7 +153,12 @@ public class CRUDOrientDB implements CRUD {
         List<ODocument> docs = new ArrayList<ODocument>();
 
         /* Fetch parameters from user request. */
-        UpdateOrientDBBean b = g.fromJson(payload, UpdateOrientDBBean.class);
+        UpdateOrientDBBean b;
+        try {
+            b = g.fromJson(payload, UpdateOrientDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();
         OPartitionedDatabasePool pool = new OPartitionedDatabasePool(url, ds.getUsername(), ds.getPassword(), 100);
@@ -179,7 +194,12 @@ public class CRUDOrientDB implements CRUD {
         List<String> deletedRows = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        RetrieveOrientDBBean b = g.fromJson(query, RetrieveOrientDBBean.class);
+        RetrieveOrientDBBean b;
+        try {
+            b = g.fromJson(query, RetrieveOrientDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Connect to the DB. */
         String url = "remote:" + ds.getUrl() + '/' + ds.getDbName();

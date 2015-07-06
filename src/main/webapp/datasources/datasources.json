@@ -146,10 +146,20 @@
    {
       "id": "GUIDOTEST",
       "driver": "MongoDB",
-      "url": "",
+      "url": "localhost:27017",
       "dbName": "guido",
       "username": "fenix",
       "password": "Qwaszx",
+      "create": true,
+      "retrieve": true
+   },
+   {
+      "id": "STEFANOTEST",
+      "driver": "MongoDB",
+      "url": "stefcud.device.fao.org:27017",
+      "dbName": "fmd",
+      "username": "admin",
+      "password": "admin",
       "create": true,
       "retrieve": true
    },
@@ -177,6 +187,15 @@
       "dbName": "test",
       "username": "fenix",
       "password": "Fenix2015",
+      "create": true
+   },
+   {
+      "id": "RLM",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://faostat3.fao.org/rlm",
+      "dbName": "rlm",
+      "username": "fenix",
+      "password": "Qwaszx",
       "create": true
    }
 ]

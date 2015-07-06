@@ -163,7 +163,12 @@ public class JDBCIterable implements Iterator<List<String>> {
                         if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
                             s += ",";
                     } catch (NullPointerException ignored) {
-
+                        if (i > 0) {
+                            s += "\"" + this.getResultSet().getMetaData().getColumnLabel(i) + "\": ";
+                            s += null;
+                        }
+                        if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
+                            s += ",";
                     }
                 }
                 this.setHasNext(this.getResultSet().next());
@@ -185,6 +190,59 @@ public class JDBCIterable implements Iterator<List<String>> {
         }
 
         return s;
+
+    }
+
+    public String nextArray() {
+
+        String s = "[";
+        String columnType;
+        String value;
+
+        if (this.isHasNext()) {
+            try {
+                for (int i = 1 ; i <= this.getResultSet().getMetaData().getColumnCount() ; i++) {
+                    try {
+                        columnType = this.getResultSet().getMetaData().getColumnClassName(i);
+                        value = this.getResultSet().getString(i).trim();
+                        if (columnType.endsWith("Double")) {
+                            s += Double.parseDouble(value);
+                        } else if (columnType.endsWith("Integer")) {
+                            s += Integer.parseInt(value);
+                        } else if (columnType.endsWith("Date")) {
+                            s += new Date(value).toString();
+                        } else {
+                            s += "\"" + value + "\"";
+                        }
+                        if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
+                            s += ",";
+                    } catch (NullPointerException ignored) {
+                        if (i > 0)
+                            s += null;
+                        if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
+                            s += ",";
+                    }
+                }
+                this.setHasNext(this.getResultSet().next());
+            } catch(SQLException ignored) {
+
+            }
+        }
+
+        s += "]";
+
+        if (!this.isHasNext()) {
+            try {
+                this.getResultSet().close();
+                this.getStatement().close();
+                this.getConnection().close();
+            } catch (SQLException ignored) {
+
+            }
+        }
+
+        return s;
+
     }
 
     @Override

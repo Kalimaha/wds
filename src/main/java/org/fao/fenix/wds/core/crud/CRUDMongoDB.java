@@ -26,11 +26,16 @@ public class CRUDMongoDB implements CRUD {
     public List<String> create(DatasourceBean ds, String payload, String collection) throws Exception {
 
         /* Fetch parameters from user request. */
-        CreateMongoDBBean b = g.fromJson(payload, CreateMongoDBBean.class);
+        CreateMongoDBBean b;
+        try {
+            b = g.fromJson(payload, CreateMongoDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Insert the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         List<DBObject> dbobjs = (List<DBObject>) JSON.parse(g.toJson(b.getQuery()));
@@ -49,19 +54,24 @@ public class CRUDMongoDB implements CRUD {
     public StreamingOutput retrieve(final DatasourceBean ds,
                                     final String query,
                                     final String collection,
-                                    final String outputType) {
+                                    final String outputType)  throws Exception {
+
+        /* Fetch parameters from user request. */
+        final RetrieveMongoDBBean b;
+        try {
+            b = g.fromJson(query, RetrieveMongoDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         return new StreamingOutput() {
 
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
 
-                /* Fetch parameters from user request. */
-                RetrieveMongoDBBean b = g.fromJson(query, RetrieveMongoDBBean.class);
-
                 /* Query MongoDB. */
                 MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-                Mongo mongo = mgr.getMongo();
+                Mongo mongo = mgr.getMongo(ds.getUrl());
                 DB db = mongo.getDB(ds.getDbName());
                 DBCollection dbCollection = db.getCollection(collection);
                 DBObject dbobj_query;
@@ -139,11 +149,16 @@ public class CRUDMongoDB implements CRUD {
         List<String> updatedDocuments = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        UpdateMongoDBBean b = g.fromJson(payload, UpdateMongoDBBean.class);
+        UpdateMongoDBBean b;
+        try {
+            b = g.fromJson(payload, UpdateMongoDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Update the documents. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         DBObject dbobj_query = dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
@@ -161,11 +176,16 @@ public class CRUDMongoDB implements CRUD {
         List<String> deletedRows = new ArrayList<String>();
 
         /* Fetch parameters from user request. */
-        RetrieveMongoDBBean b = g.fromJson(query, RetrieveMongoDBBean.class);
+        RetrieveMongoDBBean b;
+        try {
+            b = g.fromJson(query, RetrieveMongoDBBean.class);
+        } catch (Exception e) {
+            throw new Exception(ERROR_MESSAGE);
+        }
 
         /* Query MongoDB. */
         MongoDBConnectionManager mgr = MongoDBConnectionManager.getInstance();
-        Mongo mongo = mgr.getMongo();
+        Mongo mongo = mgr.getMongo(ds.getUrl());
         DB db = mongo.getDB(ds.getDbName());
         DBCollection dbCollection = db.getCollection(collection);
         DBObject dbobj_query = (DBObject) JSON.parse(g.toJson(b.getQuery()));
