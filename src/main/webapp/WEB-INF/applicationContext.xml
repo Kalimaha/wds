@@ -41,7 +41,4 @@
     <bean id="crudMongoDB" class="org.fao.fenix.wds.core.crud.CRUDMongoDB">
     </bean>
 
-    <bean id="mdsdGenerator" class="org.fao.fenix.d3s.mdsd.MDSDGenerator">
-    </bean>
-
 </beans>
