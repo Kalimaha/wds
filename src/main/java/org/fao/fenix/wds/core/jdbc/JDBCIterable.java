@@ -163,7 +163,13 @@ public class JDBCIterable implements Iterator<List<String>> {
                         if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
                             s += ",";
                     } catch (NullPointerException ignored) {
-
+                        if (i > 0) {
+                            s += "\"" + this.getResultSet().getMetaData().getColumnLabel(i) + "\": ";
+//                            s += "\"null\"";
+                            s += null;
+                        }
+                        if (i <= this.getResultSet().getMetaData().getColumnCount() - 1)
+                            s += ",";
                     }
                 }
                 this.setHasNext(this.getResultSet().next());
