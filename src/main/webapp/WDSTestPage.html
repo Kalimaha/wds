@@ -129,12 +129,14 @@
                             outputType: $('#outputType').val()
                         },
                         success: function (response) {
+                            console.log(response);
                             var json = response;
                             if (typeof json == 'string')
                                 json = $.parseJSON(response);
                             $('#out').val(JSON.stringify(json));
                         },
                         error: function (a) {
+                            console.log(a.responseText);
                             $('#out').val(a.responseText);
                             swal({
                                 title: 'Error',
@@ -263,10 +265,11 @@
                     <select id='datasource' style='width: 100%;' class='chosen-select' data-placeholder='Please select a datasource...'>
                         <option></option>
                         <option value='FAOSTAT'>FAOSTAT</option>
-                        <option value='LOCALPOSTGRES'>Local PostgreSQL</option>
                         <option value='GUIDOTEST'>MongoDB</option>
-                        <option value='STEFANOTEST'>MongoDB (Stefano)</option>
+                        <option value='LOCALPOSTGRES'>Local PostgreSQL</option>
                         <option value='ORIENTTEST'>OrientDB</option>
+                        <option value='RLM'>RLM</option>
+                        <option value='STEFANOTEST'>MongoDB (Stefano)</option>
                     </select>
                 </div>
                 <div class='col-xs-4'>

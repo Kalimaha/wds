@@ -188,5 +188,14 @@
       "username": "fenix",
       "password": "Fenix2015",
       "create": true
+   },
+   {
+      "id": "RLM",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://faostat3.fao.org/rlm",
+      "dbName": "rlm",
+      "username": "fenix",
+      "password": "Qwaszx",
+      "create": true
    }
 ]

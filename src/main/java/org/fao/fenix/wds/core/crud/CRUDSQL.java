@@ -131,32 +131,65 @@ public class CRUDSQL implements CRUD {
                     e.printStackTrace();
                 }
 
+                /* Get column names. */
+                List<String> headers = it.getColumnNames();
+
                 /* Write the result of the query... */
                 Writer writer = new BufferedWriter(new OutputStreamWriter(os));
 
                 /* ...as an array of objects... */
                 if (outputType.equalsIgnoreCase("object")) {
 
+                    /* Initiate the writer. */
                     writer.write("[");
+
+                    /* Write the headers. */
+                    writer.write("{");
+                    for (int z = 0 ; z < headers.size() ; z++) {
+                        writer.write("\"header" + z + "\": \"" + headers.get(z) + "\"");
+                        if (z < headers.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("},");
+
+                    /* Write contents. */
                     while (it.hasNext()) {
                         String s = it.nextJSON();
                         writer.write(s);
                         if (it.hasNext())
                             writer.write(",");
                     }
+
+                    /* Close the writer. */
                     writer.write("]");
 
                 }
 
                 /* ...or as an array of arrays. */
                 if (outputType.equalsIgnoreCase("array")) {
+
+                    /* Initiate the writer. */
                     writer.write("[");
+
+                    /* Write the headers. */
+                    writer.write("[");
+                    for (int z = 0 ; z < headers.size() ; z++) {
+                        writer.write("\"" + headers.get(z) + "\"");
+                        if (z < headers.size() - 1)
+                            writer.write(",");
+                    }
+                    writer.write("],");
+
+                    /* Write contents. */
                     while(it.hasNext()) {
                         writer.write(g.toJson(it.next()));
                         if (it.hasNext())
                             writer.write(",");
                     }
+
+                    /* Close the writer. */
                     writer.write("]");
+
                 }
 
                 /* Convert and write the output on the stream. */
