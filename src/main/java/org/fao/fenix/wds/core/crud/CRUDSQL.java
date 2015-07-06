@@ -181,8 +181,9 @@ public class CRUDSQL implements CRUD {
                     writer.write("],");
 
                     /* Write contents. */
-                    while(it.hasNext()) {
-                        writer.write(g.toJson(it.next()));
+                    while (it.hasNext()) {
+                        String s = it.nextArray();
+                        writer.write(s);
                         if (it.hasNext())
                             writer.write(",");
                     }
