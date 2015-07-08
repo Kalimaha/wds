@@ -21,6 +21,10 @@ Information for Action Programme
  */
 package org.fao.fenix.wds.core.datasource;
 
+/**
+ * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
+ * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
+ */
 public class AMISPOLICIES {
 
 	public static final String DRIVER = "PostgreSQL";

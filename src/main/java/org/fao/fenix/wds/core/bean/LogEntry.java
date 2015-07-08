@@ -1,8 +1,11 @@
 package org.fao.fenix.wds.core.bean;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
+ * @author <a href="mailto:guido.barbaglia@gmail.com">Guido Barbaglia</a>
+ */
 public class LogEntry {
 
     private Date date;

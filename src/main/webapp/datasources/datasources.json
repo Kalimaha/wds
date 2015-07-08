@@ -197,5 +197,13 @@
       "username": "fenix",
       "password": "Qwaszx",
       "create": true
+   },
+   {
+      "id": "TRAVIS_TEST",
+      "driver": "PostgreSQL",
+      "url": "jdbc:postgresql://127.0.0.1:5432/travis_test",
+      "dbName": "travis_test",
+      "username": "postgres",
+      "password": "postgres"
    }
 ]
