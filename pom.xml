@@ -28,12 +28,12 @@
         <repository>
             <id>FENIXAPPS</id>
             <name>FENIXAPPS-releases</name>
-            <url>http://hqlprfenixapp1.hq.un.fao.org:9090/artifactory/fenix-developers</url>
+            <url>http://fenixapps.fao.org/artifactory/fenix-developers</url>
         </repository>
         <snapshotRepository>
             <id>FENIXAPPS</id>
             <name>FENIXAPPS-snapshots</name>
-            <url>http://hqlprfenixapp1.hq.un.fao.org:9090/artifactory/fenix-developers</url>
+            <url>http://fenixapps.fao.org/artifactory/fenix-developers</url>
         </snapshotRepository>
     </distributionManagement>
     <dependencies>
