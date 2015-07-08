@@ -66,9 +66,28 @@ public class JDBCIterableTest extends TestCase {
         assertEquals(count, 1);
         CRUDSQL crudsql = new CRUDSQL();
         Gson g = new Gson();
-        String out = crudsql.createArrayOutput(it);
-        String[][] array =  g.fromJson(out, String[][].class);
+        String json = crudsql.createArrayOutput(it);
+        String[][] array =  g.fromJson(json, String[][].class);
         assertEquals(array.length, 2);
+
+        query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
+        try {
+            it.query(ds, query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        headers = it.getColumnNames();
+        assertEquals(headers.size(), 2);
+        count = 0;
+        while (it.hasNext()) {
+            count++;
+            it.next();
+        }
+        assertEquals(count, 0);
+        json = crudsql.createArrayOutput(it);
+        array =  g.fromJson(json, String[][].class);
+        assertEquals(array.length, 1);
+
     }
 
     private DatasourceBean getTravisTestBean() {
