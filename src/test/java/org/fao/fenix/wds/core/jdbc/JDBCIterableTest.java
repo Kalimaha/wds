@@ -28,8 +28,7 @@ public class JDBCIterableTest extends TestCase {
             count++;
             it.next();
         }
-        assertEquals(headers.size(), 2);
-
+        assertEquals(count, 2);
         query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
         try {
             it.query(ds, query);
@@ -43,7 +42,7 @@ public class JDBCIterableTest extends TestCase {
             count++;
             it.next();
         }
-        assertEquals(headers.size(), 0);
+        assertEquals(count, 0);
     }
 
     private DatasourceBean getTravisTestBean() {
