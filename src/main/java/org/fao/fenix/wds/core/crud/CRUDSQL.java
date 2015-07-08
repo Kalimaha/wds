@@ -204,6 +204,25 @@ public class CRUDSQL implements CRUD {
 
     public String createArrayOutput(JDBCIterable it) {
         StringBuilder sb = new StringBuilder();
+        List<String> headers = it.getColumnNames();
+        sb.append("[");
+        sb.append("[");
+        for (int z = 0 ; z < headers.size() ; z++) {
+            sb.append("\"").append(headers.get(z)).append("\"");
+            if (z < headers.size() - 1)
+                sb.append(",");
+        }
+        sb.append("]");
+        if (it.isHasNext()) {
+            sb.append(",");
+            while (it.hasNext()) {
+                String s = it.nextArray();
+                sb.append(s);
+                if (it.hasNext())
+                    sb.append(",");
+            }
+        }
+        sb.append("]");
         return sb.toString();
     }
 
