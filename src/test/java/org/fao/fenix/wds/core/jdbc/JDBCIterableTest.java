@@ -1,5 +1,6 @@
 package org.fao.fenix.wds.core.jdbc;
 
+import com.google.gson.Gson;
 import junit.framework.TestCase;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.DRIVER;
@@ -64,8 +65,10 @@ public class JDBCIterableTest extends TestCase {
         }
         assertEquals(count, 1);
         CRUDSQL crudsql = new CRUDSQL();
+        Gson g = new Gson();
         String out = crudsql.createArrayOutput(it);
-        System.out.println(out);
+        String[][] array =  g.fromJson(out, String[][].class);
+        assertEquals(array.length, 2);
     }
 
     private DatasourceBean getTravisTestBean() {
