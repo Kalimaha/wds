@@ -28,7 +28,7 @@ public class JDBCIterableTest extends TestCase {
             count++;
             it.next();
         }
-        assertEquals(count, 2);
+        assertEquals(count, 1);
         query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
         try {
             it.query(ds, query);
