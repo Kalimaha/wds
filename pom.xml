@@ -24,6 +24,13 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>FENIXAPPS</id>
+            <name>FENIXAPPS</name>
+            <url>http://fenixapps.fao.org/artifactory/fenix-developers</url>
+        </repository>
+    </repositories>
     <distributionManagement>
         <repository>
             <id>FENIXAPPS</id>
