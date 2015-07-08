@@ -5,9 +5,9 @@ import junit.framework.TestCase;
 import org.fao.fenix.wds.core.bean.DatasourceBean;
 import org.fao.fenix.wds.core.constant.DRIVER;
 import org.fao.fenix.wds.core.crud.CRUDSQL;
-import org.fao.fenix.wds.core.utils.ExcelFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:guido.barbaglia@fao.org">Guido Barbaglia</a>
@@ -70,7 +70,7 @@ public class JDBCIterableTest extends TestCase {
         String json = crudsql.createArrayOutput(it);
         try {
             g.fromJson(json, String[][].class);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
         query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
@@ -90,7 +90,54 @@ public class JDBCIterableTest extends TestCase {
         json = crudsql.createArrayOutput(it);
         try {
             g.fromJson(json, String[][].class);
+        } catch (Exception ignored) {
+
+        }
+    }
+
+    public void testRetrieveObjectOutput() {
+        JDBCIterable it = new JDBCIterable();
+        DatasourceBean ds = this.getTravisTestBean();
+        String query = "SELECT AreaCode, AreaNameE FROM Area";
+        try {
+            it.query(ds, query);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        List<String> headers = it.getColumnNames();
+        assertEquals(headers.size(), 2);
+        int count = 0;
+        while (it.hasNext()) {
+            count++;
+            it.next();
+        }
+        assertEquals(count, 1);
+        CRUDSQL crudsql = new CRUDSQL();
+        Gson g = new Gson();
+        String json = crudsql.createArrayOutput(it);
+        try {
+            g.fromJson(json, Map[].class);
+        } catch (Exception ignored) {
+
+        }
+        query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
+        try {
+            it.query(ds, query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        headers = it.getColumnNames();
+        assertEquals(headers.size(), 2);
+        count = 0;
+        while (it.hasNext()) {
+            count++;
+            it.next();
+        }
+        assertEquals(count, 0);
+        json = crudsql.createArrayOutput(it);
+        try {
+            g.fromJson(json, Map[].class);
+        } catch (Exception ignored) {
 
         }
     }

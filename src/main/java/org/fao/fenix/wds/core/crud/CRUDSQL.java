@@ -168,28 +168,8 @@ public class CRUDSQL implements CRUD {
                 /* ...or as an array of arrays. */
                 if (outputType.equalsIgnoreCase("array")) {
 
-                    /* Initiate the writer. */
-                    writer.write("[");
-
-                    /* Write the headers. */
-                    writer.write("[");
-                    for (int z = 0 ; z < headers.size() ; z++) {
-                        writer.write("\"" + headers.get(z) + "\"");
-                        if (z < headers.size() - 1)
-                            writer.write(",");
-                    }
-                    writer.write("],");
-
-                    /* Write contents. */
-                    while (it.hasNext()) {
-                        String s = it.nextArray();
-                        writer.write(s);
-                        if (it.hasNext())
-                            writer.write(",");
-                    }
-
-                    /* Close the writer. */
-                    writer.write("]");
+                    /* Write output. */
+                    writer.write(createArrayOutput(it));
 
                 }
 
@@ -200,6 +180,30 @@ public class CRUDSQL implements CRUD {
 
         };
 
+    }
+
+    public String createObjectOutput(JDBCIterable it) {
+        StringBuilder sb = new StringBuilder();
+        List<String> headers = it.getColumnNames();
+        sb.append("[");
+        sb.append("{");
+        for (int z = 0 ; z < headers.size() ; z++) {
+            sb.append("\"header").append(z).append("\": \"").append(headers.get(z)).append("\"");
+            if (z < headers.size() - 1)
+                sb.append(",");
+        }
+        sb.append("}");
+        if (it.isHasNext()) {
+            sb.append(",");
+            while (it.hasNext()) {
+                String s = it.nextJSON();
+                sb.append(s);
+                if (it.hasNext())
+                    sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     public String createArrayOutput(JDBCIterable it) {
