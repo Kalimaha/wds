@@ -23,6 +23,27 @@ public class JDBCIterableTest extends TestCase {
         }
         List<String> headers = it.getColumnNames();
         assertEquals(headers.size(), 2);
+        int count = 0;
+        while (it.hasNext()) {
+            count++;
+            it.next();
+        }
+        assertEquals(headers.size(), 2);
+
+        query = "SELECT AreaCode, AreaNameE FROM Area WHERE AreaCode = '42'";
+        try {
+            it.query(ds, query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        headers = it.getColumnNames();
+        assertEquals(headers.size(), 2);
+        count = 0;
+        while (it.hasNext()) {
+            count++;
+            it.next();
+        }
+        assertEquals(headers.size(), 0);
     }
 
     private DatasourceBean getTravisTestBean() {

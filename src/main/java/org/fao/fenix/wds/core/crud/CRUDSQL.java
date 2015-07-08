@@ -202,6 +202,11 @@ public class CRUDSQL implements CRUD {
 
     }
 
+    public String createArrayOutput(JDBCIterable it) {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
+    }
+
     public List<String> update(DatasourceBean ds, String payload, String collection) throws Exception {
 
         /* Prepare the output. */
