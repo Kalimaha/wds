@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/FENIX-Platform/wds.svg?branch=development)](https://travis-ci.org/FENIX-Platform/wds)
+[![Coverage Status](https://coveralls.io/repos/FENIX-Platform/wds/badge.svg?branch=development&service=github)](https://coveralls.io/github/FENIX-Platform/wds?branch=development)
 [![License](http://img.shields.io/:license-GPL2-green.svg)](http://doge.mit-license.org)
 
 WDS: Web Data Server
