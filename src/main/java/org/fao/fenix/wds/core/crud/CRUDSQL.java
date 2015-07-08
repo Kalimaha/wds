@@ -140,28 +140,8 @@ public class CRUDSQL implements CRUD {
                 /* ...as an array of objects... */
                 if (outputType.equalsIgnoreCase("object")) {
 
-                    /* Initiate the writer. */
-                    writer.write("[");
-
-                    /* Write the headers. */
-                    writer.write("{");
-                    for (int z = 0 ; z < headers.size() ; z++) {
-                        writer.write("\"header" + z + "\": \"" + headers.get(z) + "\"");
-                        if (z < headers.size() - 1)
-                            writer.write(",");
-                    }
-                    writer.write("},");
-
-                    /* Write contents. */
-                    while (it.hasNext()) {
-                        String s = it.nextJSON();
-                        writer.write(s);
-                        if (it.hasNext())
-                            writer.write(",");
-                    }
-
-                    /* Close the writer. */
-                    writer.write("]");
+                    /* Write output. */
+                    writer.write(createObjectOutput(it));
 
                 }
 
